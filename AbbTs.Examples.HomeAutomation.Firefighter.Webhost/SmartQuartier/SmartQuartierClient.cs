@@ -5,6 +5,8 @@ namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier;
 public interface ISmartQuartierClient
 {
     Task<SmartQuartierHistoryResponse> GetHistoryDataAsync(CancellationToken cancellationToken);
+
+    Task<SmartQuartierStatisticResponse> GetStatisticDataAsync(CancellationToken cancellationToken);
 }
 
 public sealed class SmartQuartierClient(HttpClient httpClient, Microsoft.Extensions.Options.IOptions<SmartQuartierOptions> options) : ISmartQuartierClient
@@ -22,6 +24,18 @@ public sealed class SmartQuartierClient(HttpClient httpClient, Microsoft.Extensi
         var payload = await JsonSerializer.DeserializeAsync<SmartQuartierHistoryResponse>(stream, JsonOptions, cancellationToken);
 
         return payload ?? throw new JsonException("Received empty payload from SmartQuartier history endpoint.");
+    }
+
+    public async Task<SmartQuartierStatisticResponse> GetStatisticDataAsync(CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, _options.StatisticPath);
+        using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var payload = await JsonSerializer.DeserializeAsync<SmartQuartierStatisticResponse>(stream, JsonOptions, cancellationToken);
+
+        return payload ?? throw new JsonException("Received empty payload from SmartQuartier statistic endpoint.");
     }
 
     private static JsonSerializerOptions CreateJsonOptions()

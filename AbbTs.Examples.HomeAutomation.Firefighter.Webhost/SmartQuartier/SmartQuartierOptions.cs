@@ -8,5 +8,7 @@ public sealed class SmartQuartierOptions
 
     public string HistoryPath { get; init; } = "smart-quartier/data-service/history";
 
+    public string StatisticPath { get; init; } = "smart-quartier/data-service/statistic";
+
     public int TimeoutSeconds { get; init; } = 10;
 }
