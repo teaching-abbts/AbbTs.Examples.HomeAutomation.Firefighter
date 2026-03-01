@@ -5,19 +5,41 @@ using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.Statistic;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Extensions;
 
-var builder = WebApplication.CreateBuilder(args);
-var versionInfo = builder.Services.RegisterVersionInfo(typeof(Program).Assembly);
+using Mumrich.SpaDevMiddleware.Domain.Contracts;
+using Mumrich.SpaDevMiddleware.Domain.Models;
+using Mumrich.SpaDevMiddleware.Extensions;
 
-builder.Services.SetupNSwag(versionInfo);
-builder.Services.AddSmartQuartier(builder.Configuration);
+namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost;
 
-var app = builder.Build();
+public static class Program
+{
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        var versionInfo = builder.Services.RegisterVersionInfo(typeof(Program).Assembly);
+        var appSettings =
+            builder.Configuration.Get<AppSettings>()
+            ?? throw new InvalidOperationException("Failed to load application settings.");
 
-app.UseNSwag();
-app.MapSmartQuartierHistoryEndpoint();
-app.MapSmartQuartierStatisticEndpoint();
+        builder.Services.SetupNSwag(versionInfo);
+        builder.SetupSpaMiddleware(appSettings);
+        builder.Services.AddSmartQuartier(builder.Configuration);
 
-app.MapAboutEndpoint();
-app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
+        var app = builder.Build();
 
-await app.RunAsync();
+        app.UseNSwag();
+        app.MapSmartQuartierHistoryEndpoint();
+        app.MapSmartQuartierStatisticEndpoint();
+
+        app.MapAboutEndpoint();
+        app.MapSinglePageApps(appSettings);
+
+        await app.RunAsync();
+    }
+}
+
+public class AppSettings : ISpaMiddlewareSettings
+{
+    public Dictionary<string, SpaSettings> SinglePageApps { get; set; } = new();
+    public string BasePublicPath { get; set; } = Directory.GetCurrentDirectory();
+}
