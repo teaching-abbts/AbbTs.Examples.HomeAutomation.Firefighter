@@ -6,9 +6,9 @@
           :color="house.color"
           class="house-card"
           rounded="lg"
-          variant="tonal"
+          variant="flat"
         >
-          <v-card-item>
+          <v-card-item :class="house.textColor">
             <div class="d-flex align-center justify-space-between">
               <v-icon icon="mdi-home-city-outline" size="44" />
               <v-icon :icon="house.statusIcon" size="28" />
@@ -39,5 +39,6 @@ const { t } = useI18n();
 <style scoped>
 .house-card {
   min-height: 180px;
+  border: 2px solid rgba(var(--v-theme-on-surface), 0.35);
 }
 </style>

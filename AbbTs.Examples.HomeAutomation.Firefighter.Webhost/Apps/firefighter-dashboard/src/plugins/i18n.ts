@@ -30,6 +30,11 @@ const messages = {
         english: "English",
         japanese: "日本語",
       },
+      theme: {
+        label: "Theme",
+        bright: "Bright",
+        dark: "Dark",
+      },
     },
     message: {
       hello: "hello world",
@@ -64,6 +69,11 @@ const messages = {
         english: "English",
         japanese: "日本語",
       },
+      theme: {
+        label: "Design",
+        bright: "Hell",
+        dark: "Dunkel",
+      },
     },
     message: {
       hello: "Hallo Welt",
@@ -97,6 +107,11 @@ const messages = {
         german: "Deutsch",
         english: "English",
         japanese: "日本語",
+      },
+      theme: {
+        label: "テーマ",
+        bright: "ライト",
+        dark: "ダーク",
       },
     },
     message: {

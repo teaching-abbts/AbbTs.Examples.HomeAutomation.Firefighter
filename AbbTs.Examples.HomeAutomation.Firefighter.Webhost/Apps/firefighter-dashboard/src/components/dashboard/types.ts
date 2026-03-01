@@ -5,6 +5,7 @@ export type EventItem = {
   time: string;
   icon: string;
   color: string;
+  textColor: string;
 };
 
 export type HouseItem = {
@@ -13,6 +14,7 @@ export type HouseItem = {
   statusKey: string;
   statusIcon: string;
   color: string;
+  textColor: string;
 };
 
 export type ActionItem = {
@@ -20,6 +22,7 @@ export type ActionItem = {
   titleKey: string;
   houseNumber: number;
   color: string;
+  textColor: string;
 };
 
 export type ObservedHouseItem = {

@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer permanent width="260">
+  <v-navigation-drawer color="blue-lighten-4" permanent width="260">
     <div class="px-4 py-4 text-h5 font-weight-bold">
       {{ t("dashboard.sections.events") }}
     </div>
@@ -11,16 +11,20 @@
         class="mb-3 px-0"
         lines="three"
       >
-        <v-card :color="event.color" class="w-100" rounded="lg" variant="flat">
+        <v-card :color="event.color" class="w-100" rounded="xl" variant="flat">
           <v-card-item>
-            <v-card-title class="d-flex align-center ga-2 pb-1">
+            <v-card-title
+              :class="['d-flex align-center ga-2 pb-1', event.textColor]"
+            >
               <v-icon :icon="event.icon" />
               {{ t(event.titleKey) }}
             </v-card-title>
-            <v-card-subtitle>{{
+            <v-card-subtitle :class="event.textColor">{{
               t("dashboard.houseName", { id: event.houseNumber })
             }}</v-card-subtitle>
-            <div class="text-body-2 mt-1">{{ event.time }}</div>
+            <div :class="['text-body-2 mt-1 font-italic', event.textColor]">
+              {{ event.time }}
+            </div>
           </v-card-item>
         </v-card>
       </v-list-item>

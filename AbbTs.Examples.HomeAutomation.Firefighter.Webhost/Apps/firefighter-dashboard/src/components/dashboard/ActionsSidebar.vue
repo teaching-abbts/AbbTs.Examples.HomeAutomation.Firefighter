@@ -1,5 +1,10 @@
 <template>
-  <v-navigation-drawer location="right" permanent width="300">
+  <v-navigation-drawer
+    color="blue-lighten-4"
+    location="right"
+    permanent
+    width="300"
+  >
     <div class="px-4 py-4 text-h5 font-weight-bold">
       {{ t("dashboard.sections.actions") }}
     </div>
@@ -9,30 +14,35 @@
         v-for="action in actions"
         :key="action.id"
         :color="action.color"
-        class="mb-4"
+        class="mb-4 action-card"
         rounded="lg"
         variant="flat"
       >
-        <v-card-item>
-          <v-card-title class="text-h6">{{ t(action.titleKey) }}</v-card-title>
-          <v-card-subtitle>{{
+        <v-card-item :class="action.textColor">
+          <v-card-title :class="['text-h6', action.textColor]">{{
+            t(action.titleKey)
+          }}</v-card-title>
+          <v-card-subtitle :class="action.textColor">{{
             t("dashboard.houseName", { id: action.houseNumber })
           }}</v-card-subtitle>
         </v-card-item>
 
         <v-card-actions>
-          <v-btn block color="surface" variant="elevated">{{
+          <v-btn block color="grey-lighten-2" rounded="lg" variant="elevated">{{
             t("dashboard.actions.execute")
           }}</v-btn>
         </v-card-actions>
       </v-card>
 
-      <v-card rounded="lg" variant="tonal">
-        <v-card-title>{{ t("dashboard.actions.observe") }}</v-card-title>
+      <v-card color="blue-lighten-1" rounded="lg" variant="flat">
+        <v-card-title class="text-white">{{
+          t("dashboard.actions.observe")
+        }}</v-card-title>
         <v-list class="pt-0" density="comfortable">
           <v-list-item
             v-for="house in observedHouses"
             :key="house.id"
+            class="mb-2 bg-grey-lighten-2 rounded-lg"
             :title="t('dashboard.houseName', { id: house.number })"
           >
             <template #append>
@@ -61,3 +71,9 @@ defineProps<{
 
 const { t } = useI18n();
 </script>
+
+<style scoped>
+.action-card {
+  border-top-right-radius: 28px !important;
+}
+</style>
