@@ -1,11 +1,12 @@
 <Solution>
   <Folder Name="/.global/">
     <File Path=".editorconfig" />
-    <File Path=".gitignore" />
     <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="GitVersion.yaml" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
     <File Path="global.json" />
     <File Path="nuget.config" />
-    <File Path="README.md" />
-    <File Path="LICENSE" />
   </Folder>
 </Solution>
