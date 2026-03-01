@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer
-    color="blue-lighten-4"
+    :style="{ backgroundColor: '#8fb1d5' }"
     location="right"
     permanent
     width="300"
@@ -13,36 +13,45 @@
       <v-card
         v-for="action in actions"
         :key="action.id"
-        :color="action.color"
         class="mb-4 action-card"
         rounded="lg"
+        :style="{ backgroundColor: action.color }"
         variant="flat"
       >
-        <v-card-item :class="action.textColor">
-          <v-card-title :class="['text-h6', action.textColor]">{{
+        <v-card-item :style="{ color: action.textColor }">
+          <v-card-title class="text-h6" :style="{ color: action.textColor }">{{
             t(action.titleKey)
           }}</v-card-title>
-          <v-card-subtitle :class="action.textColor">{{
+          <v-card-subtitle :style="{ color: action.textColor, opacity: 1 }">{{
             t("dashboard.houseName", { id: action.houseNumber })
           }}</v-card-subtitle>
         </v-card-item>
 
         <v-card-actions>
-          <v-btn block color="grey-lighten-2" rounded="lg" variant="elevated">{{
-            t("dashboard.actions.execute")
-          }}</v-btn>
+          <v-btn
+            block
+            rounded="lg"
+            :style="{ backgroundColor: '#b0b4b8', color: '#ffffff' }"
+            variant="elevated"
+            >{{ t("dashboard.actions.execute") }}</v-btn
+          >
         </v-card-actions>
       </v-card>
 
-      <v-card color="blue-lighten-1" rounded="lg" variant="flat">
-        <v-card-title class="text-white">{{
+      <v-card
+        rounded="lg"
+        :style="{ backgroundColor: '#5aa1dc' }"
+        variant="flat"
+      >
+        <v-card-title :style="{ color: '#ffffff' }">{{
           t("dashboard.actions.observe")
         }}</v-card-title>
         <v-list class="pt-0" density="comfortable">
           <v-list-item
             v-for="house in observedHouses"
             :key="house.id"
-            class="mb-2 bg-grey-lighten-2 rounded-lg"
+            class="mb-2 rounded-lg"
+            :style="{ backgroundColor: '#b0b4b8', color: '#ffffff' }"
             :title="t('dashboard.houseName', { id: house.number })"
           >
             <template #append>
