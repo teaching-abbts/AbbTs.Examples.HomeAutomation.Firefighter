@@ -31,8 +31,8 @@ app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/smart-quartier/history", async (ISmartQuartierClient client, CancellationToken cancellationToken) =>
 {
-    var response = await client.GetHistoryAsync(cancellationToken);
-    return Results.Content(response.Content, response.ContentType, statusCode: response.StatusCode);
+    var response = await client.GetHistoryDataAsync(cancellationToken);
+    return Results.Ok(response);
 });
 
 await app.RunAsync();

@@ -1,24 +1,33 @@
+using System.Text.Json;
+
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier;
 
 public interface ISmartQuartierClient
 {
-    Task<SmartQuartierResponse> GetHistoryAsync(CancellationToken cancellationToken);
+    Task<SmartQuartierHistoryResponse> GetHistoryDataAsync(CancellationToken cancellationToken);
 }
 
 public sealed class SmartQuartierClient(HttpClient httpClient, Microsoft.Extensions.Options.IOptions<SmartQuartierOptions> options) : ISmartQuartierClient
 {
     private readonly SmartQuartierOptions _options = options.Value;
+    private static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
 
-    public async Task<SmartQuartierResponse> GetHistoryAsync(CancellationToken cancellationToken)
+    public async Task<SmartQuartierHistoryResponse> GetHistoryDataAsync(CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, _options.HistoryPath);
         using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        response.EnsureSuccessStatusCode();
 
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/json";
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var payload = await JsonSerializer.DeserializeAsync<SmartQuartierHistoryResponse>(stream, JsonOptions, cancellationToken);
 
-        return new SmartQuartierResponse((int)response.StatusCode, contentType, content);
+        return payload ?? throw new JsonException("Received empty payload from SmartQuartier history endpoint.");
+    }
+
+    private static JsonSerializerOptions CreateJsonOptions()
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new SmartQuartierTimestampJsonConverter());
+        return options;
     }
 }
-
-public sealed record SmartQuartierResponse(int StatusCode, string ContentType, string Content);
