@@ -3,6 +3,8 @@ import { createI18n } from "vue-i18n";
 const messages = {
   en: {
     dashboard: {
+      title: "Firefighter Dashboard",
+      loading: "Loading...",
       sections: {
         events: "Events",
         actions: "Actions",
@@ -11,6 +13,9 @@ const messages = {
       events: {
         fire: "Fire!",
         gas: "Gas!",
+        motion: "Motion!",
+        sound: "Sound!",
+        rfid: "RFID!",
       },
       houseStatus: {
         fireDetected: "Fire detected",
@@ -23,6 +28,11 @@ const messages = {
         openDoors: "Open doors",
         execute: "Execute",
         observe: "Observe",
+        open: "Open",
+        done: "Done",
+        markDone: "Mark done",
+        reopen: "Reopen",
+        onlyOpen: "Only open actions",
       },
       language: {
         label: "Language",
@@ -51,6 +61,8 @@ const messages = {
   },
   de: {
     dashboard: {
+      title: "Feuerwehr-Dashboard",
+      loading: "Lädt...",
       sections: {
         events: "Ereignisse",
         actions: "Aktionen",
@@ -59,6 +71,9 @@ const messages = {
       events: {
         fire: "Feuer!",
         gas: "Gas!",
+        motion: "Bewegung!",
+        sound: "Geräusch!",
+        rfid: "RFID!",
       },
       houseStatus: {
         fireDetected: "Feuer erkannt",
@@ -71,6 +86,11 @@ const messages = {
         openDoors: "Türen öffnen",
         execute: "Ausführen",
         observe: "Beobachten",
+        open: "Offen",
+        done: "Erledigt",
+        markDone: "Als erledigt markieren",
+        reopen: "Wieder öffnen",
+        onlyOpen: "Nur offene Aktionen",
       },
       language: {
         label: "Sprache",
@@ -99,6 +119,8 @@ const messages = {
   },
   ja: {
     dashboard: {
+      title: "消防ダッシュボード",
+      loading: "読み込み中...",
       sections: {
         events: "イベント",
         actions: "アクション",
@@ -107,6 +129,9 @@ const messages = {
       events: {
         fire: "火災!",
         gas: "ガス!",
+        motion: "動体!",
+        sound: "音!",
+        rfid: "RFID!",
       },
       houseStatus: {
         fireDetected: "火災検知",
@@ -119,6 +144,11 @@ const messages = {
         openDoors: "ドアを開く",
         execute: "実行",
         observe: "監視",
+        open: "未完了",
+        done: "完了",
+        markDone: "完了にする",
+        reopen: "再オープン",
+        onlyOpen: "未完了のみ表示",
       },
       language: {
         label: "言語",

@@ -10,8 +10,17 @@
     </div>
 
     <div class="px-3 pb-3">
+      <v-switch
+        v-model="showOnlyOpenActions"
+        class="mb-3"
+        color="primary"
+        density="compact"
+        hide-details
+        :label="t('dashboard.actions.onlyOpen')"
+      />
+
       <v-card
-        v-for="action in actions"
+        v-for="action in filteredActions"
         :key="action.id"
         class="mb-4 action-card"
         rounded="lg"
@@ -25,6 +34,19 @@
           <v-card-subtitle :style="{ color: action.textColor, opacity: 1 }">{{
             t("dashboard.houseName", { id: action.houseNumber })
           }}</v-card-subtitle>
+          <v-chip
+            v-if="!showOnlyOpenActions"
+            class="mt-2"
+            :color="action.state === 'done' ? 'success' : 'secondary'"
+            size="small"
+            variant="flat"
+          >
+            {{
+              action.state === "done"
+                ? t("dashboard.actions.done")
+                : t("dashboard.actions.open")
+            }}
+          </v-chip>
         </v-card-item>
 
         <v-card-actions>
@@ -33,7 +55,14 @@
             rounded="lg"
             :style="{ backgroundColor: '#b0b4b8', color: '#ffffff' }"
             variant="elevated"
-            >{{ t("dashboard.actions.execute") }}</v-btn
+            @click="emit('toggle-action', action.actionKey)"
+            >{{
+              showOnlyOpenActions
+                ? t("dashboard.actions.markDone")
+                : action.state === "done"
+                  ? t("dashboard.actions.reopen")
+                  : t("dashboard.actions.markDone")
+            }}</v-btn
           >
         </v-card-actions>
       </v-card>
@@ -55,10 +84,16 @@
             :title="t('dashboard.houseName', { id: house.number })"
           >
             <template #append>
-              <v-icon
-                v-if="house.active"
+              <v-checkbox-btn
+                :model-value="house.active"
                 color="success"
-                icon="mdi-check-bold"
+                hide-details
+                @update:model-value="
+                  emit('toggle-observed-house', {
+                    houseNumber: house.number,
+                    observed: Boolean($event),
+                  })
+                "
               />
             </template>
           </v-list-item>
@@ -69,16 +104,33 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import type { ActionItem, ObservedHouseItem } from "./types";
 
-defineProps<{
+const props = defineProps<{
   actions: ActionItem[];
   observedHouses: ObservedHouseItem[];
 }>();
 
+const emit = defineEmits<{
+  "toggle-action": [actionKey: string];
+  "toggle-observed-house": [
+    payload: { houseNumber: number; observed: boolean },
+  ];
+}>();
+
 const { t } = useI18n();
+const showOnlyOpenActions = ref(false);
+
+const filteredActions = computed(() => {
+  if (!showOnlyOpenActions.value) {
+    return props.actions;
+  }
+
+  return props.actions.filter((action) => action.state === "open");
+});
 </script>
 
 <style scoped>

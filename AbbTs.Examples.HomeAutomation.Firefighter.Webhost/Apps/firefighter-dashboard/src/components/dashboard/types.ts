@@ -18,11 +18,15 @@ export type HouseItem = {
 };
 
 export type ActionItem = {
-  id: number;
+  id: string;
+  actionKey: string;
   titleKey: string;
   houseNumber: number;
   color: string;
   textColor: string;
+  state: "open" | "done";
+  openedAt: number;
+  closedAt: number | null;
 };
 
 export type ObservedHouseItem = {

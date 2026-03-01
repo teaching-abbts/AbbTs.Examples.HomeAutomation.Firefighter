@@ -1,22 +1,52 @@
 <template>
   <v-layout class="dashboard-layout">
     <v-app-bar class="px-6" color="surface" elevation="0">
-      <v-spacer />
+      <v-btn
+        icon="mdi-dock-left"
+        variant="text"
+        :title="
+          showEventsSidebar ? 'Hide events sidebar' : 'Show events sidebar'
+        "
+        @click="showEventsSidebar = !showEventsSidebar"
+      />
+      <v-app-bar-title class="d-flex align-center ga-2 text-h6">
+        <span>{{ t("dashboard.title") }}</span>
+        <v-progress-circular v-if="loading" color="primary" indeterminate />
+        <span v-if="loading" class="text-caption">{{
+          t("dashboard.loading")
+        }}</span>
+      </v-app-bar-title>
       <LanguageSwitcher class="mr-4" />
       <ThemeSwitcher />
+      <v-btn
+        class="ml-2"
+        icon="mdi-dock-right"
+        variant="text"
+        :title="
+          showActionsSidebar ? 'Hide actions sidebar' : 'Show actions sidebar'
+        "
+        @click="showActionsSidebar = !showActionsSidebar"
+      />
     </v-app-bar>
-    <EventsSidebar :events="events" />
+    <EventsSidebar v-if="showEventsSidebar" :events="sidebarEvents" />
     <v-main class="bg-surface">
       <HousesGrid :houses="houses" @select-house="openHouseDetails" />
       <HouseDetailsDialog />
     </v-main>
-    <ActionsSidebar :actions="actions" :observed-houses="observedHouses" />
+    <ActionsSidebar
+      v-if="showActionsSidebar"
+      :actions="actions"
+      :observed-houses="observedHouses"
+      @toggle-action="toggleAction"
+      @toggle-observed-house="toggleObservedHouse"
+    />
   </v-layout>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { storeToRefs } from "pinia";
+import { useI18n } from "vue-i18n";
 
 import ActionsSidebar from "@/components/dashboard/ActionsSidebar.vue";
 import EventsSidebar from "@/components/dashboard/EventsSidebar.vue";
@@ -26,61 +56,20 @@ import LanguageSwitcher from "@/components/dashboard/LanguageSwitcher.vue";
 import ThemeSwitcher from "@/components/dashboard/ThemeSwitcher.vue";
 import { useHouseDetailsStore } from "@/stores/houseDetails";
 
-import type {
-  ActionItem,
-  EventItem,
-  HouseItem,
-  ObservedHouseItem,
-} from "@/components/dashboard/types";
-
-const events: EventItem[] = [
-  {
-    id: 1,
-    titleKey: "dashboard.events.fire",
-    houseNumber: 1,
-    time: "17.11.2033 14:34",
-    icon: "mdi-fire",
-    color: "#ed8936",
-    textColor: "#111111",
-  },
-  {
-    id: 2,
-    titleKey: "dashboard.events.gas",
-    houseNumber: 5,
-    time: "17.11.2033 14:31",
-    icon: "mdi-alert",
-    color: "#facc15",
-    textColor: "#111111",
-  },
-];
-
-const actions: ActionItem[] = [
-  {
-    id: 1,
-    titleKey: "dashboard.actions.extinguishFire",
-    houseNumber: 1,
-    color: "#f07f2f",
-    textColor: "#ffffff",
-  },
-  {
-    id: 2,
-    titleKey: "dashboard.actions.openDoors",
-    houseNumber: 5,
-    color: "#facc15",
-    textColor: "#111111",
-  },
-];
-
-const observedHouses: ObservedHouseItem[] = [
-  { id: 2, number: 2, active: false },
-  { id: 4, number: 4, active: false },
-  { id: 6, number: 6, active: false },
-  { id: 3, number: 3, active: true },
-];
+import type { HouseItem } from "@/components/dashboard/types";
 
 const houseDetailsStore = useHouseDetailsStore();
-const { availableHouseNumbers, latestEventTypeByHouse } =
-  storeToRefs(houseDetailsStore);
+const { t } = useI18n({ useScope: "global" });
+const {
+  availableHouseNumbers,
+  latestEventTypeByHouse,
+  observedHouses,
+  sidebarEvents,
+  actions,
+  loading,
+} = storeToRefs(houseDetailsStore);
+const showEventsSidebar = ref(true);
+const showActionsSidebar = ref(true);
 
 const houses = computed<HouseItem[]>(() => {
   return availableHouseNumbers.value.map((houseNumber) => {
@@ -119,12 +108,36 @@ const houses = computed<HouseItem[]>(() => {
   });
 });
 
+let intervalId = null as number | null;
+
 onMounted(async () => {
-  await houseDetailsStore.fetchHistoryIfNeeded();
+  await houseDetailsStore.fetchHistory();
+
+  intervalId = setInterval(
+    async () => await houseDetailsStore.fetchHistory(),
+    5000,
+  );
+});
+
+onUnmounted(() => {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
 });
 
 const openHouseDetails = (houseNumber: number) => {
   houseDetailsStore.open(houseNumber);
+};
+
+const toggleAction = (actionKey: string) => {
+  houseDetailsStore.toggleActionState(actionKey);
+};
+
+const toggleObservedHouse = (payload: {
+  houseNumber: number;
+  observed: boolean;
+}) => {
+  houseDetailsStore.setHouseObserved(payload.houseNumber, payload.observed);
 };
 </script>
 
