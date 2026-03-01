@@ -9,4 +9,5 @@
     <File Path="global.json" />
     <File Path="nuget.config" />
   </Folder>
+  <Project Path="AbbTs.Examples.HomeAutomation.Firefighter.Webhost/AbbTs.Examples.HomeAutomation.Firefighter.Webhost.csproj" />
 </Solution>
