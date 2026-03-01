@@ -1,16 +1,13 @@
 <template>
-  <v-select
-    v-model="selectedTheme"
-    :items="themeOptions"
-    class="theme-switcher"
-    density="compact"
-    hide-details
-    item-title="title"
-    item-value="value"
-    :label="t('dashboard.theme.label')"
-    prepend-inner-icon="mdi-theme-light-dark"
-    variant="outlined"
-  />
+  <div class="mr-2">
+    <v-switch
+      v-model="isDarkTheme"
+      true-icon="mdi-moon-waning-crescent"
+      false-icon="mdi-white-balance-sunny"
+      density="comfortable"
+      hide-details
+    />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -21,21 +18,8 @@ import { useTheme } from "vuetify";
 const { t } = useI18n({ useScope: "global" });
 const theme = useTheme();
 
-const selectedTheme = computed({
-  get: () => (theme.global.current.value.dark ? "dark" : "light"),
-  set: (value: string) => {
-    theme.global.name.value = value;
-  },
+const isDarkTheme = computed({
+  get: () => theme.current.value.dark,
+  set: (v) => (theme.global.name.value = v ? "dark" : "light"),
 });
-
-const themeOptions = computed(() => [
-  { title: t("dashboard.theme.bright"), value: "light" },
-  { title: t("dashboard.theme.dark"), value: "dark" },
-]);
 </script>
-
-<style scoped>
-.theme-switcher {
-  max-width: 180px;
-}
-</style>

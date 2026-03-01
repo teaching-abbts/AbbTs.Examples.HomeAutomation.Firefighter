@@ -1,15 +1,14 @@
 <template>
   <v-layout class="dashboard-layout">
+    <v-app-bar class="px-6" color="surface" elevation="0">
+      <v-spacer />
+      <LanguageSwitcher class="mr-4" />
+      <ThemeSwitcher />
+    </v-app-bar>
     <EventsSidebar :events="events" />
-
     <v-main class="bg-surface">
-      <div class="d-flex justify-end align-center ga-3 px-6 pt-4">
-        <ThemeSwitcher />
-        <LanguageSwitcher />
-      </div>
       <HousesGrid :houses="houses" />
     </v-main>
-
     <ActionsSidebar :actions="actions" :observed-houses="observedHouses" />
   </v-layout>
 </template>

@@ -22,7 +22,12 @@ public static class Program
             ?? throw new InvalidOperationException("Failed to load application settings.");
 
         builder.Services.SetupNSwag(versionInfo);
-        builder.SetupSpaMiddleware(appSettings);
+
+        if (builder.Environment.EnvironmentName != "NSWAG")
+        {
+            builder.SetupSpaMiddleware(appSettings);
+        }
+
         builder.Services.AddSmartQuartier(builder.Configuration);
 
         var app = builder.Build();
@@ -32,7 +37,11 @@ public static class Program
         app.MapSmartQuartierStatisticEndpoint();
 
         app.MapAboutEndpoint();
-        app.MapSinglePageApps(appSettings);
+
+        if (app.Environment.EnvironmentName != "NSWAG")
+        {
+            app.MapSinglePageApps(appSettings);
+        }
 
         await app.RunAsync();
     }
