@@ -1,13 +1,8 @@
 using System.Text.Json;
 
-namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Models;
 
-public interface ISmartQuartierClient
-{
-    Task<SmartQuartierHistoryResponse> GetHistoryDataAsync(CancellationToken cancellationToken);
-
-    Task<SmartQuartierStatisticResponse> GetStatisticDataAsync(CancellationToken cancellationToken);
-}
+namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Services;
 
 public sealed class SmartQuartierClient(HttpClient httpClient, Microsoft.Extensions.Options.IOptions<SmartQuartierOptions> options) : ISmartQuartierClient
 {

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier;
+namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Models;
 
 public sealed record SmartQuartierStatisticResponse(
     [property: JsonPropertyName("measurements")] SmartQuartierMeasurementStatistic Measurements,
