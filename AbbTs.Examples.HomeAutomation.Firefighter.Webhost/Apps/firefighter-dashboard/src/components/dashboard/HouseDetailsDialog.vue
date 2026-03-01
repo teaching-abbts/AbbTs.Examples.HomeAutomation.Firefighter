@@ -23,30 +23,26 @@
           {{ t("dashboard.houseDetails.error") }}
         </v-alert>
 
-        <v-table v-else class="history-table" density="comfortable">
-          <thead>
-            <tr>
-              <th scope="col">{{ t("dashboard.houseDetails.timestamp") }}</th>
-              <th scope="col">{{ t("dashboard.houseDetails.type") }}</th>
-              <th scope="col">{{ t("dashboard.houseDetails.details") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(event, index) in sortedEvents"
-              :key="rowKey(event, index)"
-            >
-              <td>{{ formatTimestamp(event.timeStamp) }}</td>
-              <td>{{ formatType(event.type) }}</td>
-              <td>{{ event.data || "..." }}</td>
-            </tr>
-            <tr v-if="sortedEvents.length === 0">
-              <td class="text-center" colspan="3">
-                {{ t("dashboard.houseDetails.noData") }}
-              </td>
-            </tr>
-          </tbody>
-        </v-table>
+        <v-data-table-virtual
+          v-else
+          :headers="tableHeaders"
+          :items="tableItems"
+          class="history-table"
+          density="comfortable"
+          height="360"
+          item-value="id"
+          :no-data-text="t('dashboard.houseDetails.noData')"
+        >
+          <template #item.timestamp="{ item }">
+            {{ item.timestamp }}
+          </template>
+          <template #item.type="{ item }">
+            {{ item.type }}
+          </template>
+          <template #item.details="{ item }">
+            {{ item.details }}
+          </template>
+        </v-data-table-virtual>
       </v-card-text>
 
       <v-card-actions class="justify-end px-6 pb-4">
@@ -64,7 +60,6 @@ import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 
 import { useHouseDetailsStore } from "@/stores/houseDetails";
-import type { SmartQuartierEvent } from "@/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost";
 
 const { locale, t, te } = useI18n({ useScope: "global" });
 const store = useHouseDetailsStore();
@@ -96,10 +91,24 @@ const sortedEvents = computed(() => {
   });
 });
 
-const rowKey = (event: SmartQuartierEvent, index: number) => {
-  const timeStamp = event.timeStamp?.toISOString() ?? "na";
-  return `${timeStamp}-${event.type ?? "unknown"}-${index}`;
-};
+const tableHeaders = computed(() => [
+  { title: t("dashboard.houseDetails.timestamp"), key: "timestamp" },
+  { title: t("dashboard.houseDetails.type"), key: "type" },
+  { title: t("dashboard.houseDetails.details"), key: "details" },
+]);
+
+const tableItems = computed(() => {
+  return sortedEvents.value.map((event, index) => {
+    const timeStamp = event.timeStamp?.toISOString() ?? "na";
+
+    return {
+      id: `${timeStamp}-${event.type ?? "unknown"}-${index}`,
+      timestamp: formatTimestamp(event.timeStamp),
+      type: formatType(event.type),
+      details: event.data || "...",
+    };
+  });
+});
 
 const formatTimestamp = (timeStamp: Date | undefined) => {
   if (!timeStamp) {
