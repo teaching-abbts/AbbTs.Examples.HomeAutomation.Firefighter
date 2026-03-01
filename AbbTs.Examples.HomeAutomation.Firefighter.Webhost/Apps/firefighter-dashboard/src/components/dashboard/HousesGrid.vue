@@ -7,6 +7,7 @@
           rounded="lg"
           :style="{ backgroundColor: house.color }"
           variant="flat"
+          @click="emit('select-house', house.number)"
         >
           <v-card-item :style="{ color: house.textColor }">
             <div class="d-flex align-center justify-space-between">
@@ -35,6 +36,10 @@ defineProps<{
   houses: HouseItem[];
 }>();
 
+const emit = defineEmits<{
+  "select-house": [houseNumber: number];
+}>();
+
 const { t } = useI18n();
 </script>
 
@@ -42,5 +47,6 @@ const { t } = useI18n();
 .house-card {
   min-height: 180px;
   border: 2px solid rgba(var(--v-theme-on-surface), 0.35);
+  cursor: pointer;
 }
 </style>

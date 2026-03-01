@@ -35,6 +35,15 @@ const messages = {
         bright: "Bright",
         dark: "Dark",
       },
+      houseDetails: {
+        title: "House details",
+        timestamp: "Timestamp",
+        type: "Type",
+        details: "Details",
+        noData: "No history data available",
+        error: "History could not be loaded",
+        close: "Close",
+      },
     },
     message: {
       hello: "hello world",
@@ -74,6 +83,15 @@ const messages = {
         bright: "Hell",
         dark: "Dunkel",
       },
+      houseDetails: {
+        title: "Hausdetails",
+        timestamp: "Zeitstempel",
+        type: "Typ",
+        details: "Details",
+        noData: "Keine Verlaufsdaten verfügbar",
+        error: "Verlauf konnte nicht geladen werden",
+        close: "Schließen",
+      },
     },
     message: {
       hello: "Hallo Welt",
@@ -112,6 +130,15 @@ const messages = {
         label: "テーマ",
         bright: "ライト",
         dark: "ダーク",
+      },
+      houseDetails: {
+        title: "家の詳細",
+        timestamp: "タイムスタンプ",
+        type: "種類",
+        details: "詳細",
+        noData: "履歴データがありません",
+        error: "履歴を読み込めませんでした",
+        close: "閉じる",
       },
     },
     message: {
