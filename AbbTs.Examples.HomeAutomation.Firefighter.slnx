@@ -9,5 +9,8 @@
     <File Path="global.json" />
     <File Path="nuget.config" />
   </Folder>
+  <Folder Name="/build/">
+    <Project Path="build/Build.csproj" />
+  </Folder>
   <Project Path="AbbTs.Examples.HomeAutomation.Firefighter.Webhost/AbbTs.Examples.HomeAutomation.Firefighter.Webhost.csproj" />
 </Solution>
