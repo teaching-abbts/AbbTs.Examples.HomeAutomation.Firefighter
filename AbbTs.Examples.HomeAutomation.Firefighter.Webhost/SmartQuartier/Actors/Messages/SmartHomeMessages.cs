@@ -27,3 +27,12 @@ public sealed record GetSmartHomeDetails;
 public sealed record GetSmartQuartierHistory(int? RequestedEventLimit = null);
 
 public sealed record GetSmartQuartierStatistic;
+
+public sealed class ScheduleDashboardHistoryBroadcast
+{
+    public static readonly ScheduleDashboardHistoryBroadcast Instance = new();
+
+    private ScheduleDashboardHistoryBroadcast()
+    {
+    }
+}

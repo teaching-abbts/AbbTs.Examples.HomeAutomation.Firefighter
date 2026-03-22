@@ -10,6 +10,7 @@ public sealed class SmartQuartierAnalyticsActor : ReceiveActor
 {
     public const string ActorName = "smart-quartier-analytics";
     public const string ActorPath = "/user/" + ActorName;
+    private static readonly TimeSpan ClientTimeout = TimeSpan.FromSeconds(5);
 
     private readonly ISmartQuartierClient _smartQuartierClient;
     private readonly SmartQuartierOptions _options;
@@ -24,14 +25,16 @@ public sealed class SmartQuartierAnalyticsActor : ReceiveActor
         ReceiveAsync<GetSmartQuartierHistory>(async message =>
         {
             var replyTo = Sender;
-            var response = await _smartQuartierClient.GetHistoryDataAsync(CancellationToken.None);
+            using var cts = new CancellationTokenSource(ClientTimeout);
+            var response = await _smartQuartierClient.GetHistoryDataAsync(cts.Token);
             replyTo.Tell(ApplyEventLimit(response, message.RequestedEventLimit));
         });
 
         ReceiveAsync<GetSmartQuartierStatistic>(async _ =>
         {
             var replyTo = Sender;
-            var response = await _smartQuartierClient.GetStatisticDataAsync(CancellationToken.None);
+            using var cts = new CancellationTokenSource(ClientTimeout);
+            var response = await _smartQuartierClient.GetStatisticDataAsync(cts.Token);
             replyTo.Tell(response);
         });
     }

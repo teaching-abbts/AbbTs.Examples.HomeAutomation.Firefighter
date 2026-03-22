@@ -16,11 +16,14 @@ public static class StatisticEndpoint
             {
                 var analyticsActor = await actorSystem
                     .ActorSelection(SmartQuartierAnalyticsActor.ActorPath)
-                    .ResolveOne(AskTimeout);
+                    .ResolveOne(AskTimeout)
+                    .WaitAsync(cancellationToken);
 
-                var response = await analyticsActor.Ask<SmartQuartierStatisticResponse>(
-                    new GetSmartQuartierStatistic(),
-                    AskTimeout);
+                var response = await analyticsActor
+                    .Ask<SmartQuartierStatisticResponse>(
+                        new GetSmartQuartierStatistic(),
+                        AskTimeout)
+                    .WaitAsync(cancellationToken);
 
                 return Results.Ok(response);
             })

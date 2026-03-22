@@ -15,6 +15,8 @@ using Akka.Hosting;
 
 using Mumrich.SpaDevMiddleware.Extensions;
 
+using Microsoft.AspNetCore.SignalR;
+
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost;
 
 public static class Program
@@ -49,6 +51,9 @@ public static class Program
 
         var actorSystem = app.Services.GetRequiredService<ActorSystem>();
         var smartQuartierClient = app.Services.GetRequiredService<ISmartQuartierClient>();
+        var hubContext = app.Services.GetRequiredService<IHubContext<SmartHomeHub>>();
+        var dashboardHistoryBroadcasterLogger = app.Services
+            .GetRequiredService<ILogger<SmartQuartierDashboardHistoryBroadcasterActor>>();
         var smartQuartierOptions = app.Services
             .GetRequiredService<Microsoft.Extensions.Options.IOptions<SmartQuartier.Models.SmartQuartierOptions>>()
             .Value;
@@ -56,6 +61,10 @@ public static class Program
         actorSystem.ActorOf(
             Props.Create(() => new SmartQuartierAnalyticsActor(smartQuartierClient, smartQuartierOptions)),
             SmartQuartierAnalyticsActor.ActorName);
+
+        actorSystem.ActorOf(
+            Props.Create(() => new SmartQuartierDashboardHistoryBroadcasterActor(actorSystem, hubContext, dashboardHistoryBroadcasterLogger)),
+            SmartQuartierDashboardHistoryBroadcasterActor.ActorName);
 
         app.UseWebSockets();
 

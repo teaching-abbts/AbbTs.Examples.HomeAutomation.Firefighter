@@ -6,7 +6,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Akka.Cluster.Hosting" Version="1.5.16" />
+    <PackageReference Include="Akka.Cluster.Hosting" Version="1.5.62" />
     <PackageReference Include="Mumrich.SpaDevMiddleware" Version="1.7.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
     <PackageReference Include="GitVersion.MsBuild" Version="6.6.2">

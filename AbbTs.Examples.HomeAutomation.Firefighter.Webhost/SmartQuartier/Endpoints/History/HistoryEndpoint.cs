@@ -16,11 +16,14 @@ public static class HistoryEndpoint
             {
                 var analyticsActor = await actorSystem
                     .ActorSelection(SmartQuartierAnalyticsActor.ActorPath)
-                    .ResolveOne(AskTimeout);
+                    .ResolveOne(AskTimeout)
+                    .WaitAsync(cancellationToken);
 
-                var response = await analyticsActor.Ask<SmartQuartierHistoryResponse>(
-                    new GetSmartQuartierHistory(),
-                    AskTimeout);
+                var response = await analyticsActor
+                    .Ask<SmartQuartierHistoryResponse>(
+                        new GetSmartQuartierHistory(),
+                        AskTimeout)
+                    .WaitAsync(cancellationToken);
 
                 return Results.Ok(response);
             })

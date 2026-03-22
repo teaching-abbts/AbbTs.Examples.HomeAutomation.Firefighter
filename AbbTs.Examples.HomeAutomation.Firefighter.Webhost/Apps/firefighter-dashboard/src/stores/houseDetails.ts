@@ -604,8 +604,24 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
       },
     );
 
+    hubConnection.onreconnecting((reconnectError) => {
+      error.value =
+        reconnectError instanceof Error
+          ? reconnectError.message
+          : "Live updates reconnecting";
+    });
+
     hubConnection.onreconnected(async () => {
-      await hubConnection.invoke("SubscribeDashboardHistory");
+      try {
+        await hubConnection.invoke("SubscribeDashboardHistory");
+        error.value = null;
+      } catch (subscribeError) {
+        error.value =
+          subscribeError instanceof Error
+            ? subscribeError.message
+            : "Live updates unavailable";
+        await fetchHistory();
+      }
     });
 
     try {
