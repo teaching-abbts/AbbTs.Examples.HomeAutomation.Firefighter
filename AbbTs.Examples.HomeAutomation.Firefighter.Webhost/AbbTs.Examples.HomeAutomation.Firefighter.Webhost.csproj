@@ -6,9 +6,9 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Mumrich.SpaDevMiddleware" Version="1.6.0" />
+    <PackageReference Include="Mumrich.SpaDevMiddleware" Version="1.7.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
-    <PackageReference Include="GitVersion.MsBuild" Version="6.5.1">
+    <PackageReference Include="GitVersion.MsBuild" Version="6.6.2">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="NSwag.MSBuild" Version="14.6.3">
@@ -18,16 +18,12 @@
   </ItemGroup>
   <ItemGroup>
     <SpaRoot Include="Apps\firefighter-dashboard\">
-      <InstallCommand>pnpm install</InstallCommand>
-      <BuildCommand>pnpm run build</BuildCommand>
+      <InstallCommand>vp install</InstallCommand>
+      <BuildCommand>vp run build</BuildCommand>
       <BuildOutputPath>Apps\firefighter-dashboard\dist\**</BuildOutputPath>
     </SpaRoot>
   </ItemGroup>
   <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
-    <Exec
-      WorkingDirectory="$(ProjectDir)"
-      EnvironmentVariables="ASPNETCORE_ENVIRONMENT=NSWAG"
-      Command="$(NSwagExe_Net100) run .nswag /variables:Configuration=$(Configuration)"
-    />
+    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=NSWAG" Command="$(NSwagExe_Net100) run .nswag /variables:Configuration=$(Configuration)" />
   </Target>
 </Project>
