@@ -16,6 +16,16 @@
           t("dashboard.loading")
         }}</span>
       </v-app-bar-title>
+      <v-btn
+        class="mr-2"
+        color="primary"
+        prepend-icon="mdi-home-automation"
+        rounded="lg"
+        to="/smart-home"
+        variant="elevated"
+      >
+        {{ t("smartHome.nav") }}
+      </v-btn>
       <LanguageSwitcher class="mr-4" />
       <ThemeSwitcher />
       <v-btn

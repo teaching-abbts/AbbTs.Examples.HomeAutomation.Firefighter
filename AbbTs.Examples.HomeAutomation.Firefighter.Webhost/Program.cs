@@ -3,6 +3,7 @@ using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.GitVersion.Extensions;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.NSwag;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.History;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.Statistic;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.WebSocket;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Extensions;
 
 using Mumrich.SpaDevMiddleware.Domain.Contracts;
@@ -32,9 +33,12 @@ public static class Program
 
         var app = builder.Build();
 
+        app.UseWebSockets();
+
         app.UseNSwag();
         app.MapSmartQuartierHistoryEndpoint();
         app.MapSmartQuartierStatisticEndpoint();
+        app.MapSmartHomeGatewayEndpoints();
 
         app.MapAboutEndpoint();
 

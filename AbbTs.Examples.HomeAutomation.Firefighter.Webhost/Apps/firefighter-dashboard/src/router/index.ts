@@ -5,17 +5,22 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from 'vue-router'
-import Index from '@/pages/index.vue'
+import { createRouter, createWebHashHistory } from "vue-router";
+import Index from "@/pages/index.vue";
+import SmartHome from "@/pages/smart-home.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: "/",
       component: Index,
     },
+    {
+      path: "/smart-home",
+      component: SmartHome,
+    },
   ],
-})
+});
 
-export default router
+export default router;

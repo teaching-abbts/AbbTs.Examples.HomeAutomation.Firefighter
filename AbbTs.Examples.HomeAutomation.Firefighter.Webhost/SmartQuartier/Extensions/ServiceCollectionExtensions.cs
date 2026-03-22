@@ -33,6 +33,8 @@ public static class ServiceCollectionExtensions
             })
             .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
+        services.AddSingleton<ISmartHomeGateway, SmartHomeGateway>();
+
         return services;
     }
 }

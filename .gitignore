@@ -418,4 +418,4 @@ FodyWeavers.xsd
 *.msp
 
 # AbbTs.Examples.HomeAutomation.Firefighter
-.run/processes.json
+.run/

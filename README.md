@@ -127,3 +127,75 @@ Shutdown with Tilt:
 ```powershell
 tilt down
 ```
+
+## SmartHome WebSocket Integration (Webhost)
+
+The Webhost now supports the SmartHome gateway WebSocket protocol directly.
+
+### Endpoints
+
+- SmartHome -> Webhost: `ws://127.0.0.1:5099/smart-home/data`
+- Dashboard client -> Webhost: `ws://127.0.0.1:5099/smart-home/ws`
+
+### SmartHome Configuration
+
+In `smart-lodge/.assets/SmartHome/SmartHome.conf`, add a ServiceProvider entry so SmartHome connects to the Webhost too:
+
+```conf
+SERVICE_PROVIDER = Firefighter; 127.0.0.1:5099
+```
+
+You can keep the DataService registration in parallel:
+
+```conf
+SERVICE_PROVIDER = DataService; 127.0.0.1:11000
+SERVICE_PROVIDER = Firefighter; 127.0.0.1:5099
+```
+
+### Dashboard WebSocket Command Format
+
+Send JSON messages to `/smart-home/ws`:
+
+```json
+{ "messageType": "get state" }
+```
+
+```json
+{ "messageType": "get measurement" }
+```
+
+```json
+{
+  "messageType": "send command",
+  "payload": {
+    "device": "LightControl",
+    "command": "setpoint",
+    "value": "174"
+  }
+}
+```
+
+Supported `send command` targets (from the SmartHome protocol docs/source):
+
+- `LightControl` with `on`, `off`, `setpoint`
+- `HeatingControl` with `on`, `off`, `setpoint`
+- `AlarmControl` with `on`, `off`
+- `Door` with `open`, `close`
+- `Display` with value format `line1;line2`
+
+### Dashboard WebSocket Events
+
+The Webhost forwards SmartHome messages to `/smart-home/ws` as envelopes:
+
+```json
+{
+  "messageType": "send state",
+  "payload": { "gateway": "readandwrite", "lightControl": "on" },
+  "receivedAtUtc": "2026-03-22T12:00:00.0000000Z"
+}
+```
+
+System and outbound tracing events are also emitted:
+
+- `system status` with `{ "smartHomeConnected": true|false }`
+- `outbound get state`, `outbound get measurement`, `outbound send command`
