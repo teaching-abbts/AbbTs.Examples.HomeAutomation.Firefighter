@@ -12,11 +12,6 @@
           {{ t("smartHomes.subtitle") }}
         </p>
       </v-col>
-      <v-col cols="12" md="4" class="d-flex justify-md-end gap-2">
-        <v-btn prepend-icon="mdi-view-dashboard" to="/" variant="outlined">
-          {{ t("smartHomes.back") }}
-        </v-btn>
-      </v-col>
     </v-row>
 
     <v-alert v-if="errorMessage" class="mb-4" type="error" variant="tonal">

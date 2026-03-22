@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-page">
+  <div class="dashboard-page mt-10">
     <EventsSidebar :events="sidebarEvents" />
     <div class="dashboard-content">
       <v-alert
