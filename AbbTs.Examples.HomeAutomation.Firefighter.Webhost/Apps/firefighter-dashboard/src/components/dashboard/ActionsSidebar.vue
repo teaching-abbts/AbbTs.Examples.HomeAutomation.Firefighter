@@ -104,10 +104,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 
 import type { ActionItem, ObservedHouseItem } from "./types";
+import { useAppStore } from "@/stores/app";
 
 const props = defineProps<{
   actions: ActionItem[];
@@ -122,14 +124,16 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const showOnlyOpenActions = ref(false);
+const appStore = useAppStore();
+const { onlyOpenAlarms } = storeToRefs(appStore);
+
+const showOnlyOpenActions = computed({
+  get: () => onlyOpenAlarms.value,
+  set: (value: boolean) => appStore.setOnlyOpenAlarms(value),
+});
 
 const filteredActions = computed(() => {
-  if (!showOnlyOpenActions.value) {
-    return props.actions;
-  }
-
-  return props.actions.filter((action) => action.state === "open");
+  return props.actions;
 });
 </script>
 

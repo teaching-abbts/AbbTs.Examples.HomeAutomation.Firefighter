@@ -55,6 +55,7 @@ public sealed class SmartHomeGateway(
                 cancellationToken);
 
             await NotifySmartHomeChangedAsync(smartHomeId, cancellationToken);
+            await NotifyDashboardHistoryChangedAsync(cancellationToken);
 
             while (webSocket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
             {
@@ -77,6 +78,7 @@ public sealed class SmartHomeGateway(
                 var envelope = new SmartHomeGatewayEnvelope(messageType, payload, DateTime.UtcNow);
                 await RecordEnvelopeAsync(manager, smartHomeId, envelope, cancellationToken);
                 await NotifySmartHomeChangedAsync(smartHomeId, cancellationToken);
+                await NotifyDashboardHistoryChangedAsync(cancellationToken);
             }
         }
         finally
@@ -86,8 +88,17 @@ public sealed class SmartHomeGateway(
                 manager.Tell(new DisconnectSmartHomeSession(smartHomeId, webSocket));
                 logger.LogInformation("SmartHome WebSocket disconnected for {SmartHomeId}.", smartHomeId);
                 await NotifySmartHomeChangedAsync(smartHomeId, cancellationToken);
+                await NotifyDashboardHistoryChangedAsync(cancellationToken);
             }
         }
+    }
+
+    public async Task<SmartQuartierHistoryResponse> GetDashboardHistoryAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var analytics = await ResolveAnalyticsAsync();
+        return await analytics.Ask<SmartQuartierHistoryResponse>(new GetSmartQuartierHistory(), AskTimeout);
     }
 
     public async Task<IReadOnlyList<SmartHomeSummary>> GetSmartHomesAsync(CancellationToken cancellationToken)
@@ -121,10 +132,11 @@ public sealed class SmartHomeGateway(
         await NotifySmartHomeChangedAsync(smartHomeId, cancellationToken);
     }
 
-    private async Task RecordEnvelopeAsync(IActorRef manager, string smartHomeId, SmartHomeGatewayEnvelope envelope, CancellationToken cancellationToken)
+    private static Task RecordEnvelopeAsync(IActorRef manager, string smartHomeId, SmartHomeGatewayEnvelope envelope, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         manager.Tell(new RecordSmartHomeEnvelope(smartHomeId, envelope));
+        return Task.CompletedTask;
     }
 
     private async Task NotifySmartHomeChangedAsync(string smartHomeId, CancellationToken cancellationToken)
@@ -144,9 +156,23 @@ public sealed class SmartHomeGateway(
         }
     }
 
+    private async Task NotifyDashboardHistoryChangedAsync(CancellationToken cancellationToken)
+    {
+        var history = await GetDashboardHistoryAsync(cancellationToken);
+
+        await hubContext.Clients
+            .Group(SmartHomeHub.DashboardGroupName)
+            .SendAsync("historyUpdated", history, cancellationToken);
+    }
+
     private async Task<IActorRef> ResolveManagerAsync()
     {
         return await actorSystem.ActorSelection(SmartHomeManagerActor.ActorPath).ResolveOne(AskTimeout);
+    }
+
+    private async Task<IActorRef> ResolveAnalyticsAsync()
+    {
+        return await actorSystem.ActorSelection(SmartQuartierAnalyticsActor.ActorPath).ResolveOne(AskTimeout);
     }
 
     private static async Task<string?> ReceiveTextAsync(WebSocket socket, CancellationToken cancellationToken)

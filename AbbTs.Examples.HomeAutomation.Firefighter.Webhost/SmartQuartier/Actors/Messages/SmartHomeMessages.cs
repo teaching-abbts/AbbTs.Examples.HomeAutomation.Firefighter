@@ -23,3 +23,7 @@ public sealed record MarkDeviceDisconnected(WebSocket WebSocket);
 public sealed record GetSmartHomeSummary;
 
 public sealed record GetSmartHomeDetails;
+
+public sealed record GetSmartQuartierHistory(int? RequestedEventLimit = null);
+
+public sealed record GetSmartQuartierStatistic;

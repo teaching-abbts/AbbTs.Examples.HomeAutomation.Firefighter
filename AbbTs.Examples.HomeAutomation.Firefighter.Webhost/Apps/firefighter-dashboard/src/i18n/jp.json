@@ -6,6 +6,10 @@
       "events": "イベント",
       "actions": "アクション"
     },
+    "filters": {
+      "eventTypes": "イベント種別",
+      "lastEventsLimit": "最新イベント上限"
+    },
     "houseName": "家 {id}",
     "events": {
       "fire": "火災!",

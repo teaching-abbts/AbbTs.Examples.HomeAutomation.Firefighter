@@ -1,15 +1,27 @@
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Actors;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Actors.Messages;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Models;
-using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Services;
+
+using Akka.Actor;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.History;
 
 public static class HistoryEndpoint
 {
+    private static readonly TimeSpan AskTimeout = TimeSpan.FromSeconds(5);
+
     public static RouteHandlerBuilder MapSmartQuartierHistoryEndpoint(this WebApplication app)
     {
-        return app.MapGet("/smart-quartier/history", async (ISmartQuartierClient client, CancellationToken cancellationToken) =>
+        return app.MapGet("/smart-quartier/history", async (ActorSystem actorSystem, CancellationToken cancellationToken) =>
             {
-                var response = await client.GetHistoryDataAsync(cancellationToken);
+                var analyticsActor = await actorSystem
+                    .ActorSelection(SmartQuartierAnalyticsActor.ActorPath)
+                    .ResolveOne(AskTimeout);
+
+                var response = await analyticsActor.Ask<SmartQuartierHistoryResponse>(
+                    new GetSmartQuartierHistory(),
+                    AskTimeout);
+
                 return Results.Ok(response);
             })
             .WithName("GetSmartQuartierHistory")

@@ -6,6 +6,10 @@
       "events": "Events",
       "actions": "Actions"
     },
+    "filters": {
+      "eventTypes": "Event types",
+      "lastEventsLimit": "Last events limit"
+    },
     "houseName": "House {id}",
     "events": {
       "fire": "Fire!",

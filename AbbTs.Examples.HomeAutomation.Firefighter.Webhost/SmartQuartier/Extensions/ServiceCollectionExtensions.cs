@@ -19,6 +19,9 @@ public static class ServiceCollectionExtensions
             .Validate(
                 options => !string.IsNullOrWhiteSpace(options.StatisticPath),
                 $"{SmartQuartierOptions.SectionName}:StatisticPath must not be empty.")
+            .Validate(
+                options => options.HistoryEventsLimit > 0,
+                $"{SmartQuartierOptions.SectionName}:HistoryEventsLimit must be greater than 0.")
             .ValidateOnStart();
 
         services

@@ -12,14 +12,19 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify";
 
-const { t } = useI18n({ useScope: "global" });
+import { useAppStore } from "@/stores/app";
+
 const theme = useTheme();
+const appStore = useAppStore();
 
 const isDarkTheme = computed({
   get: () => theme.current.value.dark,
-  set: (v) => (theme.global.name.value = v ? "dark" : "light"),
+  set: (v) => {
+    const nextTheme = v ? "dark" : "light";
+    theme.global.name.value = nextTheme;
+    appStore.setTheme(nextTheme);
+  },
 });
 </script>

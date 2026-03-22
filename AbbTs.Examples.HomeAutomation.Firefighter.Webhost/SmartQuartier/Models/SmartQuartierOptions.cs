@@ -11,4 +11,6 @@ public sealed class SmartQuartierOptions
     public string StatisticPath { get; init; } = "smart-quartier/data-service/statistic";
 
     public int TimeoutSeconds { get; init; } = 10;
+
+    public int HistoryEventsLimit { get; init; } = 100;
 }

@@ -1,15 +1,27 @@
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Actors;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Actors.Messages;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Models;
-using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Services;
+
+using Akka.Actor;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.Statistic;
 
 public static class StatisticEndpoint
 {
+    private static readonly TimeSpan AskTimeout = TimeSpan.FromSeconds(5);
+
     public static RouteHandlerBuilder MapSmartQuartierStatisticEndpoint(this WebApplication app)
     {
-        return app.MapGet("/smart-quartier/statistic", async (ISmartQuartierClient client, CancellationToken cancellationToken) =>
+        return app.MapGet("/smart-quartier/statistic", async (ActorSystem actorSystem, CancellationToken cancellationToken) =>
             {
-                var response = await client.GetStatisticDataAsync(cancellationToken);
+                var analyticsActor = await actorSystem
+                    .ActorSelection(SmartQuartierAnalyticsActor.ActorPath)
+                    .ResolveOne(AskTimeout);
+
+                var response = await analyticsActor.Ask<SmartQuartierStatisticResponse>(
+                    new GetSmartQuartierStatistic(),
+                    AskTimeout);
+
                 return Results.Ok(response);
             })
             .WithName("GetSmartQuartierStatistic")

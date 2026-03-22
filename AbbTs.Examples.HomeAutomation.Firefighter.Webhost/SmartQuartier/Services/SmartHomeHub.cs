@@ -9,6 +9,7 @@ namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Servic
 public sealed class SmartHomeHub(ISmartHomeGateway gateway) : Hub
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    public const string DashboardGroupName = "dashboard:history";
 
     public static string GetGroupName(string smartHomeId) => $"smart-home:{smartHomeId}";
 
@@ -26,6 +27,19 @@ public sealed class SmartHomeHub(ISmartHomeGateway gateway) : Hub
     public Task Unsubscribe(string smartHomeId)
     {
         return Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(smartHomeId));
+    }
+
+    public async Task SubscribeDashboardHistory()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, DashboardGroupName);
+
+        var snapshot = await gateway.GetDashboardHistoryAsync(Context.ConnectionAborted);
+        await Clients.Caller.SendAsync("historyUpdated", snapshot, Context.ConnectionAborted);
+    }
+
+    public Task UnsubscribeDashboardHistory()
+    {
+        return Groups.RemoveFromGroupAsync(Context.ConnectionId, DashboardGroupName);
     }
 
     public Task RequestState(string smartHomeId)

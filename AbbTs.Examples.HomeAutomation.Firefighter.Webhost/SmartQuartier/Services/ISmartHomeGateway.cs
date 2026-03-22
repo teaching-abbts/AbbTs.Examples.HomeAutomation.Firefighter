@@ -12,5 +12,7 @@ public interface ISmartHomeGateway
 
     Task<SmartHomeDetails?> GetSmartHomeAsync(string smartHomeId, CancellationToken cancellationToken);
 
+    Task<SmartQuartierHistoryResponse> GetDashboardHistoryAsync(CancellationToken cancellationToken);
+
     Task SendDashboardCommandAsync(string smartHomeId, SmartHomeDashboardCommand command, CancellationToken cancellationToken);
 }

@@ -47,6 +47,16 @@ public static class Program
 
         var app = builder.Build();
 
+        var actorSystem = app.Services.GetRequiredService<ActorSystem>();
+        var smartQuartierClient = app.Services.GetRequiredService<ISmartQuartierClient>();
+        var smartQuartierOptions = app.Services
+            .GetRequiredService<Microsoft.Extensions.Options.IOptions<SmartQuartier.Models.SmartQuartierOptions>>()
+            .Value;
+
+        actorSystem.ActorOf(
+            Props.Create(() => new SmartQuartierAnalyticsActor(smartQuartierClient, smartQuartierOptions)),
+            SmartQuartierAnalyticsActor.ActorName);
+
         app.UseWebSockets();
 
         app.UseNSwag();

@@ -1,9 +1,17 @@
-import { defineStore } from "pinia";
+import {
+  HubConnectionBuilder,
+  LogLevel,
+  type HubConnection,
+} from "@microsoft/signalr";
+import { defineStore, storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 
 import {
   Client,
+  SmartQuartierEvent as SmartQuartierEventModel,
   type SmartQuartierEvent,
+  type SmartQuartierHistoryResponse,
+  SmartQuartierMeasurement as SmartQuartierMeasurementModel,
   type SmartQuartierMeasurement,
 } from "@/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost";
 import type {
@@ -11,8 +19,9 @@ import type {
   EventItem,
   ObservedHouseItem,
 } from "@/components/dashboard/types";
+import { useAppStore, type AppEventType } from "@/stores/app";
 
-type AlertType = "fire" | "gas" | "motion";
+type AlertType = AppEventType;
 
 const EVENT_ICON_BY_TYPE: Record<AlertType, string> = {
   fire: "mdi-fire",
@@ -23,13 +32,13 @@ const EVENT_ICON_BY_TYPE: Record<AlertType, string> = {
 const EVENT_COLOR_BY_TYPE: Record<AlertType, string> = {
   fire: "#ed8936",
   gas: "#facc15",
-  motion: "#6f42c1",
+  motion: "#8fd3ff",
 };
 
 const EVENT_TEXT_COLOR_BY_TYPE: Record<AlertType, string> = {
   fire: "#111111",
   gas: "#111111",
-  motion: "#ffffff",
+  motion: "#0b3b5a",
 };
 
 const ACTION_TITLE_BY_TYPE: Record<AlertType, string> = {
@@ -134,7 +143,9 @@ const getActionKeysForState = (
   state: "open" | "done",
 ) => {
   return Object.entries(states)
-    .filter(([key, currentState]) => key.startsWith(prefix) && currentState === state)
+    .filter(
+      ([key, currentState]) => key.startsWith(prefix) && currentState === state,
+    )
     .map(([key]) => key)
     .sort((left, right) => getActionOpenedAt(right) - getActionOpenedAt(left));
 };
@@ -180,6 +191,7 @@ const resolveActionKey = ({
 const buildEquivalentGroups = (
   sourceEvents: SmartQuartierEvent[],
   observedSet: Set<number>,
+  selectedTypeSet: Set<AlertType>,
 ) => {
   const groupedByEquivalent = new Map<string, EquivalentGroup>();
 
@@ -187,7 +199,12 @@ const buildEquivalentGroups = (
     const alertType = parseAlertType(event.type);
     const houseNumber = parseHouseNumberFromBuildingId(event.buildingID);
 
-    if (!alertType || houseNumber === null || !observedSet.has(houseNumber)) {
+    if (
+      !alertType ||
+      !selectedTypeSet.has(alertType) ||
+      houseNumber === null ||
+      !observedSet.has(houseNumber)
+    ) {
       continue;
     }
 
@@ -212,7 +229,50 @@ const buildEquivalentGroups = (
   return groupedByEquivalent;
 };
 
+const asDate = (value: Date | string | undefined) => {
+  if (!value) {
+    return undefined;
+  }
+
+  if (value instanceof Date) {
+    return value;
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+};
+
+const toHistoryResponse = (
+  payload: SmartQuartierHistoryResponse | null | undefined,
+) => {
+  const events = (payload?.events ?? []).map(
+    (event) =>
+      new SmartQuartierEventModel({
+        ...event,
+        timeStamp: asDate(event.timeStamp),
+      }),
+  );
+
+  const measurements = (payload?.measurements ?? []).map(
+    (measurement) =>
+      new SmartQuartierMeasurementModel({
+        ...measurement,
+        timeStamp: asDate(measurement.timeStamp),
+      }),
+  );
+
+  return { events, measurements };
+};
+
 export const useHouseDetailsStore = defineStore("house-details", () => {
+  const appStore = useAppStore();
+  const {
+    normalizedEventTypeFilter,
+    normalizedLastEventsLimit,
+    observedHouses,
+    onlyOpenAlarms,
+  } = storeToRefs(appStore);
+
   const isOpen = ref(false);
   const selectedHouseNumber = ref<number | null>(null);
   const loading = ref(false);
@@ -221,24 +281,11 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
   const measurements = ref<SmartQuartierMeasurement[]>([]);
   const actionStates = ref<Record<string, "open" | "done">>({});
   const actionClosedAt = ref<Record<string, number | null>>({});
-  const observedHouseOverrides = ref<Record<number, boolean>>({});
+  const liveConnection = ref<HubConnection | null>(null);
 
-  const selectedHouseEvents = computed(() => {
-    if (!selectedHouseNumber.value) {
-      return [] as SmartQuartierEvent[];
-    }
-
-    const houseNumberAsText = String(selectedHouseNumber.value);
-
-    return events.value.filter((event) => {
-      const parsedNumber = parseHouseNumberFromBuildingId(event.buildingID);
-      if (parsedNumber !== null) {
-        return parsedNumber === selectedHouseNumber.value;
-      }
-
-      return normalizeBuildingId(event.buildingID) === houseNumberAsText;
-    });
-  });
+  const selectedTypeSet = computed(
+    () => new Set(normalizedEventTypeFilter.value),
+  );
 
   const availableHouseNumbers = computed(() => {
     const houseNumbers = new Set<number>();
@@ -260,6 +307,87 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
     }
 
     return [...houseNumbers].sort((left, right) => left - right);
+  });
+
+  const defaultObservedHouseNumbers = computed(() => {
+    const numbers = new Set<number>();
+
+    for (const measurement of measurements.value) {
+      const houseNumber = parseHouseNumberFromBuildingId(
+        measurement.buildingID,
+      );
+      if (houseNumber !== null) {
+        numbers.add(houseNumber);
+      }
+    }
+
+    if (numbers.size === 0) {
+      for (const houseNumber of availableHouseNumbers.value) {
+        numbers.add(houseNumber);
+      }
+    }
+
+    return [...numbers].sort((left, right) => left - right);
+  });
+
+  const observedHouseNumbers = computed(() => {
+    const defaults = new Set(defaultObservedHouseNumbers.value);
+
+    return availableHouseNumbers.value.filter((houseNumber) => {
+      const explicit = observedHouses.value[String(houseNumber)];
+      return explicit ?? defaults.has(houseNumber);
+    });
+  });
+
+  const observedHousesList = computed<ObservedHouseItem[]>(() => {
+    const observedSet = new Set(observedHouseNumbers.value);
+
+    return availableHouseNumbers.value.map((houseNumber) => ({
+      id: houseNumber,
+      number: houseNumber,
+      active: observedSet.has(houseNumber),
+    }));
+  });
+
+  const filteredAndLimitedEvents = computed(() => {
+    const observedSet = new Set(observedHouseNumbers.value);
+
+    return events.value
+      .filter((event) => {
+        const alertType = parseAlertType(event.type);
+        const houseNumber = parseHouseNumberFromBuildingId(event.buildingID);
+
+        if (alertType === null || houseNumber === null) {
+          return false;
+        }
+
+        return (
+          observedSet.has(houseNumber) && selectedTypeSet.value.has(alertType)
+        );
+      })
+      .sort((left, right) => {
+        const leftMs = left.timeStamp ? left.timeStamp.getTime() : 0;
+        const rightMs = right.timeStamp ? right.timeStamp.getTime() : 0;
+        return rightMs - leftMs;
+      })
+      .slice(0, normalizedLastEventsLimit.value);
+  });
+
+  const selectedHouseEvents = computed(() => {
+    if (!selectedHouseNumber.value) {
+      return [] as SmartQuartierEvent[];
+    }
+
+    const houseNumberAsText = String(selectedHouseNumber.value);
+
+    return filteredAndLimitedEvents.value.filter((event) => {
+      const parsedNumber = parseHouseNumberFromBuildingId(event.buildingID);
+      if (parsedNumber !== null) {
+        return parsedNumber === selectedHouseNumber.value;
+      }
+
+      return normalizeBuildingId(event.buildingID) === houseNumberAsText;
+    });
   });
 
   const latestEventTypeByHouse = computed(() => {
@@ -289,52 +417,13 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
     return result;
   });
 
-  const defaultObservedHouseNumbers = computed(() => {
-    const numbers = new Set<number>();
-
-    for (const measurement of measurements.value) {
-      const houseNumber = parseHouseNumberFromBuildingId(measurement.buildingID);
-      if (houseNumber !== null) {
-        numbers.add(houseNumber);
-      }
-    }
-
-    if (numbers.size === 0) {
-      for (const houseNumber of availableHouseNumbers.value) {
-        numbers.add(houseNumber);
-      }
-    }
-
-    return [...numbers].sort((left, right) => left - right);
-  });
-
-  const observedHouseNumbers = computed(() => {
-    const defaults = new Set(defaultObservedHouseNumbers.value);
-
-    return availableHouseNumbers.value.filter((houseNumber) => {
-      return observedHouseOverrides.value[houseNumber] ?? defaults.has(houseNumber);
-    });
-  });
-
-  const observedHouses = computed<ObservedHouseItem[]>(() => {
-    const observedSet = new Set(observedHouseNumbers.value);
-
-    return availableHouseNumbers.value.map((houseNumber) => ({
-      id: houseNumber,
-      number: houseNumber,
-      active: observedSet.has(houseNumber),
-    }));
-  });
-
   const sidebarEvents = computed<EventItem[]>(() => {
-    const observedSet = new Set(observedHouseNumbers.value);
-
-    return events.value
+    return filteredAndLimitedEvents.value
       .map((event, index) => {
         const alertType = parseAlertType(event.type);
         const houseNumber = parseHouseNumberFromBuildingId(event.buildingID);
 
-        if (!alertType || houseNumber === null || !observedSet.has(houseNumber)) {
+        if (!alertType || houseNumber === null) {
           return null;
         }
 
@@ -352,13 +441,16 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
       .filter((event): event is EventItem & { timestamp: number } =>
         Boolean(event),
       )
-      .sort((left, right) => right.timestamp - left.timestamp)
       .map(({ timestamp, ...event }) => event);
   });
 
   const actions = computed<ActionItem[]>(() => {
     const observedSet = new Set(observedHouseNumbers.value);
-    const groupedByEquivalent = buildEquivalentGroups(events.value, observedSet);
+    const groupedByEquivalent = buildEquivalentGroups(
+      filteredAndLimitedEvents.value,
+      observedSet,
+      selectedTypeSet.value,
+    );
 
     const generatedActions: Array<ActionItem & { timestamp: number }> = [];
 
@@ -373,8 +465,16 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
       }
 
       const prefix = `${equivalentKey}:`;
-      const openKeys = getActionKeysForState(actionStates.value, prefix, "open");
-      const doneKeys = getActionKeysForState(actionStates.value, prefix, "done");
+      const openKeys = getActionKeysForState(
+        actionStates.value,
+        prefix,
+        "open",
+      );
+      const doneKeys = getActionKeysForState(
+        actionStates.value,
+        prefix,
+        "done",
+      );
 
       const existingOpenKey = openKeys[0];
       const latestDoneKey = doneKeys[0];
@@ -394,13 +494,16 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
 
       const openedAt = getActionOpenedAt(selectedActionKey);
       const selectedEvent =
-        groupedEvents.find((item) => item.timestamp === openedAt)?.event ?? latest.event;
+        groupedEvents.find((item) => item.timestamp === openedAt)?.event ??
+        latest.event;
 
       const color = ACTION_COLOR_BY_TYPE[grouped.alertType];
       const textColor = ACTION_TEXT_COLOR_BY_TYPE[grouped.alertType];
       const state = actionStates.value[selectedActionKey] ?? "open";
       const closedAt =
-        state === "done" ? (actionClosedAt.value[selectedActionKey] ?? openedAt) : null;
+        state === "done"
+          ? (actionClosedAt.value[selectedActionKey] ?? openedAt)
+          : null;
 
       generatedActions.push({
         id: selectedActionKey,
@@ -418,15 +521,28 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
       });
     }
 
-    return [...generatedActions]
+    const sorted = generatedActions
       .sort((left, right) => right.timestamp - left.timestamp)
       .map(({ timestamp, ...action }) => action);
+
+    if (onlyOpenAlarms.value) {
+      return sorted.filter((action) => action.state === "open");
+    }
+
+    return sorted;
   });
+
+  const applyHistoryResponse = (
+    payload: SmartQuartierHistoryResponse | null | undefined,
+  ) => {
+    const next = toHistoryResponse(payload);
+    events.value = next.events;
+    measurements.value = next.measurements;
+  };
 
   const open = (houseNumber: number) => {
     selectedHouseNumber.value = houseNumber;
     isOpen.value = true;
-    fetchHistory();
   };
 
   const close = () => {
@@ -447,7 +563,7 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
   };
 
   const setHouseObserved = (houseNumber: number, observed: boolean) => {
-    observedHouseOverrides.value[houseNumber] = observed;
+    appStore.setHouseObserved(houseNumber, observed);
   };
 
   const fetchHistory = async () => {
@@ -461,14 +577,66 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
     try {
       const client = new Client();
       const response = await client.getSmartQuartierHistory();
-      events.value = response?.events ?? [];
-      measurements.value = response?.measurements ?? [];
+      applyHistoryResponse(response);
     } catch (fetchError) {
       error.value =
         fetchError instanceof Error ? fetchError.message : "Unknown error";
     } finally {
       loading.value = false;
     }
+  };
+
+  const startLiveUpdates = async () => {
+    if (liveConnection.value) {
+      return;
+    }
+
+    const hubConnection = new HubConnectionBuilder()
+      .withUrl("/hubs/smart-homes")
+      .withAutomaticReconnect()
+      .configureLogging(LogLevel.Warning)
+      .build();
+
+    hubConnection.on(
+      "historyUpdated",
+      (payload: SmartQuartierHistoryResponse) => {
+        applyHistoryResponse(payload);
+      },
+    );
+
+    hubConnection.onreconnected(async () => {
+      await hubConnection.invoke("SubscribeDashboardHistory");
+    });
+
+    try {
+      await hubConnection.start();
+      await hubConnection.invoke("SubscribeDashboardHistory");
+      liveConnection.value = hubConnection;
+    } catch (liveError) {
+      error.value =
+        liveError instanceof Error
+          ? liveError.message
+          : "Live updates unavailable";
+      await fetchHistory();
+      await hubConnection.stop();
+    }
+  };
+
+  const stopLiveUpdates = async () => {
+    if (!liveConnection.value) {
+      return;
+    }
+
+    liveConnection.value.off("historyUpdated");
+
+    try {
+      await liveConnection.value.invoke("UnsubscribeDashboardHistory");
+    } catch {
+      // Ignore unsubscribe failures during teardown.
+    }
+
+    await liveConnection.value.stop();
+    liveConnection.value = null;
   };
 
   return {
@@ -481,7 +649,7 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
     selectedHouseEvents,
     availableHouseNumbers,
     latestEventTypeByHouse,
-    observedHouses,
+    observedHouses: observedHousesList,
     sidebarEvents,
     actions,
     open,
@@ -489,5 +657,7 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
     toggleActionState,
     setHouseObserved,
     fetchHistory,
+    startLiveUpdates,
+    stopLiveUpdates,
   };
 });

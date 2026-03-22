@@ -118,21 +118,13 @@ const houses = computed<HouseItem[]>(() => {
   });
 });
 
-let intervalId = null as number | null;
-
 onMounted(async () => {
   await houseDetailsStore.fetchHistory();
-
-  intervalId = setInterval(
-    async () => await houseDetailsStore.fetchHistory(),
-    5000,
-  );
+  await houseDetailsStore.startLiveUpdates();
 });
 
-onUnmounted(() => {
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
+onUnmounted(async () => {
+  await houseDetailsStore.stopLiveUpdates();
 });
 
 const openHouseDetails = (houseNumber: number) => {

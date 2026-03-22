@@ -6,6 +6,10 @@
       "events": "Ereignisse",
       "actions": "Aktionen"
     },
+    "filters": {
+      "eventTypes": "Ereignistypen",
+      "lastEventsLimit": "Limit letzte Ereignisse"
+    },
     "houseName": "Haus {id}",
     "events": {
       "fire": "Feuer!",

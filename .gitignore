@@ -419,3 +419,4 @@ FodyWeavers.xsd
 
 # AbbTs.Examples.HomeAutomation.Firefighter
 .run/
+**/Apps/**/dist/

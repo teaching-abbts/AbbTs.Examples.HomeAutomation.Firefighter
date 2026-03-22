@@ -8,6 +8,35 @@
       {{ t("dashboard.sections.events") }}
     </div>
 
+    <div class="px-3 pb-2">
+      <v-select
+        v-model="selectedEventTypes"
+        :items="eventTypeOptions"
+        chips
+        clearable
+        closable-chips
+        density="compact"
+        hide-details
+        item-title="title"
+        item-value="value"
+        multiple
+        :label="t('dashboard.filters.eventTypes')"
+        variant="outlined"
+      />
+
+      <v-text-field
+        v-model.number="eventsLimit"
+        class="mt-3"
+        density="compact"
+        hide-details
+        min="1"
+        prepend-inner-icon="mdi-counter"
+        :label="t('dashboard.filters.lastEventsLimit')"
+        type="number"
+        variant="outlined"
+      />
+    </div>
+
     <v-list class="px-2">
       <v-list-item
         v-for="event in events"
@@ -46,13 +75,35 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
+import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 
 import type { EventItem } from "./types";
+import { useAppStore, type AppEventType } from "@/stores/app";
 
 defineProps<{
   events: EventItem[];
 }>();
 
 const { t } = useI18n();
+const appStore = useAppStore();
+const { normalizedEventTypeFilter, normalizedLastEventsLimit } =
+  storeToRefs(appStore);
+
+const eventTypeOptions = computed(() => [
+  { title: t("dashboard.events.fire"), value: "fire" },
+  { title: t("dashboard.events.gas"), value: "gas" },
+  { title: t("dashboard.events.motion"), value: "motion" },
+]);
+
+const selectedEventTypes = computed({
+  get: () => normalizedEventTypeFilter.value,
+  set: (value: AppEventType[]) => appStore.setEventTypes(value ?? []),
+});
+
+const eventsLimit = computed({
+  get: () => normalizedLastEventsLimit.value,
+  set: (value: number) => appStore.setLastEventsLimit(value),
+});
 </script>

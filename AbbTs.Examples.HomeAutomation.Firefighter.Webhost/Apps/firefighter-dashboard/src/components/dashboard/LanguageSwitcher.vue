@@ -17,19 +17,23 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
+import { useAppStore, type AppLocale } from "@/stores/app";
+
 const { locale, t } = useI18n({ useScope: "global" });
+const appStore = useAppStore();
 
 const selectedLocale = computed({
   get: () => locale.value,
-  set: (value) => {
+  set: (value: string) => {
     locale.value = value;
+    appStore.setLocale(value as AppLocale);
   },
 });
 
 const languageOptions = computed(() => [
   { title: t("dashboard.language.german"), value: "de" },
   { title: t("dashboard.language.english"), value: "en" },
-  { title: t("dashboard.language.japanese"), value: "ja" },
+  { title: t("dashboard.language.japanese"), value: "jp" },
 ]);
 </script>
 
