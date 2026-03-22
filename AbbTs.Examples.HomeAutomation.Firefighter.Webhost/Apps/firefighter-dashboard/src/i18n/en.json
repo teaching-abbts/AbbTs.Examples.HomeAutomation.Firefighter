@@ -1,0 +1,86 @@
+{
+  "dashboard": {
+    "title": "Firefighter Dashboard",
+    "loading": "Loading...",
+    "sections": {
+      "events": "Events",
+      "actions": "Actions"
+    },
+    "houseName": "House {id}",
+    "events": {
+      "fire": "Fire!",
+      "gas": "Gas!",
+      "motion": "Motion!",
+      "sound": "Sound!",
+      "rfid": "RFID!"
+    },
+    "houseStatus": {
+      "fireDetected": "Fire detected",
+      "monitoring": "Monitoring",
+      "safe": "Safe",
+      "gasAlert": "Gas alert"
+    },
+    "actions": {
+      "extinguishFire": "Extinguish fire",
+      "openDoors": "Open doors",
+      "execute": "Execute",
+      "observe": "Observe",
+      "open": "Open",
+      "done": "Done",
+      "markDone": "Mark done",
+      "reopen": "Reopen",
+      "onlyOpen": "Only open actions"
+    },
+    "language": {
+      "label": "Language",
+      "german": "Deutsch",
+      "english": "English",
+      "japanese": "日本語"
+    },
+    "theme": {
+      "label": "Theme",
+      "bright": "Bright",
+      "dark": "Dark"
+    },
+    "houseDetails": {
+      "title": "House details",
+      "timestamp": "Timestamp",
+      "type": "Type",
+      "details": "Details",
+      "noData": "No history data available",
+      "error": "History could not be loaded",
+      "close": "Close"
+    }
+  },
+  "smartHome": {
+    "nav": "SmartHome",
+    "badge": "Live Control",
+    "title": "SmartHome Command Center",
+    "subtitle": "Send SmartHome gateway commands and inspect live WebSocket traffic.",
+    "back": "Back to dashboard",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "connection": "Connection",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "ready": "WebSocket is ready.",
+    "error": "Connection error.",
+    "closed": "Connection closed.",
+    "notConnected": "Connect first before sending commands.",
+    "quick": "Quick requests",
+    "getState": "Get state",
+    "getMeasurement": "Get measurement",
+    "sendCommand": "Send command",
+    "device": "Device",
+    "command": "Command",
+    "value": "Value",
+    "send": "Send",
+    "liveLog": "Live stream",
+    "clear": "Clear",
+    "noMessages": "No messages yet. Connect and send a command.",
+    "smartHomeOffline": "SmartHome is not connected to the gateway. Commands are disabled."
+  },
+  "message": {
+    "hello": "Hello world"
+  }
+}

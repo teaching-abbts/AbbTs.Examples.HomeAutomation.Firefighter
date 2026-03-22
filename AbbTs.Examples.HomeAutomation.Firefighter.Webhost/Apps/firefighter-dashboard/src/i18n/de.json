@@ -1,0 +1,86 @@
+{
+  "dashboard": {
+    "title": "Feuerwehr-Dashboard",
+    "loading": "Lädt...",
+    "sections": {
+      "events": "Ereignisse",
+      "actions": "Aktionen"
+    },
+    "houseName": "Haus {id}",
+    "events": {
+      "fire": "Feuer!",
+      "gas": "Gas!",
+      "motion": "Bewegung!",
+      "sound": "Geräusch!",
+      "rfid": "RFID!"
+    },
+    "houseStatus": {
+      "fireDetected": "Feuer erkannt",
+      "monitoring": "Beobachtung",
+      "safe": "Sicher",
+      "gasAlert": "Gasalarm"
+    },
+    "actions": {
+      "extinguishFire": "Brandlöschung",
+      "openDoors": "Türen öffnen",
+      "execute": "Ausführen",
+      "observe": "Beobachten",
+      "open": "Offen",
+      "done": "Erledigt",
+      "markDone": "Als erledigt markieren",
+      "reopen": "Wieder öffnen",
+      "onlyOpen": "Nur offene Aktionen"
+    },
+    "language": {
+      "label": "Sprache",
+      "german": "Deutsch",
+      "english": "English",
+      "japanese": "日本語"
+    },
+    "theme": {
+      "label": "Design",
+      "bright": "Hell",
+      "dark": "Dunkel"
+    },
+    "houseDetails": {
+      "title": "Hausdetails",
+      "timestamp": "Zeitstempel",
+      "type": "Typ",
+      "details": "Details",
+      "noData": "Keine Verlaufsdaten verfügbar",
+      "error": "Verlauf konnte nicht geladen werden",
+      "close": "Schließen"
+    }
+  },
+  "smartHome": {
+    "nav": "SmartHome",
+    "badge": "Live-Steuerung",
+    "title": "SmartHome Kommandozentrale",
+    "subtitle": "Sende SmartHome-Gateway-Kommandos und beobachte den WebSocket-Datenstrom live.",
+    "back": "Zurück zum Dashboard",
+    "connect": "Verbinden",
+    "disconnect": "Trennen",
+    "connection": "Verbindung",
+    "connected": "Verbunden",
+    "disconnected": "Getrennt",
+    "ready": "WebSocket ist bereit.",
+    "error": "Verbindungsfehler.",
+    "closed": "Verbindung geschlossen.",
+    "notConnected": "Bitte zuerst verbinden.",
+    "quick": "Schnellanfragen",
+    "getState": "Status abfragen",
+    "getMeasurement": "Messwerte abfragen",
+    "sendCommand": "Kommando senden",
+    "device": "Gerät",
+    "command": "Befehl",
+    "value": "Wert",
+    "send": "Senden",
+    "liveLog": "Live-Stream",
+    "clear": "Leeren",
+    "noMessages": "Noch keine Nachrichten. Verbinde dich und sende ein Kommando.",
+    "smartHomeOffline": "SmartHome ist nicht mit dem Gateway verbunden. Kommandos sind deaktiviert."
+  },
+  "message": {
+    "hello": "Hallo Welt"
+  }
+}

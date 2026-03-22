@@ -1,0 +1,8 @@
+{
+  "i18n-ally.enabledFrameworks": [
+    "vue"
+  ],
+  "i18n-ally.localesPaths": [
+    "AbbTs.Examples.HomeAutomation.Firefighter.Webhost/Apps/firefighter-dashboard/src/i18n"
+  ]
+}
