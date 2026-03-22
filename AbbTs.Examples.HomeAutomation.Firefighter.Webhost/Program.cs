@@ -54,6 +54,8 @@ public static class Program
         var hubContext = app.Services.GetRequiredService<IHubContext<SmartHomeHub>>();
         var dashboardHistoryBroadcasterLogger = app.Services
             .GetRequiredService<ILogger<SmartQuartierDashboardHistoryBroadcasterActor>>();
+        var smartQuartierStatisticsLogger = app.Services
+            .GetRequiredService<ILogger<SmartQuartierStatisticsActor>>();
         var smartQuartierOptions = app.Services
             .GetRequiredService<Microsoft.Extensions.Options.IOptions<SmartQuartier.Models.SmartQuartierOptions>>()
             .Value;
@@ -61,6 +63,10 @@ public static class Program
         actorSystem.ActorOf(
             Props.Create(() => new SmartQuartierAnalyticsActor(smartQuartierClient, smartQuartierOptions)),
             SmartQuartierAnalyticsActor.ActorName);
+
+        actorSystem.ActorOf(
+            Props.Create(() => new SmartQuartierStatisticsActor(smartQuartierClient, smartQuartierStatisticsLogger)),
+            SmartQuartierStatisticsActor.ActorName);
 
         actorSystem.ActorOf(
             Props.Create(() => new SmartQuartierDashboardHistoryBroadcasterActor(actorSystem, hubContext, dashboardHistoryBroadcasterLogger)),

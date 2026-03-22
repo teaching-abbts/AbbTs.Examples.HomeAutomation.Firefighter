@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-8 smart-home-page" fluid>
+  <v-container class="py-8 smart-home-page mt-8" fluid>
     <v-row class="mb-4" justify="space-between" align="center">
       <v-col cols="12" md="8">
         <div class="text-overline text-primary">
@@ -130,9 +130,13 @@
         <v-card rounded="xl" class="log-card">
           <v-card-title class="d-flex align-center justify-space-between">
             <span>{{ t("smartHomes.liveLog") }}</span>
-            <v-btn size="small" variant="text" @click="clearMessages()">
-              {{ t("smartHomes.clear") }}
-            </v-btn>
+            <v-btn
+              :title="t('smartHomes.clear')"
+              icon="mdi-delete-outline"
+              size="small"
+              variant="text"
+              @click="clearMessages()"
+            />
           </v-card-title>
           <v-divider />
           <v-card-text class="log-area">

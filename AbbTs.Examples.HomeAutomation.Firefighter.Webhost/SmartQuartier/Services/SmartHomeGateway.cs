@@ -77,6 +77,7 @@ public sealed class SmartHomeGateway(
 
                 var envelope = new SmartHomeGatewayEnvelope(messageType, payload, DateTime.UtcNow);
                 await RecordEnvelopeAsync(manager, smartHomeId, envelope, cancellationToken);
+                RecordStatisticEnvelope(smartHomeId, envelope);
                 await NotifySmartHomeChangedAsync(smartHomeId, cancellationToken);
                 await RequestDashboardHistoryBroadcastAsync(cancellationToken);
             }
@@ -145,6 +146,12 @@ public sealed class SmartHomeGateway(
         cancellationToken.ThrowIfCancellationRequested();
         manager.Tell(new RecordSmartHomeEnvelope(smartHomeId, envelope));
         return Task.CompletedTask;
+    }
+
+    private void RecordStatisticEnvelope(string smartHomeId, SmartHomeGatewayEnvelope envelope)
+    {
+        actorSystem.ActorSelection(SmartQuartierStatisticsActor.ActorPath)
+            .Tell(new ObserveSmartQuartierEnvelope(smartHomeId, envelope));
     }
 
     private async Task NotifySmartHomeChangedAsync(string smartHomeId, CancellationToken cancellationToken)

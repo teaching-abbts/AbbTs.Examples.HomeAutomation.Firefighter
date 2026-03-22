@@ -90,6 +90,7 @@
     "badge": "Akteur-Übersicht",
     "title": "Verbundene Smart-Homes",
     "subtitle": "Zeigt alle dem Feuerwehr-Webhost bekannten Smart-Homes und öffnet pro Gerät eine eigene Live-Ansicht.",
+    "landscapeTitle": "Smart-Home-Landschaft",
     "back": "Zurück zum Dashboard",
     "online": "Online",
     "offline": "Offline",

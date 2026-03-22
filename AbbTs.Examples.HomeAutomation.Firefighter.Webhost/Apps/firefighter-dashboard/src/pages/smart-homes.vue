@@ -48,6 +48,15 @@
     <v-alert v-else-if="!loading" type="info" variant="tonal">
       {{ t("smartHomes.empty") }}
     </v-alert>
+    <v-row v-if="smartHomes.length > 0" class="mt-2">
+      <v-col cols="12">
+        <SmartHomesLandscape
+          :homes="smartHomes"
+          :title="t('smartHomes.landscapeTitle')"
+          @select="openSmartHome"
+        />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -59,6 +68,7 @@ import { useI18n } from "vue-i18n";
 
 import { Client } from "@/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost";
 import SmartHomeCard from "@/components/smart-homes/SmartHomeCard.vue";
+import SmartHomesLandscape from "@/components/smart-homes/SmartHomesLandscape.vue";
 
 import type { SmartHomeSummary } from "@/types/smartHomes";
 

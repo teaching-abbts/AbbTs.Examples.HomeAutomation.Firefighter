@@ -28,6 +28,17 @@ public sealed record GetSmartQuartierHistory(int? RequestedEventLimit = null);
 
 public sealed record GetSmartQuartierStatistic;
 
+public sealed record ObserveSmartQuartierEnvelope(string SmartHomeId, SmartHomeGatewayEnvelope Envelope);
+
+public sealed class InitializeSmartQuartierStatistics
+{
+    public static readonly InitializeSmartQuartierStatistics Instance = new();
+
+    private InitializeSmartQuartierStatistics()
+    {
+    }
+}
+
 public sealed class ScheduleDashboardHistoryBroadcast
 {
     public static readonly ScheduleDashboardHistoryBroadcast Instance = new();

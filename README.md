@@ -85,7 +85,7 @@ vp run lint
 
 ## Unified Local Runtime (SmartHome + DataService + Webhost)
 
-Use the root script to start all three required processes:
+Use the root script to start all required local processes:
 
 ```powershell
 ./run.ps1 -Action start
@@ -93,11 +93,21 @@ Use the root script to start all three required processes:
 
 This starts:
 
-- `smart-lodge/.assets/SmartHome/SmartHome.jar`
+- `smart-lodge/.assets/SmartHome/SmartHome.jar` (multiple instances based on config)
 - `smart-lodge/.assets/DataService/SmartQuartierDataService.jar`
 - `AbbTs.Examples.HomeAutomation.Firefighter.Webhost`
 
 Process IDs are tracked in `.run/processes.json`.
+
+Smart-home instance definitions are read from:
+
+- `build/smart-homes.json`
+
+The script is a thin wrapper around Cake Frosting targets:
+
+- `Run-Start`
+- `Run-Stop`
+- `Run-Status`
 
 Status and shutdown:
 

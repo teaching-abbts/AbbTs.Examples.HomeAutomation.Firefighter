@@ -25,9 +25,7 @@
           <LanguageSwitcher class="mr-4" />
           <ThemeSwitcher />
         </v-app-bar>
-        <v-container>
-          <router-view />
-        </v-container>
+        <router-view />
       </v-layout>
     </v-main>
   </v-app>

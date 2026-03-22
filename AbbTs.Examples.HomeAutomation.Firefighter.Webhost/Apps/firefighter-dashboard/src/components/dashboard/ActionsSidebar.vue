@@ -1,5 +1,6 @@
 <template>
   <v-navigation-drawer
+    class="sidebar-fill"
     :style="{ backgroundColor: '#8fb1d5' }"
     location="right"
     permanent
@@ -138,6 +139,10 @@ const filteredActions = computed(() => {
 </script>
 
 <style scoped>
+.sidebar-fill {
+  height: 100%;
+}
+
 .action-card {
   border-top-right-radius: 28px !important;
 }

@@ -90,6 +90,7 @@
     "badge": "Actor overview",
     "title": "Connected smart homes",
     "subtitle": "Inspect all smart-homes known by the firefighter webhost and open a dedicated live session for each one.",
+    "landscapeTitle": "Smart-home landscape",
     "back": "Back to dashboard",
     "online": "Online",
     "offline": "Offline",

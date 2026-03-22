@@ -29,14 +29,6 @@ public sealed class SmartQuartierAnalyticsActor : ReceiveActor
             var response = await _smartQuartierClient.GetHistoryDataAsync(cts.Token);
             replyTo.Tell(ApplyEventLimit(response, message.RequestedEventLimit));
         });
-
-        ReceiveAsync<GetSmartQuartierStatistic>(async _ =>
-        {
-            var replyTo = Sender;
-            using var cts = new CancellationTokenSource(ClientTimeout);
-            var response = await _smartQuartierClient.GetStatisticDataAsync(cts.Token);
-            replyTo.Tell(response);
-        });
     }
 
     private SmartQuartierHistoryResponse ApplyEventLimit(

@@ -1,4 +1,5 @@
 import { createPinia } from "pinia";
+import TresPlugin from "@tresjs/core";
 
 import router from "../router";
 import { useAppStore } from "@/stores/app";
@@ -19,6 +20,7 @@ export function registerPlugins(app: App) {
   const pinia = createPinia();
 
   app.use(vuetify);
+  app.use(TresPlugin);
   app.use(pinia);
 
   const appStore = useAppStore(pinia);

@@ -1,5 +1,6 @@
 <template>
   <v-navigation-drawer
+    class="sidebar-fill"
     :style="{ backgroundColor: '#8fb1d5' }"
     permanent
     width="260"
@@ -107,3 +108,9 @@ const eventsLimit = computed({
   set: (value: number) => appStore.setLastEventsLimit(value),
 });
 </script>
+
+<style scoped>
+.sidebar-fill {
+  height: 100%;
+}
+</style>

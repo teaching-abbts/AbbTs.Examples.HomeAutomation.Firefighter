@@ -15,7 +15,7 @@ public static class StatisticEndpoint
         return app.MapGet("/smart-quartier/statistic", async (ActorSystem actorSystem, CancellationToken cancellationToken) =>
             {
                 var analyticsActor = await actorSystem
-                    .ActorSelection(SmartQuartierAnalyticsActor.ActorPath)
+                    .ActorSelection(SmartQuartierStatisticsActor.ActorPath)
                     .ResolveOne(AskTimeout)
                     .WaitAsync(cancellationToken);
 
