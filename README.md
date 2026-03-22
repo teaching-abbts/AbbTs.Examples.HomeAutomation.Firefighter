@@ -82,3 +82,48 @@ vp run build
 vp run type-check
 vp run lint
 ```
+
+## Unified Local Runtime (SmartHome + DataService + Webhost)
+
+Use the root script to start all three required processes:
+
+```powershell
+./run.ps1 -Action start
+```
+
+This starts:
+
+- `smart-lodge/.assets/SmartHome/SmartHome.jar`
+- `smart-lodge/.assets/DataService/SmartQuartierDataService.jar`
+- `AbbTs.Examples.HomeAutomation.Firefighter.Webhost`
+
+Process IDs are tracked in `.run/processes.json`.
+
+Status and shutdown:
+
+```powershell
+./run.ps1 -Action status
+./run.ps1 -Action stop
+```
+
+The stop action first tries graceful window close (where supported), then force-terminates remaining processes.
+
+## Optional Tilt Workflow
+
+An optional `Tiltfile` is included to run `data-service` and `webhost` as local resources:
+
+```powershell
+tilt up
+```
+
+Because SmartHome is JavaFX-based, it is intentionally kept outside container workflows. Start SmartHome separately:
+
+```powershell
+pwsh -NoProfile -Command "Set-Location smart-lodge/.assets/SmartHome; java -jar SmartHome.jar"
+```
+
+Shutdown with Tilt:
+
+```powershell
+tilt down
+```

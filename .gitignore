@@ -416,3 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# AbbTs.Examples.HomeAutomation.Firefighter
+.run/processes.json
