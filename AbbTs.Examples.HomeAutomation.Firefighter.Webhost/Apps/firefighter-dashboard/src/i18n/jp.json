@@ -1,5 +1,6 @@
 {
   "dashboard": {
+    "nav": "ダッシュボード",
     "title": "消防ダッシュボード",
     "loading": "読み込み中...",
     "sections": {

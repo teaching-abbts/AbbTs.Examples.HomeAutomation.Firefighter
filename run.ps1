@@ -12,31 +12,119 @@ $stateDir = Join-Path $repoRoot ".run"
 $pidFile = Join-Path $stateDir "processes.json"
 
 $smartHomeDir = Join-Path $repoRoot "smart-lodge/.assets/SmartHome"
+$smartHomeJarPath = Join-Path $smartHomeDir "SmartHome.jar"
+$smartHomeInstancesRoot = Join-Path $stateDir "smarthomes"
 $dataServiceDir = Join-Path $repoRoot "smart-lodge/.assets/DataService"
 $webhostProject = Join-Path $repoRoot "AbbTs.Examples.HomeAutomation.Firefighter.Webhost/AbbTs.Examples.HomeAutomation.Firefighter.Webhost.csproj"
 
-$components = @(
+$smartHomeInstances = @(
   @{
-    Name = "data-service"
-    FilePath = "java"
-    Arguments = @("-jar", "SmartQuartierDataService.jar")
-    WorkingDirectory = $dataServiceDir
+    Name = "smart-home-1"
+    BuildingId = "Haus-1"
+    Owner = "Mike"
+    X = 0
+    Y = 0
   },
   @{
-    Name = "webhost"
-    FilePath = "dotnet"
-    Arguments = @("run", "--project", $webhostProject, "--", "--urls", "http://localhost:5099")
-    WorkingDirectory = $repoRoot
-    WaitForPort = 5099
-    WaitTimeoutSeconds = 45
+    Name = "smart-home-2"
+    BuildingId = "Haus-2"
+    Owner = "Anna"
+    X = 10
+    Y = 0
   },
   @{
-    Name = "smart-home"
-    FilePath = "java"
-    Arguments = @("-jar", "SmartHome.jar")
-    WorkingDirectory = $smartHomeDir
+    Name = "smart-home-3"
+    BuildingId = "Haus-3"
+    Owner = "Luca"
+    X = 20
+    Y = 0
   }
 )
+
+function Get-SmartHomeInstanceDirectory {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$InstanceName
+  )
+
+  return (Join-Path $smartHomeInstancesRoot $InstanceName)
+}
+
+function Set-ConfigValue {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Config,
+    [Parameter(Mandatory = $true)]
+    [string]$Key,
+    [Parameter(Mandatory = $true)]
+    [string]$Value
+  )
+
+  return [System.Text.RegularExpressions.Regex]::Replace(
+    $Config,
+    "(?m)^\s*$([System.Text.RegularExpressions.Regex]::Escape($Key))\s*=\s*.*$",
+    "${Key} = ${Value}")
+}
+
+function Initialize-SmartHomeInstances {
+  Ensure-StateDirectory
+
+  if (-not (Test-Path -LiteralPath $smartHomeJarPath)) {
+    throw "SmartHome jar was not found at '$smartHomeJarPath'."
+  }
+
+  $templateConfigPath = Join-Path $smartHomeDir "SmartHome.conf"
+  if (-not (Test-Path -LiteralPath $templateConfigPath)) {
+    throw "SmartHome configuration template was not found at '$templateConfigPath'."
+  }
+
+  $templateConfig = Get-Content -LiteralPath $templateConfigPath -Raw
+
+  foreach ($instance in $smartHomeInstances) {
+    $instanceDir = Get-SmartHomeInstanceDirectory -InstanceName $instance.Name
+    if (-not (Test-Path -LiteralPath $instanceDir)) {
+      New-Item -ItemType Directory -Path $instanceDir -Force | Out-Null
+    }
+
+    $instanceConfig = $templateConfig
+    $instanceConfig = Set-ConfigValue -Config $instanceConfig -Key "BUILDING_ID" -Value $instance.BuildingId
+    $instanceConfig = Set-ConfigValue -Config $instanceConfig -Key "OWNER" -Value $instance.Owner
+    $instanceConfig = Set-ConfigValue -Config $instanceConfig -Key "X_COORDINATE" -Value ([string]$instance.X)
+    $instanceConfig = Set-ConfigValue -Config $instanceConfig -Key "Y_COORDINATE" -Value ([string]$instance.Y)
+
+    Set-Content -LiteralPath (Join-Path $instanceDir "SmartHome.conf") -Value $instanceConfig -Encoding UTF8
+  }
+}
+
+function Get-Components {
+  $components = @(
+    @{
+      Name = "data-service"
+      FilePath = "java"
+      Arguments = @("-jar", "SmartQuartierDataService.jar")
+      WorkingDirectory = $dataServiceDir
+    },
+    @{
+      Name = "webhost"
+      FilePath = "dotnet"
+      Arguments = @("run", "--project", $webhostProject, "--", "--urls", "http://localhost:5099")
+      WorkingDirectory = $repoRoot
+      WaitForPort = 5099
+      WaitTimeoutSeconds = 45
+    }
+  )
+
+  foreach ($instance in $smartHomeInstances) {
+    $components += @{
+      Name = $instance.Name
+      FilePath = "java"
+      Arguments = @("-jar", $smartHomeJarPath)
+      WorkingDirectory = (Get-SmartHomeInstanceDirectory -InstanceName $instance.Name)
+    }
+  }
+
+  return $components
+}
 
 function Wait-ForTcpPort {
   param(
@@ -111,6 +199,9 @@ function Remove-TrackedProcessesFile {
 }
 
 function Start-Components {
+  Initialize-SmartHomeInstances
+  $components = @(Get-Components)
+
   foreach ($component in $components) {
     Ensure-ExecutableAvailable -Command $component.FilePath
 

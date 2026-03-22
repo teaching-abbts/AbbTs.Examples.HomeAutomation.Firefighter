@@ -1,85 +1,35 @@
 <template>
-  <v-layout class="dashboard-layout">
-    <v-app-bar class="px-6" color="surface" elevation="0">
-      <v-btn
-        icon="mdi-dock-left"
-        variant="text"
-        :title="
-          showEventsSidebar ? 'Hide events sidebar' : 'Show events sidebar'
-        "
-        @click="showEventsSidebar = !showEventsSidebar"
-      />
-      <v-app-bar-title class="d-flex align-center ga-2 text-h6">
-        <span>{{ t("dashboard.title") }}</span>
-        <v-progress-circular v-if="loading" color="primary" indeterminate />
-        <span v-if="loading" class="text-caption">{{
-          t("dashboard.loading")
-        }}</span>
-      </v-app-bar-title>
-      <v-btn
-        class="mr-2"
-        color="primary"
-        prepend-icon="mdi-home-automation"
-        rounded="lg"
-        to="/smart-homes"
-        variant="elevated"
-      >
-        {{ t("smartHomes.nav") }}
-      </v-btn>
-      <LanguageSwitcher class="mr-4" />
-      <ThemeSwitcher />
-      <v-btn
-        class="ml-2"
-        icon="mdi-dock-right"
-        variant="text"
-        :title="
-          showActionsSidebar ? 'Hide actions sidebar' : 'Show actions sidebar'
-        "
-        @click="showActionsSidebar = !showActionsSidebar"
-      />
-    </v-app-bar>
-    <EventsSidebar v-if="showEventsSidebar" :events="sidebarEvents" />
-    <v-main class="bg-surface">
-      <HousesGrid :houses="houses" @select-house="openHouseDetails" />
-      <HouseDetailsDialog />
-    </v-main>
+  <v-main class="h-full">
+    <EventsSidebar :events="sidebarEvents" />
+    <HousesGrid :houses="houses" @select-house="openHouseDetails" />
+    <HouseDetailsDialog />
     <ActionsSidebar
-      v-if="showActionsSidebar"
       :actions="actions"
       :observed-houses="observedHouses"
       @toggle-action="toggleAction"
       @toggle-observed-house="toggleObservedHouse"
     />
-  </v-layout>
+  </v-main>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from "vue";
-import { storeToRefs } from "pinia";
-import { useI18n } from "vue-i18n";
-
 import ActionsSidebar from "@/components/dashboard/ActionsSidebar.vue";
 import EventsSidebar from "@/components/dashboard/EventsSidebar.vue";
 import HouseDetailsDialog from "@/components/dashboard/HouseDetailsDialog.vue";
 import HousesGrid from "@/components/dashboard/HousesGrid.vue";
-import LanguageSwitcher from "@/components/dashboard/LanguageSwitcher.vue";
-import ThemeSwitcher from "@/components/dashboard/ThemeSwitcher.vue";
+import type { HouseItem } from "@/components/dashboard/types";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useHouseDetailsStore } from "@/stores/houseDetails";
 
-import type { HouseItem } from "@/components/dashboard/types";
-
 const houseDetailsStore = useHouseDetailsStore();
-const { t } = useI18n({ useScope: "global" });
 const {
   availableHouseNumbers,
   latestEventTypeByHouse,
   observedHouses,
   sidebarEvents,
   actions,
-  loading,
 } = storeToRefs(houseDetailsStore);
-const showEventsSidebar = ref(true);
-const showActionsSidebar = ref(true);
 
 const houses = computed<HouseItem[]>(() => {
   return availableHouseNumbers.value.map((houseNumber) => {

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-8" fluid>
+  <v-container class="py-8 mt-8" fluid>
     <v-row class="mb-4" justify="space-between" align="center">
       <v-col cols="12" md="8">
         <div class="text-overline text-primary">
@@ -12,7 +12,7 @@
           {{ t("smartHomes.subtitle") }}
         </p>
       </v-col>
-      <v-col cols="12" md="4" class="d-flex justify-md-end ga-2">
+      <v-col cols="12" md="4" class="d-flex justify-md-end gap-2">
         <v-btn prepend-icon="mdi-view-dashboard" to="/" variant="outlined">
           {{ t("smartHomes.back") }}
         </v-btn>

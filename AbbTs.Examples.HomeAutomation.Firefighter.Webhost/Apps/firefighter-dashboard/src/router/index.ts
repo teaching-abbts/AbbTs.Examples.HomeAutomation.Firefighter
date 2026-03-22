@@ -10,22 +10,49 @@ import Index from "@/pages/index.vue";
 import SmartHomeDetail from "@/pages/smart-home-detail.vue";
 import SmartHomes from "@/pages/smart-homes.vue";
 
+declare module "vue-router" {
+  interface RouteMeta {
+    appBar?: {
+      icon: string;
+      labelKey: string;
+      order: number;
+    };
+  }
+}
+
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      name: "dashboard",
       path: "/",
       component: Index,
+      meta: {
+        appBar: {
+          icon: "mdi-view-dashboard",
+          labelKey: "dashboard.nav",
+          order: 10,
+        },
+      },
     },
     {
       path: "/smart-home",
       redirect: "/smart-homes",
     },
     {
+      name: "smart-homes",
       path: "/smart-homes",
       component: SmartHomes,
+      meta: {
+        appBar: {
+          icon: "mdi-home-automation",
+          labelKey: "smartHomes.nav",
+          order: 20,
+        },
+      },
     },
     {
+      name: "smart-home-detail",
       path: "/smart-homes/:id",
       component: SmartHomeDetail,
     },
