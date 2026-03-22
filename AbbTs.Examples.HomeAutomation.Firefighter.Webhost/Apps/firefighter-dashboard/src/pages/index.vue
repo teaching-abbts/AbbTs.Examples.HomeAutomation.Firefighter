@@ -21,10 +21,10 @@
         color="primary"
         prepend-icon="mdi-home-automation"
         rounded="lg"
-        to="/smart-home"
+        to="/smart-homes"
         variant="elevated"
       >
-        {{ t("smartHome.nav") }}
+        {{ t("smartHomes.nav") }}
       </v-btn>
       <LanguageSwitcher class="mr-4" />
       <ThemeSwitcher />

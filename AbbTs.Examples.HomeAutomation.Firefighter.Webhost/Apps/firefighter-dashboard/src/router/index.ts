@@ -7,7 +7,8 @@
 // Composables
 import { createRouter, createWebHashHistory } from "vue-router";
 import Index from "@/pages/index.vue";
-import SmartHome from "@/pages/smart-home.vue";
+import SmartHomeDetail from "@/pages/smart-home-detail.vue";
+import SmartHomes from "@/pages/smart-homes.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -18,7 +19,15 @@ const router = createRouter({
     },
     {
       path: "/smart-home",
-      component: SmartHome,
+      redirect: "/smart-homes",
+    },
+    {
+      path: "/smart-homes",
+      component: SmartHomes,
+    },
+    {
+      path: "/smart-homes/:id",
+      component: SmartHomeDetail,
     },
   ],
 });

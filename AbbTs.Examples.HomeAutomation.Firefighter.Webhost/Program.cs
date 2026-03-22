@@ -1,13 +1,18 @@
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.Configuration;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Actors;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.GitVersion.Endpoints.About;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.GitVersion.Extensions;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.NSwag;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.History;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.SmartHomes;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.Statistic;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Endpoints.WebSocket;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Extensions;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Services;
 
-using Mumrich.SpaDevMiddleware.Domain.Contracts;
-using Mumrich.SpaDevMiddleware.Domain.Models;
+using Akka.Actor;
+using Akka.Hosting;
+
 using Mumrich.SpaDevMiddleware.Extensions;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost;
@@ -30,6 +35,15 @@ public static class Program
         }
 
         builder.Services.AddSmartQuartier(builder.Configuration);
+        builder.Services.AddSignalR();
+
+        builder.Services.AddAkka("firefighter-system", configurationBuilder =>
+        {
+            configurationBuilder.WithActors((actorSystem, actorRegistry) =>
+            {
+                actorSystem.ActorOf(Props.Create(() => new SmartHomeManagerActor()), SmartHomeManagerActor.ActorName);
+            });
+        });
 
         var app = builder.Build();
 
@@ -38,7 +52,9 @@ public static class Program
         app.UseNSwag();
         app.MapSmartQuartierHistoryEndpoint();
         app.MapSmartQuartierStatisticEndpoint();
+        app.MapSmartHomesEndpoints();
         app.MapSmartHomeGatewayEndpoints();
+        app.MapHub<SmartHomeHub>("/hubs/smart-homes");
 
         app.MapAboutEndpoint();
 
@@ -49,10 +65,4 @@ public static class Program
 
         await app.RunAsync();
     }
-}
-
-public class AppSettings : ISpaMiddlewareSettings
-{
-    public Dictionary<string, SpaSettings> SinglePageApps { get; set; } = new();
-    public string BasePublicPath { get; set; } = Directory.GetCurrentDirectory();
 }

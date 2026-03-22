@@ -118,6 +118,88 @@ export class Client {
         }
         return Promise.resolve<VersionInfo>(null as any);
     }
+
+    getSmartHomes(): Promise<SmartHomeSummary[]> {
+        let url_ = this.baseUrl + "/api/smart-homes";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSmartHomes(_response);
+        });
+    }
+
+    protected processGetSmartHomes(response: Response): Promise<SmartHomeSummary[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(SmartHomeSummary.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SmartHomeSummary[]>(null as any);
+    }
+
+    getSmartHome(smartHomeId: string): Promise<SmartHomeDetails> {
+        let url_ = this.baseUrl + "/api/smart-homes/{smartHomeId}";
+        if (smartHomeId === undefined || smartHomeId === null)
+            throw new globalThis.Error("The parameter 'smartHomeId' must be defined.");
+        url_ = url_.replace("{smartHomeId}", encodeURIComponent("" + smartHomeId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSmartHome(_response);
+        });
+    }
+
+    protected processGetSmartHome(response: Response): Promise<SmartHomeDetails> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SmartHomeDetails.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SmartHomeDetails>(null as any);
+    }
 }
 
 export class SmartQuartierHistoryResponse implements ISmartQuartierHistoryResponse {
@@ -550,6 +632,186 @@ export interface IVersionInfo {
     name?: string;
     semVer?: string;
     informationalVersion?: string;
+}
+
+export class SmartHomeSummary implements ISmartHomeSummary {
+    id?: string;
+    owner?: string;
+    xCoordinate?: number;
+    yCoordinate?: number;
+    isConnected?: boolean;
+    connectedAtUtc?: Date | undefined;
+    lastSeenUtc?: Date | undefined;
+    recentMessageCount?: number;
+
+    constructor(data?: ISmartHomeSummary) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.owner = _data["owner"];
+            this.xCoordinate = _data["xCoordinate"];
+            this.yCoordinate = _data["yCoordinate"];
+            this.isConnected = _data["isConnected"];
+            this.connectedAtUtc = _data["connectedAtUtc"] ? new Date(_data["connectedAtUtc"].toString()) : undefined as any;
+            this.lastSeenUtc = _data["lastSeenUtc"] ? new Date(_data["lastSeenUtc"].toString()) : undefined as any;
+            this.recentMessageCount = _data["recentMessageCount"];
+        }
+    }
+
+    static fromJS(data: any): SmartHomeSummary {
+        data = typeof data === 'object' ? data : {};
+        let result = new SmartHomeSummary();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["owner"] = this.owner;
+        data["xCoordinate"] = this.xCoordinate;
+        data["yCoordinate"] = this.yCoordinate;
+        data["isConnected"] = this.isConnected;
+        data["connectedAtUtc"] = this.connectedAtUtc ? this.connectedAtUtc.toISOString() : undefined as any;
+        data["lastSeenUtc"] = this.lastSeenUtc ? this.lastSeenUtc.toISOString() : undefined as any;
+        data["recentMessageCount"] = this.recentMessageCount;
+        return data;
+    }
+}
+
+export interface ISmartHomeSummary {
+    id?: string;
+    owner?: string;
+    xCoordinate?: number;
+    yCoordinate?: number;
+    isConnected?: boolean;
+    connectedAtUtc?: Date | undefined;
+    lastSeenUtc?: Date | undefined;
+    recentMessageCount?: number;
+}
+
+export class SmartHomeDetails implements ISmartHomeDetails {
+    id?: string;
+    owner?: string;
+    xCoordinate?: number;
+    yCoordinate?: number;
+    isConnected?: boolean;
+    connectedAtUtc?: Date | undefined;
+    lastSeenUtc?: Date | undefined;
+    recentEnvelopes?: SmartHomeGatewayEnvelope[];
+
+    constructor(data?: ISmartHomeDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.owner = _data["owner"];
+            this.xCoordinate = _data["xCoordinate"];
+            this.yCoordinate = _data["yCoordinate"];
+            this.isConnected = _data["isConnected"];
+            this.connectedAtUtc = _data["connectedAtUtc"] ? new Date(_data["connectedAtUtc"].toString()) : undefined as any;
+            this.lastSeenUtc = _data["lastSeenUtc"] ? new Date(_data["lastSeenUtc"].toString()) : undefined as any;
+            if (Array.isArray(_data["recentEnvelopes"])) {
+                this.recentEnvelopes = [] as any;
+                for (let item of _data["recentEnvelopes"])
+                    this.recentEnvelopes!.push(SmartHomeGatewayEnvelope.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SmartHomeDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new SmartHomeDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["owner"] = this.owner;
+        data["xCoordinate"] = this.xCoordinate;
+        data["yCoordinate"] = this.yCoordinate;
+        data["isConnected"] = this.isConnected;
+        data["connectedAtUtc"] = this.connectedAtUtc ? this.connectedAtUtc.toISOString() : undefined as any;
+        data["lastSeenUtc"] = this.lastSeenUtc ? this.lastSeenUtc.toISOString() : undefined as any;
+        if (Array.isArray(this.recentEnvelopes)) {
+            data["recentEnvelopes"] = [];
+            for (let item of this.recentEnvelopes)
+                data["recentEnvelopes"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface ISmartHomeDetails {
+    id?: string;
+    owner?: string;
+    xCoordinate?: number;
+    yCoordinate?: number;
+    isConnected?: boolean;
+    connectedAtUtc?: Date | undefined;
+    lastSeenUtc?: Date | undefined;
+    recentEnvelopes?: SmartHomeGatewayEnvelope[];
+}
+
+export class SmartHomeGatewayEnvelope implements ISmartHomeGatewayEnvelope {
+    messageType?: string;
+    payload?: any | undefined;
+    receivedAtUtc?: Date;
+
+    constructor(data?: ISmartHomeGatewayEnvelope) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.messageType = _data["messageType"];
+            this.payload = _data["payload"];
+            this.receivedAtUtc = _data["receivedAtUtc"] ? new Date(_data["receivedAtUtc"].toString()) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): SmartHomeGatewayEnvelope {
+        data = typeof data === 'object' ? data : {};
+        let result = new SmartHomeGatewayEnvelope();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["messageType"] = this.messageType;
+        data["payload"] = this.payload;
+        data["receivedAtUtc"] = this.receivedAtUtc ? this.receivedAtUtc.toISOString() : undefined as any;
+        return data;
+    }
+}
+
+export interface ISmartHomeGatewayEnvelope {
+    messageType?: string;
+    payload?: any | undefined;
+    receivedAtUtc?: Date;
 }
 
 export class ApiException extends Error {

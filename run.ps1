@@ -17,12 +17,6 @@ $webhostProject = Join-Path $repoRoot "AbbTs.Examples.HomeAutomation.Firefighter
 
 $components = @(
 	@{
-		Name = "smart-home"
-		FilePath = "java"
-		Arguments = @("-jar", "SmartHome.jar")
-		WorkingDirectory = $smartHomeDir
-	},
-	@{
 		Name = "data-service"
 		FilePath = "java"
 		Arguments = @("-jar", "SmartQuartierDataService.jar")
@@ -31,10 +25,39 @@ $components = @(
 	@{
 		Name = "webhost"
 		FilePath = "dotnet"
-		Arguments = @("run", "--project", $webhostProject)
+		Arguments = @("run", "--project", $webhostProject, "--", "--urls", "http://localhost:5099")
 		WorkingDirectory = $repoRoot
+		WaitForPort = 5099
+		WaitTimeoutSeconds = 45
+	},
+	@{
+		Name = "smart-home"
+		FilePath = "java"
+		Arguments = @("-jar", "SmartHome.jar")
+		WorkingDirectory = $smartHomeDir
 	}
 )
+
+function Wait-ForTcpPort {
+	param(
+		[Parameter(Mandatory = $true)]
+		[int]$Port,
+		[Parameter(Mandatory = $true)]
+		[int]$TimeoutSeconds
+	)
+
+	$deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+	while ((Get-Date) -lt $deadline) {
+		$listener = Get-NetTCPConnection -State Listen -LocalPort $Port -ErrorAction SilentlyContinue
+		if ($listener) {
+			return $true
+		}
+
+		Start-Sleep -Milliseconds 500
+	}
+
+	return $false
+}
 
 function Ensure-StateDirectory {
 	if (-not (Test-Path -LiteralPath $stateDir)) {
@@ -117,6 +140,18 @@ function Start-Components {
 				Command = "$($component.FilePath) $($component.Arguments -join ' ')"
 			}
 			Write-Host "Started $($component.Name) (PID $($process.Id))"
+
+			if ($component.ContainsKey("WaitForPort")) {
+				$timeoutSeconds = if ($component.ContainsKey("WaitTimeoutSeconds")) { [int]$component.WaitTimeoutSeconds } else { 30 }
+				$port = [int]$component.WaitForPort
+				Write-Host "Waiting for $($component.Name) to listen on port $port..."
+
+				if (-not (Wait-ForTcpPort -Port $port -TimeoutSeconds $timeoutSeconds)) {
+					throw "$($component.Name) did not open port $port within $timeoutSeconds seconds."
+				}
+
+				Write-Host "$($component.Name) is listening on port $port."
+			}
 		}
 
 		Save-TrackedProcesses -Processes $started
