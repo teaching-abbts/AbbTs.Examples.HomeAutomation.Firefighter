@@ -1,25 +1,25 @@
 {
-    "smartHomes": [
-        {
-            "name": "smart-home-1",
-            "buildingId": "Haus-1",
-            "owner": "Mike",
-            "x": 0,
-            "y": 0
-        },
-        {
-            "name": "smart-home-2",
-            "buildingId": "Haus-2",
-            "owner": "Anna",
-            "x": 10,
-            "y": 0
-        },
-        {
-            "name": "smart-home-3",
-            "buildingId": "Haus-3",
-            "owner": "Luca",
-            "x": 20,
-            "y": 0
-        }
-    ]
+  "smartHomes": [
+    {
+      "name": "smart-home-1",
+      "buildingId": "Haus-1",
+      "owner": "Mike",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "name": "smart-home-2",
+      "buildingId": "Haus-2",
+      "owner": "Anna",
+      "x": 10,
+      "y": 0
+    },
+    {
+      "name": "smart-home-3",
+      "buildingId": "Haus-3",
+      "owner": "Luca",
+      "x": 20,
+      "y": 10
+    }
+  ]
 }

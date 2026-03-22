@@ -51,7 +51,13 @@ export const useAppStore = defineStore("app", () => {
       (item): item is AppEventType => allowed.has(item as AppEventType),
     );
 
-    return selected.length > 0 ? selected : [...ALL_EVENT_TYPES];
+    return selected;
+  });
+
+  const effectiveEventTypeFilter = computed<AppEventType[]>(() => {
+    return normalizedEventTypeFilter.value.length > 0
+      ? normalizedEventTypeFilter.value
+      : [...ALL_EVENT_TYPES];
   });
 
   const normalizedLastEventsLimit = computed(() => {
@@ -83,16 +89,14 @@ export const useAppStore = defineStore("app", () => {
       selected.delete(eventType);
     }
 
-    eventTypeFilter.value =
-      selected.size > 0 ? [...selected] : [...ALL_EVENT_TYPES];
+    eventTypeFilter.value = [...selected];
   };
 
   const setEventTypes = (eventTypes: AppEventType[]) => {
     const allowed = new Set(ALL_EVENT_TYPES);
     const selected = eventTypes.filter((item) => allowed.has(item));
 
-    eventTypeFilter.value =
-      selected.length > 0 ? selected : [...ALL_EVENT_TYPES];
+    eventTypeFilter.value = selected;
   };
 
   const setLastEventsLimit = (value: number) => {
@@ -107,6 +111,7 @@ export const useAppStore = defineStore("app", () => {
     eventTypeFilter,
     lastEventsLimit,
     normalizedEventTypeFilter,
+    effectiveEventTypeFilter,
     normalizedLastEventsLimit,
     setLocale,
     setTheme,

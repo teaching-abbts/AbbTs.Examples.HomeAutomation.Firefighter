@@ -267,7 +267,7 @@ const toHistoryResponse = (
 export const useHouseDetailsStore = defineStore("house-details", () => {
   const appStore = useAppStore();
   const {
-    normalizedEventTypeFilter,
+    effectiveEventTypeFilter,
     normalizedLastEventsLimit,
     observedHouses,
     onlyOpenAlarms,
@@ -284,7 +284,7 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
   const liveConnection = ref<HubConnection | null>(null);
 
   const selectedTypeSet = computed(
-    () => new Set(normalizedEventTypeFilter.value),
+    () => new Set(effectiveEventTypeFilter.value),
   );
 
   const availableHouseNumbers = computed(() => {
