@@ -1,22 +1,37 @@
 [CmdletBinding()]
 param(
   [ValidateSet("start", "stop", "status")]
-  [string]$Action = "start"
+  [string]$Action = "start",
+  [ValidateSet("local", "artifacts")]
+  [string]$Mode = "local"
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$target = switch ($Action) {
-  "start" { "Run-Start" }
-  "stop" { "Run-Stop" }
-  "status" { "Run-Status" }
-  default { throw "Unknown action '$Action'." }
+$target = switch ("${Mode}:${Action}") {
+  "local:start" { "Run-Start" }
+  "local:stop" { "Run-Stop" }
+  "local:status" { "Run-Status" }
+  "artifacts:start" { "Artifacts-Run-Start" }
+  "artifacts:stop" { "Artifacts-Run-Stop" }
+  "artifacts:status" { "Artifacts-Run-Status" }
+  default { throw "Unsupported mode/action combination '$Mode/$Action'." }
 }
 
-$buildProject = Join-Path $PSScriptRoot "build/Build.csproj"
+$repoRoot = if (Test-Path (Join-Path $PSScriptRoot "build/Build.csproj")) {
+  $PSScriptRoot
+}
+elseif (Test-Path (Join-Path $PSScriptRoot "../build/Build.csproj")) {
+  (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+}
+else {
+  throw "Could not locate build/Build.csproj from '$PSScriptRoot'."
+}
 
-& dotnet run --project $buildProject --target $target -- --repo-root $PSScriptRoot
+$buildProject = Join-Path $repoRoot "build/Build.csproj"
+
+& dotnet run --project $buildProject --target $target -- --repo-root $repoRoot
 if ($LASTEXITCODE -ne 0) {
   throw "Cake Frosting task '$target' failed with exit code $LASTEXITCODE."
 }
