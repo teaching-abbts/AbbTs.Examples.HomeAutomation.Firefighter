@@ -9,8 +9,8 @@ namespace Build.Tasks.Runtime;
 [TaskName("Run-Stop")]
 public sealed class RunStopTask : FrostingTask<BuildContext>
 {
-    public override void Run(BuildContext context)
-    {
-        RuntimeOrchestrator.Stop(context, RuntimeMode.Local);
-    }
+  public override void Run(BuildContext context)
+  {
+    RuntimeOrchestrator.Stop(context, RuntimeMode.Local);
+  }
 }

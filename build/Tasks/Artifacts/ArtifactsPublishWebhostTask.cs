@@ -9,8 +9,8 @@ namespace Build.Tasks.Artifacts;
 [IsDependentOn(typeof(ArtifactsCleanTask))]
 public sealed class ArtifactsPublishWebhostTask : FrostingTask<BuildContext>
 {
-    public override void Run(BuildContext context)
-    {
-        ArtifactBuilder.PublishWebhost(context);
-    }
+  public override void Run(BuildContext context)
+  {
+    ArtifactBuilder.PublishWebhost(context);
+  }
 }

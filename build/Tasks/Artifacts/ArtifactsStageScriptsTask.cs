@@ -9,8 +9,8 @@ namespace Build.Tasks.Artifacts;
 [IsDependentOn(typeof(ArtifactsStageAssetsTask))]
 public sealed class ArtifactsStageScriptsTask : FrostingTask<BuildContext>
 {
-    public override void Run(BuildContext context)
-    {
-        ArtifactBuilder.StageRuntimeScripts(context);
-    }
+  public override void Run(BuildContext context)
+  {
+    ArtifactBuilder.StageRuntimeScripts(context);
+  }
 }

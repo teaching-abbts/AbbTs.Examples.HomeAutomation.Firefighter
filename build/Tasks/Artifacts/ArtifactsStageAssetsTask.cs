@@ -9,8 +9,8 @@ namespace Build.Tasks.Artifacts;
 [IsDependentOn(typeof(ArtifactsPublishWebhostTask))]
 public sealed class ArtifactsStageAssetsTask : FrostingTask<BuildContext>
 {
-    public override void Run(BuildContext context)
-    {
-        ArtifactBuilder.StageRuntimeAssets(context);
-    }
+  public override void Run(BuildContext context)
+  {
+    ArtifactBuilder.StageRuntimeAssets(context);
+  }
 }

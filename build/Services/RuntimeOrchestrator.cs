@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
 using Build.Context;
 using Build.Models;
 
@@ -7,125 +12,137 @@ namespace Build.Services;
 
 public static class RuntimeOrchestrator
 {
-    public static void Start(BuildContext context, RuntimeMode mode)
+  public static void Start(BuildContext context, RuntimeMode mode)
+  {
+    var paths = context.GetRuntimePaths(mode);
+    var settings = context.LoadSmartHomeSettings(paths.SmartHomesConfigFile);
+    SmartHomeInitializer.Initialize(paths, settings.SmartHomes);
+
+    var components = RuntimeComponentFactory.Build(paths, settings.SmartHomes);
+    EnsureDirectoriesExist(components);
+
+    var alreadyRunning = context
+      .LoadTrackedProcesses(paths.ProcessesFile)
+      .Where(item => ProcessService.IsProcessRunning(item.Pid))
+      .ToList();
+
+    if (alreadyRunning.Count > 0)
     {
-        var paths = context.GetRuntimePaths(mode);
-        var settings = context.LoadSmartHomeSettings(paths.SmartHomesConfigFile);
-        SmartHomeInitializer.Initialize(paths, settings.SmartHomes);
-
-        var components = RuntimeComponentFactory.Build(paths, settings.SmartHomes);
-        EnsureDirectoriesExist(components);
-
-        var alreadyRunning = context.LoadTrackedProcesses(paths.ProcessesFile)
-            .Where(item => ProcessService.IsProcessRunning(item.Pid))
-            .ToList();
-
-        if (alreadyRunning.Count > 0)
-        {
-            context.Log.Warning("There are already tracked processes running. Use stop first.");
-            return;
-        }
-
-        var started = new List<TrackedProcess>();
-
-        try
-        {
-            foreach (var component in components)
-            {
-                var process = ProcessService.StartComponent(component);
-                var tracked = new TrackedProcess
-                {
-                    Name = component.Name,
-                    Pid = process.Id,
-                    StartTimeUtc = DateTime.UtcNow.ToString("O"),
-                    WorkingDirectory = component.WorkingDirectory,
-                    Command = $"{component.FileName} {string.Join(" ", component.Arguments)}",
-                };
-
-                started.Add(tracked);
-                context.Log.Information($"Started {component.Name} (PID {process.Id})");
-
-                if (component.WaitForPort is { } port)
-                {
-                    context.Log.Information($"Waiting for {component.Name} to listen on port {port}...");
-                    var ok = ProcessService.WaitForTcpPort(port, TimeSpan.FromSeconds(component.WaitTimeoutSeconds));
-                    if (!ok)
-                    {
-                        throw new TimeoutException($"{component.Name} did not open port {port} within {component.WaitTimeoutSeconds} seconds.");
-                    }
-
-                    context.Log.Information($"{component.Name} is listening on port {port}.");
-                }
-            }
-
-            context.SaveTrackedProcesses(paths.ProcessesFile, started);
-            context.Log.Information("All components started.");
-        }
-        catch
-        {
-            StopTracked(context, started);
-            throw;
-        }
+      context.Log.Warning("There are already tracked processes running. Use stop first.");
+      return;
     }
 
-    public static void Stop(BuildContext context, RuntimeMode mode)
+    var started = new List<TrackedProcess>();
+
+    try
     {
-        var paths = context.GetRuntimePaths(mode);
-        var tracked = context.LoadTrackedProcesses(paths.ProcessesFile);
-        if (tracked.Count == 0)
+      foreach (var component in components)
+      {
+        var process = ProcessService.StartComponent(component);
+        var tracked = new TrackedProcess
         {
-            context.Log.Information("No tracked processes found.");
-            return;
-        }
+          Name = component.Name,
+          Pid = process.Id,
+          StartTimeUtc = DateTime.UtcNow.ToString("O"),
+          WorkingDirectory = component.WorkingDirectory,
+          Command = $"{component.FileName} {string.Join(" ", component.Arguments)}",
+        };
 
-        foreach (var item in tracked)
+        started.Add(tracked);
+        context.Log.Information($"Started {component.Name} (PID {process.Id})");
+
+        if (component.WaitForPort is { } port)
         {
-            var wasRunning = ProcessService.IsProcessRunning(item.Pid);
-            ProcessService.TryStop(item.Pid);
+          context.Log.Information($"Waiting for {component.Name} to listen on port {port}...");
+          var ok = ProcessService.WaitForTcpPort(
+            port,
+            TimeSpan.FromSeconds(component.WaitTimeoutSeconds)
+          );
+          if (!ok)
+          {
+            throw new TimeoutException(
+              $"{component.Name} did not open port {port} within {component.WaitTimeoutSeconds} seconds."
+            );
+          }
 
-            context.Log.Information(wasRunning
-                ? $"{item.Name}: terminated (PID {item.Pid})."
-                : $"{item.Name}: PID {item.Pid} is not running.");
+          context.Log.Information($"{component.Name} is listening on port {port}.");
         }
+      }
 
-        context.RemoveTrackedProcessesFile(paths.ProcessesFile);
-        context.Log.Information("Stopped all tracked components.");
+      context.SaveTrackedProcesses(paths.ProcessesFile, started);
+      context.Log.Information("All components started.");
+    }
+    catch
+    {
+      StopTracked(context, started);
+      throw;
+    }
+  }
+
+  public static void Stop(BuildContext context, RuntimeMode mode)
+  {
+    var paths = context.GetRuntimePaths(mode);
+    var tracked = context.LoadTrackedProcesses(paths.ProcessesFile);
+    if (tracked.Count == 0)
+    {
+      context.Log.Information("No tracked processes found.");
+      return;
     }
 
-    public static void Status(BuildContext context, RuntimeMode mode)
+    foreach (var item in tracked)
     {
-        var paths = context.GetRuntimePaths(mode);
-        var tracked = context.LoadTrackedProcesses(paths.ProcessesFile);
-        if (tracked.Count == 0)
-        {
-            context.Log.Information("No tracked processes found.");
-            return;
-        }
+      var wasRunning = ProcessService.IsProcessRunning(item.Pid);
+      ProcessService.TryStop(item.Pid);
 
-        foreach (var item in tracked)
-        {
-            var isRunning = ProcessService.IsProcessRunning(item.Pid);
-            context.Log.Information($"{item.Name}: {(isRunning ? "running" : "stopped")} (PID {item.Pid})");
-        }
+      context.Log.Information(
+        wasRunning
+          ? $"{item.Name}: terminated (PID {item.Pid})."
+          : $"{item.Name}: PID {item.Pid} is not running."
+      );
     }
 
-    private static void StopTracked(BuildContext context, IReadOnlyCollection<TrackedProcess> tracked)
+    context.RemoveTrackedProcessesFile(paths.ProcessesFile);
+    context.Log.Information("Stopped all tracked components.");
+  }
+
+  public static void Status(BuildContext context, RuntimeMode mode)
+  {
+    var paths = context.GetRuntimePaths(mode);
+    var tracked = context.LoadTrackedProcesses(paths.ProcessesFile);
+    if (tracked.Count == 0)
     {
-        foreach (var item in tracked)
-        {
-            ProcessService.TryStop(item.Pid);
-            context.Log.Information($"Stopped {item.Name} (PID {item.Pid}).");
-        }
+      context.Log.Information("No tracked processes found.");
+      return;
     }
 
-    private static void EnsureDirectoriesExist(IEnumerable<RuntimeComponent> components)
+    foreach (var item in tracked)
     {
-        foreach (var component in components)
-        {
-            if (!Directory.Exists(component.WorkingDirectory))
-            {
-                throw new DirectoryNotFoundException($"Working directory '{component.WorkingDirectory}' does not exist.");
-            }
-        }
+      var isRunning = ProcessService.IsProcessRunning(item.Pid);
+      context.Log.Information(
+        $"{item.Name}: {(isRunning ? "running" : "stopped")} (PID {item.Pid})"
+      );
     }
+  }
+
+  private static void StopTracked(BuildContext context, IReadOnlyCollection<TrackedProcess> tracked)
+  {
+    foreach (var item in tracked)
+    {
+      ProcessService.TryStop(item.Pid);
+      context.Log.Information($"Stopped {item.Name} (PID {item.Pid}).");
+    }
+  }
+
+  private static void EnsureDirectoriesExist(IEnumerable<RuntimeComponent> components)
+  {
+    foreach (var component in components)
+    {
+      if (!Directory.Exists(component.WorkingDirectory))
+      {
+        throw new DirectoryNotFoundException(
+          $"Working directory '{component.WorkingDirectory}' does not exist."
+        );
+      }
+    }
+  }
 }
