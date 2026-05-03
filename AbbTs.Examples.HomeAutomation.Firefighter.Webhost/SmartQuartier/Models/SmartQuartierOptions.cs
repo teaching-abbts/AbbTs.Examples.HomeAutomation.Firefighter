@@ -2,15 +2,15 @@ namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Models
 
 public sealed class SmartQuartierOptions
 {
-    public const string SectionName = "SmartQuartier";
+  public const string SectionName = "SmartQuartier";
 
-    public string BaseAddress { get; init; } = "http://127.0.0.1:11001/";
+  public string BaseAddress { get; init; } = "http://127.0.0.1:11001/";
 
-    public string HistoryPath { get; init; } = "smart-quartier/data-service/history";
+  public string HistoryPath { get; init; } = "smart-quartier/data-service/history";
 
-    public string StatisticPath { get; init; } = "smart-quartier/data-service/statistic";
+  public string StatisticPath { get; init; } = "smart-quartier/data-service/statistic";
 
-    public int TimeoutSeconds { get; init; } = 10;
+  public int TimeoutSeconds { get; init; } = 10;
 
-    public int HistoryEventsLimit { get; init; } = 100;
+  public int HistoryEventsLimit { get; init; } = 100;
 }

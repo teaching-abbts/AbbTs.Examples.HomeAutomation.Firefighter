@@ -24,7 +24,7 @@ public static class ProcessService
     }
 
     return Process.Start(startInfo)
-        ?? throw new InvalidOperationException($"Failed to start process '{component.Name}'.");
+      ?? throw new InvalidOperationException($"Failed to start process '{component.Name}'.");
   }
 
   public static bool WaitForTcpPort(int port, TimeSpan timeout)

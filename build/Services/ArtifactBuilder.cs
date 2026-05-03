@@ -38,13 +38,16 @@ public static class ArtifactBuilder
     startInfo.ArgumentList.Add("-o");
     startInfo.ArgumentList.Add(outputDirectory);
 
-    using var process = Process.Start(startInfo)
-        ?? throw new InvalidOperationException("Failed to start dotnet publish process.");
+    using var process =
+      Process.Start(startInfo)
+      ?? throw new InvalidOperationException("Failed to start dotnet publish process.");
 
     process.WaitForExit();
     if (process.ExitCode != 0)
     {
-      throw new InvalidOperationException($"dotnet publish failed with exit code {process.ExitCode}.");
+      throw new InvalidOperationException(
+        $"dotnet publish failed with exit code {process.ExitCode}."
+      );
     }
   }
 
@@ -57,7 +60,11 @@ public static class ArtifactBuilder
     CopyDirectory(context.DataServiceSourceAssetsDirectory, dataServiceTarget);
     CopyDirectory(context.SmartHomeSourceAssetsDirectory, smartHomeTarget);
     Directory.CreateDirectory(buildTarget);
-    File.Copy(context.SmartHomesSourceConfigFile, Path.Combine(buildTarget, "smart-homes.json"), overwrite: true);
+    File.Copy(
+      context.SmartHomesSourceConfigFile,
+      Path.Combine(buildTarget, "smart-homes.json"),
+      overwrite: true
+    );
   }
 
   public static void StageRuntimeScripts(BuildContext context)
@@ -89,8 +96,9 @@ public static class ArtifactBuilder
     {
       var relativePath = Path.GetRelativePath(sourceDirectory, file);
       var destinationFile = Path.Combine(targetDirectory, relativePath);
-      var destinationParent = Path.GetDirectoryName(destinationFile)
-          ?? throw new InvalidOperationException("Could not resolve destination directory.");
+      var destinationParent =
+        Path.GetDirectoryName(destinationFile)
+        ?? throw new InvalidOperationException("Could not resolve destination directory.");
 
       Directory.CreateDirectory(destinationParent);
       File.Copy(file, destinationFile, overwrite: true);
