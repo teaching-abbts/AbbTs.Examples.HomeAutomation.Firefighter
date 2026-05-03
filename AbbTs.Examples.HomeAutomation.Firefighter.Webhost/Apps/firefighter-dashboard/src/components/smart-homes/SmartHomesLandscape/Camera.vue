@@ -9,7 +9,7 @@
     :target="[0, 0, 0]"
     :enable-damping="true"
     :enable-pan="false"
-    :auto-rotate="false"
+    :auto-rotate="true"
     :auto-rotate-speed="1"
     :min-distance="8"
     :max-distance="35"

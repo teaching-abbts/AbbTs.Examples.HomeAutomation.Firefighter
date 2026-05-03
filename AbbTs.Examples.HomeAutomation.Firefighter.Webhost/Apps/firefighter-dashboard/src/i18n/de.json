@@ -27,7 +27,7 @@
     },
     "actions": {
       "extinguishFire": "Brandlöschung",
-      "openDoors": "Türen öffnen",
+      "openDoors": "Lüften",
       "execute": "Ausführen",
       "observe": "Beobachten",
       "open": "Offen",

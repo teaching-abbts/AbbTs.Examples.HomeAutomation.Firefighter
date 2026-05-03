@@ -1,5 +1,15 @@
 <template>
   <TresGroup :position="position" @click="$emit('select')">
+    <CientosHtml
+      :position="[0, 1.95, 0]"
+      transform
+      sprite
+      :distance-factor="12"
+      pointer-events="none"
+    >
+      <div class="house-label">{{ houseName }}</div>
+    </CientosHtml>
+
     <!-- Main house base (rectangular walls) -->
     <TresMesh cast-shadow>
       <TresBoxGeometry :args="[1.8, 1.2, 2.2]" />
@@ -72,10 +82,12 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
+import { Html as CientosHtml } from "@tresjs/cientos";
 
 interface Props {
   position: [number, number, number];
   color: string;
+  houseName: string;
   isConnected?: boolean;
 }
 
@@ -116,10 +128,27 @@ watch([frontGableGeom, backGableGeom], () => {
 });
 
 const gableColor = computed(() => {
-  return props.isConnected ? "#1b5e20" : "#d84315";
+  return props.isConnected ? "#1b5e20" : "#d32f2f";
 });
 
 const roofColor = computed(() => {
-  return props.isConnected ? "#0d3817" : "#bf360c";
+  return props.isConnected ? "#0d3817" : "#b71c1c";
 });
 </script>
+
+<style scoped>
+.house-label {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.86);
+  color: #1f2937;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  user-select: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+</style>

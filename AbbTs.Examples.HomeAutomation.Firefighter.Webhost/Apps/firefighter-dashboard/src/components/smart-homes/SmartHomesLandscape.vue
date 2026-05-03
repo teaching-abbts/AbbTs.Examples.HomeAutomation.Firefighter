@@ -28,8 +28,9 @@
             v-for="home in positionedHomes"
             :key="home.id"
             :position="[home.sceneX, 0.6, home.sceneZ]"
-            :color="home.isConnected ? '#2e7d32' : '#f57c00'"
+            :color="home.isConnected ? '#2e7d32' : '#F44336'"
             :is-connected="home.isConnected"
+            :house-name="home.id"
             @select="emit('select', home.id)"
           />
         </TresCanvas>

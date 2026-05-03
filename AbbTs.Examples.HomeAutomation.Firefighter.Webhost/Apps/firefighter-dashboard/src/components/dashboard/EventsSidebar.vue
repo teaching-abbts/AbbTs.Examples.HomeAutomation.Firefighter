@@ -47,8 +47,9 @@
       >
         <v-card
           :style="{ backgroundColor: event.color }"
+          :width="230"
           class="w-100"
-          rounded="xl"
+          rounded="lg"
           variant="flat"
         >
           <v-card-item>
