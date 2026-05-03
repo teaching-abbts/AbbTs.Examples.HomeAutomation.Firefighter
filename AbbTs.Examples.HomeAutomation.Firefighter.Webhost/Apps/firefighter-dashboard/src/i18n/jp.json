@@ -30,11 +30,15 @@
       "openDoors": "ドアを開く",
       "execute": "実行",
       "observe": "監視",
+      "endangeredLives": "人命が危険",
       "open": "未完了",
       "done": "完了",
       "markDone": "完了にする",
       "reopen": "再オープン",
-      "onlyOpen": "未完了のみ表示"
+      "onlyOpen": "未完了のみ表示",
+      "createdAt": "作成日時",
+      "resolvedAt": "解決日時",
+      "notResolved": "未解決"
     },
     "language": {
       "label": "言語",
@@ -138,6 +142,16 @@
       "label": "距離しきい値",
       "sliderLabel": "しきい値",
       "current": "現在のしきい値: {value}"
+    },
+    "motionEscalation": {
+      "title": "動体検知のエスカレーション",
+      "description": "火災アラート後の時間枠内に動体検知がX回発生した場合、'人命が危険'にエスカレーションします。",
+      "label": "動体検知回数 (X)",
+      "sliderLabel": "回数",
+      "current": "現在の値: {value}",
+      "windowLabel": "時間枠（分）(Y)",
+      "windowSliderLabel": "時間枠",
+      "windowCurrent": "現在の時間枠: {value} 分"
     }
   },
   "message": {

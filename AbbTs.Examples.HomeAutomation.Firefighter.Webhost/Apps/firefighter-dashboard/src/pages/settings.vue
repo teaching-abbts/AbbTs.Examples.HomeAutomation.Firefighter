@@ -54,6 +54,73 @@
             </div>
           </v-card-text>
         </v-card>
+
+        <v-card class="mt-4" rounded="xl">
+          <v-card-title>
+            {{ t("settings.motionEscalation.title") }}
+          </v-card-title>
+          <v-card-text>
+            <p class="text-body-2 text-medium-emphasis mb-4">
+              {{ t("settings.motionEscalation.description") }}
+            </p>
+
+            <v-text-field
+              v-model.number="motionEscalationCount"
+              :label="t('settings.motionEscalation.label')"
+              class="mb-3"
+              density="comfortable"
+              min="1"
+              type="number"
+              variant="outlined"
+            />
+
+            <v-slider
+              v-model="motionEscalationCount"
+              :label="t('settings.motionEscalation.sliderLabel')"
+              :max="20"
+              :min="1"
+              color="primary"
+              step="1"
+              thumb-label="always"
+            />
+
+            <div class="text-caption text-medium-emphasis mt-2">
+              {{
+                t("settings.motionEscalation.current", {
+                  value: normalizedMotionEscalationCount,
+                })
+              }}
+            </div>
+
+            <v-text-field
+              v-model.number="motionEscalationWindowMinutes"
+              :label="t('settings.motionEscalation.windowLabel')"
+              class="mt-4 mb-3"
+              density="comfortable"
+              min="1"
+              type="number"
+              variant="outlined"
+            />
+
+            <v-slider
+              v-model="motionEscalationWindowMinutes"
+              :label="t('settings.motionEscalation.windowSliderLabel')"
+              :max="120"
+              :min="1"
+              color="primary"
+              step="1"
+              thumb-label="always"
+            />
+
+            <div class="text-caption text-medium-emphasis mt-2">
+              {{
+                t("settings.motionEscalation.windowCurrent", {
+                  value: normalizedMotionEscalationWindowMinutes,
+                })
+              }}
+            </div>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -68,10 +135,24 @@ import { useAppStore } from "@/stores/app";
 
 const { t } = useI18n({ useScope: "global" });
 const appStore = useAppStore();
-const { normalizedNeighborFireDistanceThreshold } = storeToRefs(appStore);
+const {
+  normalizedNeighborFireDistanceThreshold,
+  normalizedMotionEscalationCount,
+  normalizedMotionEscalationWindowMinutes,
+} = storeToRefs(appStore);
 
 const neighborThreshold = computed({
   get: () => normalizedNeighborFireDistanceThreshold.value,
   set: (value: number) => appStore.setNeighborFireDistanceThreshold(value),
+});
+
+const motionEscalationCount = computed({
+  get: () => normalizedMotionEscalationCount.value,
+  set: (value: number) => appStore.setMotionEscalationCount(value),
+});
+
+const motionEscalationWindowMinutes = computed({
+  get: () => normalizedMotionEscalationWindowMinutes.value,
+  set: (value: number) => appStore.setMotionEscalationWindowMinutes(value),
 });
 </script>

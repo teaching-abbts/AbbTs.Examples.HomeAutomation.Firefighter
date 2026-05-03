@@ -30,11 +30,15 @@
             "openDoors": "Szellőztetés",
             "execute": "Végrehajtás",
             "observe": "Megfigyelés",
+            "endangeredLives": "Emberélet veszélyben",
             "open": "Nyitott",
             "done": "Kész",
             "markDone": "Befejezettnek jelölés",
             "reopen": "Újranyitás",
-            "onlyOpen": "Csak nyitott műveletek"
+            "onlyOpen": "Csak nyitott műveletek",
+            "createdAt": "Létrehozva",
+            "resolvedAt": "Lezárva",
+            "notResolved": "Még nyitott"
         },
         "language": {
             "label": "Nyelv",
@@ -138,6 +142,16 @@
             "label": "Távolsági küszöb",
             "sliderLabel": "Küszöb",
             "current": "Jelenlegi küszöb: {value}"
+        },
+        "motionEscalation": {
+            "title": "Mozgás alapú súlyosbítás",
+            "description": "Súlyosbítás 'Emberélet veszélyben' szintre, ha a tűzriasztás után a mozgás X-szer előfordul az időablakban.",
+            "label": "Mozgások száma (X)",
+            "sliderLabel": "Mozgásszám",
+            "current": "Jelenlegi érték: {value}",
+            "windowLabel": "Időablak percben (Y)",
+            "windowSliderLabel": "Időablak",
+            "windowCurrent": "Jelenlegi időablak: {value} perc"
         }
     },
     "message": {

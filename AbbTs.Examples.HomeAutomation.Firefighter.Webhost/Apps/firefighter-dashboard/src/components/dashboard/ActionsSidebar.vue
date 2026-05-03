@@ -35,6 +35,18 @@
           <v-card-subtitle :style="{ color: action.textColor, opacity: 1 }">{{
             t("dashboard.houseName", { id: action.houseNumber })
           }}</v-card-subtitle>
+          <div class="text-body-2 mt-1" :style="{ color: action.textColor }">
+            <strong>{{ t("dashboard.actions.createdAt") }}:</strong>
+            {{ formatActionTimestamp(action.openedAt) }}
+          </div>
+          <div class="text-body-2" :style="{ color: action.textColor }">
+            <strong>{{ t("dashboard.actions.resolvedAt") }}:</strong>
+            {{
+              action.closedAt
+                ? formatActionTimestamp(action.closedAt)
+                : t("dashboard.actions.notResolved")
+            }}
+          </div>
           <v-chip
             v-if="!showOnlyOpenActions"
             class="mt-2"
@@ -99,6 +111,16 @@ const showOnlyOpenActions = computed({
 const filteredActions = computed(() => {
   return props.actions;
 });
+
+const formatActionTimestamp = (timestamp: number) => {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(timestamp));
+};
 </script>
 
 <style scoped>

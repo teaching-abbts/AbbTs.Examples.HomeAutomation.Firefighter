@@ -14,9 +14,11 @@ const STORAGE_KEYS = {
   eventTypes: "ff.settings.eventTypes",
   lastEventsLimit: "ff.settings.lastEventsLimit",
   neighborFireDistanceThreshold: "ff.settings.neighborFireDistanceThreshold",
+  motionEscalationCount: "ff.settings.motionEscalationCount",
+  motionEscalationWindowMinutes: "ff.settings.motionEscalationWindowMinutes",
 } as const;
 
-const ALL_EVENT_TYPES: AppEventType[] = ["fire", "gas"];
+const ALL_EVENT_TYPES: AppEventType[] = ["fire", "gas", "motion"];
 
 const normalizeLimit = (value: number) => {
   if (!Number.isFinite(value)) {
@@ -32,6 +34,22 @@ const normalizeNeighborFireDistanceThreshold = (value: number) => {
   }
 
   return Math.min(1000, Math.max(1, Math.trunc(value)));
+};
+
+const normalizeMotionEscalationCount = (value: number) => {
+  if (!Number.isFinite(value)) {
+    return 2;
+  }
+
+  return Math.min(20, Math.max(1, Math.trunc(value)));
+};
+
+const normalizeMotionEscalationWindowMinutes = (value: number) => {
+  if (!Number.isFinite(value)) {
+    return 10;
+  }
+
+  return Math.min(120, Math.max(1, Math.trunc(value)));
 };
 
 export const useAppStore = defineStore("app", () => {
@@ -57,6 +75,14 @@ export const useAppStore = defineStore("app", () => {
     STORAGE_KEYS.neighborFireDistanceThreshold,
     15,
   );
+  const motionEscalationCount = useLocalStorage<number>(
+    STORAGE_KEYS.motionEscalationCount,
+    2,
+  );
+  const motionEscalationWindowMinutes = useLocalStorage<number>(
+    STORAGE_KEYS.motionEscalationWindowMinutes,
+    10,
+  );
 
   const normalizedEventTypeFilter = computed<AppEventType[]>(() => {
     const allowed = new Set(ALL_EVENT_TYPES);
@@ -80,6 +106,16 @@ export const useAppStore = defineStore("app", () => {
   const normalizedNeighborFireDistanceThreshold = computed(() => {
     return normalizeNeighborFireDistanceThreshold(
       neighborFireDistanceThreshold.value,
+    );
+  });
+
+  const normalizedMotionEscalationCount = computed(() => {
+    return normalizeMotionEscalationCount(motionEscalationCount.value);
+  });
+
+  const normalizedMotionEscalationWindowMinutes = computed(() => {
+    return normalizeMotionEscalationWindowMinutes(
+      motionEscalationWindowMinutes.value,
     );
   });
 
@@ -127,6 +163,15 @@ export const useAppStore = defineStore("app", () => {
       normalizeNeighborFireDistanceThreshold(value);
   };
 
+  const setMotionEscalationCount = (value: number) => {
+    motionEscalationCount.value = normalizeMotionEscalationCount(value);
+  };
+
+  const setMotionEscalationWindowMinutes = (value: number) => {
+    motionEscalationWindowMinutes.value =
+      normalizeMotionEscalationWindowMinutes(value);
+  };
+
   return {
     locale,
     theme,
@@ -135,10 +180,14 @@ export const useAppStore = defineStore("app", () => {
     eventTypeFilter,
     lastEventsLimit,
     neighborFireDistanceThreshold,
+    motionEscalationCount,
+    motionEscalationWindowMinutes,
     normalizedEventTypeFilter,
     effectiveEventTypeFilter,
     normalizedLastEventsLimit,
     normalizedNeighborFireDistanceThreshold,
+    normalizedMotionEscalationCount,
+    normalizedMotionEscalationWindowMinutes,
     setLocale,
     setTheme,
     setHouseObserved,
@@ -147,5 +196,7 @@ export const useAppStore = defineStore("app", () => {
     setEventTypes,
     setLastEventsLimit,
     setNeighborFireDistanceThreshold,
+    setMotionEscalationCount,
+    setMotionEscalationWindowMinutes,
   };
 });

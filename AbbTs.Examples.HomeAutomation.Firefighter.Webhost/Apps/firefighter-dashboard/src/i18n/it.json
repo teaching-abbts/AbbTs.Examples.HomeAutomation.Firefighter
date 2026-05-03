@@ -30,11 +30,15 @@
             "openDoors": "Ventilare",
             "execute": "Esegui",
             "observe": "Monitora",
+            "endangeredLives": "Vite umane in pericolo",
             "open": "Aperto",
             "done": "Completato",
             "markDone": "Segna come completato",
             "reopen": "Riapri",
-            "onlyOpen": "Solo azioni aperte"
+            "onlyOpen": "Solo azioni aperte",
+            "createdAt": "Creato il",
+            "resolvedAt": "Risolto il",
+            "notResolved": "Non ancora risolto"
         },
         "language": {
             "label": "Lingua",
@@ -138,6 +142,16 @@
             "label": "Soglia distanza",
             "sliderLabel": "Soglia",
             "current": "Soglia attuale: {value}"
+        },
+        "motionEscalation": {
+            "title": "Escalation movimento",
+            "description": "Escalation a 'Vite umane in pericolo' quando il movimento si verifica X volte nella finestra temporale dopo un allarme incendio.",
+            "label": "Numero movimenti (X)",
+            "sliderLabel": "Conteggio movimenti",
+            "current": "Valore attuale: {value}",
+            "windowLabel": "Finestra temporale in minuti (Y)",
+            "windowSliderLabel": "Finestra temporale",
+            "windowCurrent": "Finestra attuale: {value} min"
         }
     },
     "message": {

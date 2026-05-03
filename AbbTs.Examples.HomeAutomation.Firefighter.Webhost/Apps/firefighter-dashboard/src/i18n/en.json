@@ -30,11 +30,15 @@
       "openDoors": "Open doors",
       "execute": "Execute",
       "observe": "Observe",
+      "endangeredLives": "Lives endangered",
       "open": "Open",
       "done": "Done",
       "markDone": "Mark done",
       "reopen": "Reopen",
-      "onlyOpen": "Only open actions"
+      "onlyOpen": "Only open actions",
+      "createdAt": "Created at",
+      "resolvedAt": "Resolved at",
+      "notResolved": "Not resolved yet"
     },
     "language": {
       "label": "Language",
@@ -138,6 +142,16 @@
       "label": "Distance threshold",
       "sliderLabel": "Threshold",
       "current": "Current threshold: {value}"
+    },
+    "motionEscalation": {
+      "title": "Motion escalation",
+      "description": "Escalate to 'Lives endangered' when motion occurs X times within the time window after a fire alert.",
+      "label": "Motion count (X)",
+      "sliderLabel": "Motion count",
+      "current": "Current value: {value}",
+      "windowLabel": "Time window in minutes (Y)",
+      "windowSliderLabel": "Time window",
+      "windowCurrent": "Current time window: {value} min"
     }
   },
   "message": {
