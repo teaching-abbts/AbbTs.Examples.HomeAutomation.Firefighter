@@ -9,6 +9,7 @@
     <PackageReference Include="Akka.Cluster.Hosting" Version="1.5.67" />
     <PackageReference Include="Mumrich.SpaDevMiddleware" Version="1.7.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
+    <PackageReference Include="OpenTelemetry" Version="1.15.3" />
     <PackageReference Include="GitVersion.MsBuild" Version="6.7.0">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>

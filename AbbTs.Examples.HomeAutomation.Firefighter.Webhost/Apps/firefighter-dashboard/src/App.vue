@@ -11,14 +11,14 @@
             }}</span>
           </v-app-bar-title>
           <v-btn
-            v-for="item in appBarNavItems"
-            :key="item.path"
-            class="mr-2"
             :color="isActiveRoute(item.path) ? 'primary' : 'default'"
+            :key="item.path"
             :prepend-icon="item.icon"
-            rounded="lg"
             :to="item.path"
             :variant="isActiveRoute(item.path) ? 'elevated' : 'text'"
+            class="mr-2"
+            rounded="lg"
+            v-for="item in appBarNavItems"
           >
             {{ t(item.labelKey) }}
           </v-btn>

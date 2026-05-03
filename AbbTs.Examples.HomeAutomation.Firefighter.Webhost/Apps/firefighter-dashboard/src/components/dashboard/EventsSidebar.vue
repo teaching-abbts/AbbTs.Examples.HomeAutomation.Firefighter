@@ -11,8 +11,8 @@
 
     <div class="px-3 pb-2">
       <v-select
-        v-model="selectedEventTypes"
         :items="eventTypeOptions"
+        :label="t('dashboard.filters.eventTypes')"
         chips
         clearable
         closable-chips
@@ -21,34 +21,34 @@
         item-title="title"
         item-value="value"
         multiple
-        :label="t('dashboard.filters.eventTypes')"
+        v-model="selectedEventTypes"
         variant="outlined"
       />
 
       <v-text-field
-        v-model.number="eventsLimit"
+        :label="t('dashboard.filters.lastEventsLimit')"
         class="mt-3"
         density="compact"
         hide-details
         min="1"
         prepend-inner-icon="mdi-counter"
-        :label="t('dashboard.filters.lastEventsLimit')"
         type="number"
+        v-model.number="eventsLimit"
         variant="outlined"
       />
     </div>
 
     <v-list class="px-2">
       <v-list-item
-        v-for="event in events"
         :key="event.id"
         class="mb-3 px-0"
         lines="three"
+        v-for="event in events"
       >
         <v-card
+          :style="{ backgroundColor: event.color }"
           class="w-100"
           rounded="xl"
-          :style="{ backgroundColor: event.color }"
           variant="flat"
         >
           <v-card-item>
