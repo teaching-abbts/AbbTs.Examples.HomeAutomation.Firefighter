@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { defineStore } from "pinia";
 
 export type AppTheme = "light" | "dark";
-export type AppLocale = "de" | "en" | "jp";
+export type AppLocale = "de" | "en" | "hu" | "it" | "jp";
 export type AppEventType = "fire" | "gas" | "motion";
 
 const STORAGE_KEYS = {

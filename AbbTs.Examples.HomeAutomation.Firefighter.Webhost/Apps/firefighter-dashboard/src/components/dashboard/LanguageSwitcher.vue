@@ -33,6 +33,8 @@ const selectedLocale = computed({
 const languageOptions = computed(() => [
   { title: t("dashboard.language.german"), value: "de" },
   { title: t("dashboard.language.english"), value: "en" },
+  { title: t("dashboard.language.hungarian"), value: "hu" },
+  { title: t("dashboard.language.italian"), value: "it" },
   { title: t("dashboard.language.japanese"), value: "jp" },
 ]);
 </script>

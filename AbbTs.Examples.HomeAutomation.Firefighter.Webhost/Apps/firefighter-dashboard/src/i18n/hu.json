@@ -1,0 +1,133 @@
+{
+    "dashboard": {
+        "nav": "Irányítópult",
+        "title": "Tűzoltói irányítópult",
+        "loading": "Betöltés...",
+        "sections": {
+            "events": "Események",
+            "actions": "Műveletek"
+        },
+        "filters": {
+            "eventTypes": "Eseménytípusok",
+            "lastEventsLimit": "Legutóbbi események limitje"
+        },
+        "houseName": "Ház {id}",
+        "events": {
+            "fire": "Tűz!",
+            "gas": "Gáz!",
+            "motion": "Mozgás!",
+            "sound": "Hang!",
+            "rfid": "RFID!"
+        },
+        "houseStatus": {
+            "fireDetected": "Tűz észlelve",
+            "monitoring": "Megfigyelés",
+            "safe": "Biztonságos",
+            "gasAlert": "Gázriasztás"
+        },
+        "actions": {
+            "extinguishFire": "Tűz oltása",
+            "openDoors": "Szellőztetés",
+            "execute": "Végrehajtás",
+            "observe": "Megfigyelés",
+            "open": "Nyitott",
+            "done": "Kész",
+            "markDone": "Befejezettnek jelölés",
+            "reopen": "Újranyitás",
+            "onlyOpen": "Csak nyitott műveletek"
+        },
+        "language": {
+            "label": "Nyelv",
+            "german": "Német",
+            "english": "Angol",
+            "hungarian": "Magyar",
+            "italian": "Olasz",
+            "japanese": "Japán"
+        },
+        "theme": {
+            "label": "Téma",
+            "bright": "Világos",
+            "dark": "Sötét"
+        },
+        "houseDetails": {
+            "title": "Ház részletei",
+            "timestamp": "Időbélyeg",
+            "type": "Típus",
+            "details": "Részletek",
+            "noData": "Nincs elérhető előzményadat",
+            "error": "Nem sikerült betölteni az előzményeket",
+            "close": "Bezárás"
+        }
+    },
+    "smartHome": {
+        "nav": "SmartHome",
+        "badge": "Élő vezérlés",
+        "title": "SmartHome vezérlőközpont",
+        "subtitle": "Küldj SmartHome gateway parancsokat és figyeld az élő WebSocket forgalmat.",
+        "back": "Vissza az irányítópultra",
+        "connect": "Csatlakozás",
+        "disconnect": "Kapcsolat bontása",
+        "connection": "Kapcsolat",
+        "connected": "Csatlakozva",
+        "disconnected": "Lecsatlakozva",
+        "ready": "A WebSocket készen áll.",
+        "error": "Kapcsolódási hiba.",
+        "closed": "A kapcsolat lezárult.",
+        "notConnected": "Parancsküldés előtt először csatlakozz.",
+        "quick": "Gyors lekérdezések",
+        "getState": "Állapot lekérése",
+        "getMeasurement": "Mérés lekérése",
+        "sendCommand": "Parancs küldése",
+        "device": "Eszköz",
+        "command": "Parancs",
+        "value": "Érték",
+        "send": "Küldés",
+        "liveLog": "Élő napló",
+        "clear": "Törlés",
+        "noMessages": "Még nincsenek üzenetek. Csatlakozz és küldj parancsot.",
+        "smartHomeOffline": "A SmartHome nincs csatlakozva a gatewayhez. A parancsok le vannak tiltva."
+    },
+    "smartHomes": {
+        "nav": "Okosotthonok",
+        "badge": "Aktor áttekintés",
+        "title": "Csatlakoztatott okosotthonok",
+        "subtitle": "Tekintsd át az összes, a tűzoltó webhost által ismert okosotthont, és nyiss külön élő munkamenetet mindegyikhez.",
+        "landscapeTitle": "Okosotthon térkép",
+        "back": "Vissza az irányítópultra",
+        "online": "Online",
+        "offline": "Offline",
+        "coordinates": "Koordináták: x={x}, y={y}",
+        "recentMessages": "{count} legutóbbi üzenet",
+        "lastSeenNever": "Még nem érkezett aktivitás.",
+        "lastSeenAt": "Utolsó aktivitás: {timestamp}",
+        "empty": "Még egyetlen okosotthon sem regisztrált.",
+        "loadError": "Nem sikerült betölteni az okosotthonok listáját.",
+        "liveUnavailable": "Az élő frissítések jelenleg nem érhetők el.",
+        "detailBadge": "Élő részlet",
+        "detailSubtitle": "Tulajdonos: {owner} • Koordináták x={x}, y={y}",
+        "detailSubtitleUnknown": "Várakozás az okosotthon metaadataira.",
+        "backToList": "Vissza a listához",
+        "notFound": "A kért okosotthon nem ismert a webhost számára.",
+        "connection": "Kapcsolat",
+        "ownerLabel": "Tulajdonos: {owner}",
+        "hubDisconnected": "Az irányítópult élő csatornája megszakadt.",
+        "deviceConnected": "Az eszközkapcsolat aktív.",
+        "deviceDisconnected": "Az eszköz jelenleg offline.",
+        "quick": "Gyors műveletek",
+        "getState": "Állapot lekérése",
+        "getMeasurement": "Mérés lekérése",
+        "sendCommand": "Parancs küldése",
+        "device": "Eszköz",
+        "command": "Parancs",
+        "value": "Érték",
+        "send": "Küldés",
+        "liveLog": "Élő napló",
+        "clear": "Törlés",
+        "noMessages": "Még nem érkezett üzenet.",
+        "loadDetailError": "Nem sikerült betölteni az okosotthon részleteit.",
+        "commandError": "A parancs kézbesítése nem sikerült."
+    },
+    "message": {
+        "hello": "Helló világ"
+    }
+}

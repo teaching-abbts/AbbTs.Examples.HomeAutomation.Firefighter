@@ -1,0 +1,133 @@
+{
+    "dashboard": {
+        "nav": "Pannello",
+        "title": "Pannello Vigili del Fuoco",
+        "loading": "Caricamento...",
+        "sections": {
+            "events": "Eventi",
+            "actions": "Azioni"
+        },
+        "filters": {
+            "eventTypes": "Tipi di evento",
+            "lastEventsLimit": "Limite ultimi eventi"
+        },
+        "houseName": "Casa {id}",
+        "events": {
+            "fire": "Fuoco!",
+            "gas": "Gas!",
+            "motion": "Movimento!",
+            "sound": "Suono!",
+            "rfid": "RFID!"
+        },
+        "houseStatus": {
+            "fireDetected": "Incendio rilevato",
+            "monitoring": "Monitoraggio",
+            "safe": "Sicuro",
+            "gasAlert": "Allarme gas"
+        },
+        "actions": {
+            "extinguishFire": "Estinguere incendio",
+            "openDoors": "Ventilare",
+            "execute": "Esegui",
+            "observe": "Monitora",
+            "open": "Aperto",
+            "done": "Completato",
+            "markDone": "Segna come completato",
+            "reopen": "Riapri",
+            "onlyOpen": "Solo azioni aperte"
+        },
+        "language": {
+            "label": "Lingua",
+            "german": "Tedesco",
+            "english": "Inglese",
+            "hungarian": "Ungherese (Magyar)",
+            "italian": "Italiano",
+            "japanese": "Giapponese"
+        },
+        "theme": {
+            "label": "Tema",
+            "bright": "Chiaro",
+            "dark": "Scuro"
+        },
+        "houseDetails": {
+            "title": "Dettagli casa",
+            "timestamp": "Timestamp",
+            "type": "Tipo",
+            "details": "Dettagli",
+            "noData": "Nessun dato storico disponibile",
+            "error": "Non è stato possibile caricare la cronologia",
+            "close": "Chiudi"
+        }
+    },
+    "smartHome": {
+        "nav": "SmartHome",
+        "badge": "Controllo in tempo reale",
+        "title": "Centro di comando SmartHome",
+        "subtitle": "Invia comandi gateway SmartHome e ispeziona il traffico WebSocket in tempo reale.",
+        "back": "Torna al pannello",
+        "connect": "Connetti",
+        "disconnect": "Disconnetti",
+        "connection": "Connessione",
+        "connected": "Connesso",
+        "disconnected": "Disconnesso",
+        "ready": "WebSocket è pronto.",
+        "error": "Errore di connessione.",
+        "closed": "Connessione chiusa.",
+        "notConnected": "Connettiti prima di inviare comandi.",
+        "quick": "Query rapide",
+        "getState": "Ottieni stato",
+        "getMeasurement": "Ottieni misurazioni",
+        "sendCommand": "Invia comando",
+        "device": "Dispositivo",
+        "command": "Comando",
+        "value": "Valore",
+        "send": "Invia",
+        "liveLog": "Streaming in tempo reale",
+        "clear": "Cancella",
+        "noMessages": "Nessun messaggio ancora. Connettiti e invia un comando.",
+        "smartHomeOffline": "SmartHome non è connesso al gateway. I comandi sono disabilitati."
+    },
+    "smartHomes": {
+        "nav": "Case intelligenti",
+        "badge": "Panoramica attori",
+        "title": "Case intelligenti connesse",
+        "subtitle": "Esamina tutte le case intelligenti conosciute dall'host web dei vigili del fuoco e apri una sessione in tempo reale dedicata per ciascuna.",
+        "landscapeTitle": "Paesaggio casa intelligente",
+        "back": "Torna al pannello",
+        "online": "Online",
+        "offline": "Offline",
+        "coordinates": "Coordinate: x={x}, y={y}",
+        "recentMessages": "{count} messaggi recenti",
+        "lastSeenNever": "Nessuna attività ricevuta ancora.",
+        "lastSeenAt": "Ultima attività: {timestamp}",
+        "empty": "Nessuna casa intelligente si è registrata ancora.",
+        "loadError": "Impossibile caricare l'elenco delle case intelligenti.",
+        "liveUnavailable": "Gli aggiornamenti in tempo reale non sono attualmente disponibili.",
+        "detailBadge": "Dettaglio in tempo reale",
+        "detailSubtitle": "Proprietario: {owner} • Coordinate x={x}, y={y}",
+        "detailSubtitleUnknown": "In attesa di metadati della casa intelligente.",
+        "backToList": "Torna all'elenco",
+        "notFound": "La casa intelligente richiesta non è nota all'host web.",
+        "connection": "Connessione",
+        "ownerLabel": "Proprietario: {owner}",
+        "hubDisconnected": "Il canale live del pannello è disconnesso.",
+        "deviceConnected": "La connessione del dispositivo è attiva.",
+        "deviceDisconnected": "Il dispositivo è attualmente offline.",
+        "quick": "Azioni rapide",
+        "getState": "Richiedi stato",
+        "getMeasurement": "Richiedi misurazioni",
+        "sendCommand": "Invia comando",
+        "device": "Dispositivo",
+        "command": "Comando",
+        "value": "Valore",
+        "send": "Invia",
+        "liveLog": "Log in tempo reale",
+        "clear": "Cancella",
+        "noMessages": "Nessun messaggio ricevuto ancora.",
+        "loadDetailError": "Impossibile caricare i dettagli della casa intelligente.",
+        "commandError": "Impossibile consegnare il comando."
+    },
+    "message": {
+        "hello": "Ciao mondo"
+    }
+}
