@@ -105,7 +105,7 @@ const loadSmartHomes = async () => {
 };
 
 const openSmartHome = (smartHomeId: string) => {
-  void router.push(`/smart-homes/${encodeURIComponent(smartHomeId)}`);
+  router.push(`/smart-homes/${encodeURIComponent(smartHomeId)}`);
 };
 
 onMounted(async () => {
@@ -124,6 +124,6 @@ onMounted(async () => {
 
 onUnmounted(() => {
   hubConnection.off("smartHomesChanged");
-  void hubConnection.stop();
+  hubConnection.stop();
 });
 </script>
