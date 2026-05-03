@@ -67,39 +67,6 @@
           >
         </v-card-actions>
       </v-card>
-
-      <v-card
-        rounded="lg"
-        :style="{ backgroundColor: '#5aa1dc' }"
-        variant="flat"
-      >
-        <v-card-title :style="{ color: '#ffffff' }">{{
-          t("dashboard.actions.observe")
-        }}</v-card-title>
-        <v-list class="pt-0" density="comfortable">
-          <v-list-item
-            v-for="house in observedHouses"
-            :key="house.id"
-            class="mb-2 rounded-lg"
-            :style="{ backgroundColor: '#b0b4b8', color: '#ffffff' }"
-            :title="t('dashboard.houseName', { id: house.number })"
-          >
-            <template #append>
-              <v-checkbox-btn
-                :model-value="house.active"
-                color="success"
-                hide-details
-                @update:model-value="
-                  emit('toggle-observed-house', {
-                    houseNumber: house.number,
-                    observed: Boolean($event),
-                  })
-                "
-              />
-            </template>
-          </v-list-item>
-        </v-list>
-      </v-card>
     </div>
   </v-navigation-drawer>
 </template>
@@ -109,19 +76,15 @@ import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 
-import type { ActionItem, ObservedHouseItem } from "./types";
+import type { ActionItem } from "./types";
 import { useAppStore } from "@/stores/app";
 
 const props = defineProps<{
   actions: ActionItem[];
-  observedHouses: ObservedHouseItem[];
 }>();
 
 const emit = defineEmits<{
   "toggle-action": [actionKey: string];
-  "toggle-observed-house": [
-    payload: { houseNumber: number; observed: boolean },
-  ];
 }>();
 
 const { t } = useI18n();

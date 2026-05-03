@@ -127,6 +127,19 @@
         "loadDetailError": "Nem sikerült betölteni az okosotthon részleteit.",
         "commandError": "A parancs kézbesítése nem sikerült."
     },
+    "settings": {
+        "nav": "Beállítások",
+        "badge": "Konfiguráció",
+        "title": "Irányítópult beállításai",
+        "subtitle": "Állítsd be, hogyan jöjjenek létre az automatikus Megfigyelés műveletek.",
+        "threshold": {
+            "title": "Szomszédos tűz távolság",
+            "description": "Megfigyelés művelet jön létre, ha bármelyik szomszédos ház ég, és ezen a távolságon belül van.",
+            "label": "Távolsági küszöb",
+            "sliderLabel": "Küszöb",
+            "current": "Jelenlegi küszöb: {value}"
+        }
+    },
     "message": {
         "hello": "Helló világ"
     }

@@ -7,6 +7,7 @@
 // Composables
 import { createRouter, createWebHashHistory } from "vue-router";
 import Index from "@/pages/index.vue";
+import Settings from "@/pages/settings.vue";
 import SmartHomeDetail from "@/pages/smart-home-detail.vue";
 import SmartHomes from "@/pages/smart-homes.vue";
 
@@ -48,6 +49,18 @@ const router = createRouter({
           icon: "mdi-home-automation",
           labelKey: "smartHomes.nav",
           order: 20,
+        },
+      },
+    },
+    {
+      name: "settings",
+      path: "/settings",
+      component: Settings,
+      meta: {
+        appBar: {
+          icon: "mdi-cog",
+          labelKey: "settings.nav",
+          order: 30,
         },
       },
     },

@@ -20,8 +20,10 @@ import type {
   ObservedHouseItem,
 } from "@/components/dashboard/types";
 import { useAppStore, type AppEventType } from "@/stores/app";
+import type { SmartHomeSummary } from "@/types/smartHomes";
 
 type AlertType = AppEventType;
+type ActionAlertType = "fire" | "gas" | "observe";
 
 const EVENT_ICON_BY_TYPE: Record<AlertType, string> = {
   fire: "mdi-fire",
@@ -41,22 +43,22 @@ const EVENT_TEXT_COLOR_BY_TYPE: Record<AlertType, string> = {
   motion: "#0b3b5a",
 };
 
-const ACTION_TITLE_BY_TYPE: Record<AlertType, string> = {
+const ACTION_TITLE_BY_TYPE: Record<ActionAlertType, string> = {
   fire: "dashboard.actions.extinguishFire",
   gas: "dashboard.actions.openDoors",
-  motion: "dashboard.actions.observe",
+  observe: "dashboard.actions.observe",
 };
 
-const ACTION_COLOR_BY_TYPE: Record<AlertType, string> = {
+const ACTION_COLOR_BY_TYPE: Record<ActionAlertType, string> = {
   fire: "#f07f2f",
   gas: "#facc15",
-  motion: "#6f42c1",
+  observe: "#6f42c1",
 };
 
-const ACTION_TEXT_COLOR_BY_TYPE: Record<AlertType, string> = {
+const ACTION_TEXT_COLOR_BY_TYPE: Record<ActionAlertType, string> = {
   fire: "#ffffff",
   gas: "#111111",
-  motion: "#ffffff",
+  observe: "#ffffff",
 };
 
 const normalizeBuildingId = (buildingId: string | undefined) => {
@@ -132,9 +134,148 @@ const getActionOpenedAt = (actionKey: string) => {
 
 type EquivalentGroup = {
   houseNumber: number;
-  alertType: AlertType;
+  alertType: ActionAlertType;
   titleKey: string;
-  events: Array<{ event: SmartQuartierEvent; timestamp: number }>;
+  events: Array<{ event?: SmartQuartierEvent; timestamp: number }>;
+};
+
+type HouseCoordinate = {
+  x: number;
+  y: number;
+};
+
+const getDistance = (left: HouseCoordinate, right: HouseCoordinate) => {
+  const dx = left.x - right.x;
+  const dy = left.y - right.y;
+  return Math.hypot(dx, dy);
+};
+
+const addEventTriggeredGroup = ({
+  groupedByEquivalent,
+  event,
+  alertType,
+  houseNumber,
+}: {
+  groupedByEquivalent: Map<string, EquivalentGroup>;
+  event: SmartQuartierEvent;
+  alertType: Exclude<AlertType, "motion">;
+  houseNumber: number;
+}) => {
+  const titleKey = ACTION_TITLE_BY_TYPE[alertType];
+  const equivalentKey = `${houseNumber}:${alertType}:${titleKey}`;
+  const timestamp = event.timeStamp ? event.timeStamp.getTime() : 0;
+
+  const group = groupedByEquivalent.get(equivalentKey);
+  if (!group) {
+    groupedByEquivalent.set(equivalentKey, {
+      houseNumber,
+      alertType,
+      titleKey,
+      events: [{ event, timestamp }],
+    });
+    return;
+  }
+
+  group.events.push({ event, timestamp });
+};
+
+const getLatestNeighborFireTimestamp = ({
+  houseNumber,
+  houseCoordinates,
+  latestFireTimestampByHouse,
+  distanceThreshold,
+}: {
+  houseNumber: number;
+  houseCoordinates: Record<number, HouseCoordinate>;
+  latestFireTimestampByHouse: Map<number, number>;
+  distanceThreshold: number;
+}) => {
+  const ownCoordinate = houseCoordinates[houseNumber];
+  if (!ownCoordinate) {
+    return 0;
+  }
+
+  let latestNeighborFireTimestamp = 0;
+
+  for (const [fireHouseNumber, fireTimestamp] of latestFireTimestampByHouse) {
+    if (fireHouseNumber === houseNumber) {
+      continue;
+    }
+
+    const fireCoordinate = houseCoordinates[fireHouseNumber];
+    if (!fireCoordinate) {
+      continue;
+    }
+
+    const distance = getDistance(ownCoordinate, fireCoordinate);
+    if (
+      distance <= distanceThreshold &&
+      fireTimestamp > latestNeighborFireTimestamp
+    ) {
+      latestNeighborFireTimestamp = fireTimestamp;
+    }
+  }
+
+  return latestNeighborFireTimestamp;
+};
+
+const addNeighborObserveGroup = ({
+  groupedByEquivalent,
+  houseNumber,
+  timestamp,
+}: {
+  groupedByEquivalent: Map<string, EquivalentGroup>;
+  houseNumber: number;
+  timestamp: number;
+}) => {
+  const titleKey = ACTION_TITLE_BY_TYPE.observe;
+  const equivalentKey = `${houseNumber}:observe:${titleKey}`;
+  const group = groupedByEquivalent.get(equivalentKey);
+
+  if (!group) {
+    groupedByEquivalent.set(equivalentKey, {
+      houseNumber,
+      alertType: "observe",
+      titleKey,
+      events: [{ timestamp }],
+    });
+    return;
+  }
+
+  group.events.push({ timestamp });
+};
+
+const updateLatestFireTimestamp = ({
+  latestFireTimestampByHouse,
+  alertType,
+  houseNumber,
+  event,
+}: {
+  latestFireTimestampByHouse: Map<number, number>;
+  alertType: AlertType | null;
+  houseNumber: number | null;
+  event: SmartQuartierEvent;
+}) => {
+  if (alertType !== "fire" || houseNumber === null) {
+    return;
+  }
+
+  const timestamp = event.timeStamp ? event.timeStamp.getTime() : 0;
+  const current = latestFireTimestampByHouse.get(houseNumber) ?? 0;
+  if (timestamp > current) {
+    latestFireTimestampByHouse.set(houseNumber, timestamp);
+  }
+};
+
+const toActionAlertType = (
+  alertType: AlertType | null,
+  selectedTypeSet: Set<AlertType>,
+): Exclude<AlertType, "motion"> | null => {
+  if (!alertType || alertType === "motion" || !selectedTypeSet.has(alertType)) {
+    return null;
+  }
+
+  return alertType;
 };
 
 const getActionKeysForState = (
@@ -192,38 +333,60 @@ const buildEquivalentGroups = (
   sourceEvents: SmartQuartierEvent[],
   observedSet: Set<number>,
   selectedTypeSet: Set<AlertType>,
+  houseCoordinates: Record<number, HouseCoordinate>,
+  distanceThreshold: number,
 ) => {
   const groupedByEquivalent = new Map<string, EquivalentGroup>();
+  const latestFireTimestampByHouse = new Map<number, number>();
+  const candidateObserveHouses = Object.keys(houseCoordinates)
+    .map(Number)
+    .filter((value) => Number.isFinite(value));
 
   for (const event of sourceEvents) {
     const alertType = parseAlertType(event.type);
     const houseNumber = parseHouseNumberFromBuildingId(event.buildingID);
 
-    if (
-      !alertType ||
-      !selectedTypeSet.has(alertType) ||
-      houseNumber === null ||
-      !observedSet.has(houseNumber)
-    ) {
+    updateLatestFireTimestamp({
+      latestFireTimestampByHouse,
+      alertType,
+      houseNumber,
+      event,
+    });
+
+    if (!alertType || houseNumber === null || !observedSet.has(houseNumber)) {
       continue;
     }
 
-    const titleKey = ACTION_TITLE_BY_TYPE[alertType];
-    const equivalentKey = `${houseNumber}:${alertType}:${titleKey}`;
-    const timestamp = event.timeStamp ? event.timeStamp.getTime() : 0;
-
-    const group = groupedByEquivalent.get(equivalentKey);
-    if (!group) {
-      groupedByEquivalent.set(equivalentKey, {
-        houseNumber,
-        alertType,
-        titleKey,
-        events: [{ event, timestamp }],
-      });
+    const actionAlertType = toActionAlertType(alertType, selectedTypeSet);
+    if (!actionAlertType) {
       continue;
     }
 
-    group.events.push({ event, timestamp });
+    addEventTriggeredGroup({
+      groupedByEquivalent,
+      event,
+      alertType: actionAlertType,
+      houseNumber,
+    });
+  }
+
+  for (const houseNumber of candidateObserveHouses) {
+    const latestNeighborFireTimestamp = getLatestNeighborFireTimestamp({
+      houseNumber,
+      houseCoordinates,
+      latestFireTimestampByHouse,
+      distanceThreshold,
+    });
+
+    if (latestNeighborFireTimestamp === 0) {
+      continue;
+    }
+
+    addNeighborObserveGroup({
+      groupedByEquivalent,
+      houseNumber,
+      timestamp: latestNeighborFireTimestamp,
+    });
   }
 
   return groupedByEquivalent;
@@ -269,7 +432,7 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
   const {
     effectiveEventTypeFilter,
     normalizedLastEventsLimit,
-    observedHouses,
+    normalizedNeighborFireDistanceThreshold,
     onlyOpenAlarms,
   } = storeToRefs(appStore);
 
@@ -279,6 +442,7 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
   const error = ref<string | null>(null);
   const events = ref<SmartQuartierEvent[]>([]);
   const measurements = ref<SmartQuartierMeasurement[]>([]);
+  const houseCoordinates = ref<Record<number, HouseCoordinate>>({});
   const actionStates = ref<Record<string, "open" | "done">>({});
   const actionClosedAt = ref<Record<string, number | null>>({});
   const liveConnection = ref<HubConnection | null>(null);
@@ -309,34 +473,8 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
     return [...houseNumbers].sort((left, right) => left - right);
   });
 
-  const defaultObservedHouseNumbers = computed(() => {
-    const numbers = new Set<number>();
-
-    for (const measurement of measurements.value) {
-      const houseNumber = parseHouseNumberFromBuildingId(
-        measurement.buildingID,
-      );
-      if (houseNumber !== null) {
-        numbers.add(houseNumber);
-      }
-    }
-
-    if (numbers.size === 0) {
-      for (const houseNumber of availableHouseNumbers.value) {
-        numbers.add(houseNumber);
-      }
-    }
-
-    return [...numbers].sort((left, right) => left - right);
-  });
-
   const observedHouseNumbers = computed(() => {
-    const defaults = new Set(defaultObservedHouseNumbers.value);
-
-    return availableHouseNumbers.value.filter((houseNumber) => {
-      const explicit = observedHouses.value[String(houseNumber)];
-      return explicit ?? defaults.has(houseNumber);
-    });
+    return [...availableHouseNumbers.value];
   });
 
   const observedHousesList = computed<ObservedHouseItem[]>(() => {
@@ -357,7 +495,11 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
         const alertType = parseAlertType(event.type);
         const houseNumber = parseHouseNumberFromBuildingId(event.buildingID);
 
-        if (alertType === null || houseNumber === null) {
+        if (
+          alertType === null ||
+          alertType === "motion" ||
+          houseNumber === null
+        ) {
           return false;
         }
 
@@ -447,9 +589,11 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
   const actions = computed<ActionItem[]>(() => {
     const observedSet = new Set(observedHouseNumbers.value);
     const groupedByEquivalent = buildEquivalentGroups(
-      filteredAndLimitedEvents.value,
+      events.value,
       observedSet,
       selectedTypeSet.value,
+      houseCoordinates.value,
+      normalizedNeighborFireDistanceThreshold.value,
     );
 
     const generatedActions: Array<ActionItem & { timestamp: number }> = [];
@@ -515,15 +659,14 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
         state,
         openedAt,
         closedAt,
-        timestamp: selectedEvent.timeStamp
+        timestamp: selectedEvent?.timeStamp
           ? selectedEvent.timeStamp.getTime()
           : openedAt,
       });
     }
 
-    const sorted = generatedActions
-      .sort((left, right) => right.timestamp - left.timestamp)
-      .map(({ timestamp, ...action }) => action);
+    generatedActions.sort((left, right) => right.timestamp - left.timestamp);
+    const sorted = generatedActions.map(({ timestamp, ...action }) => action);
 
     if (onlyOpenAlarms.value) {
       return sorted.filter((action) => action.state === "open");
@@ -564,6 +707,24 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
 
   const setHouseObserved = (houseNumber: number, observed: boolean) => {
     appStore.setHouseObserved(houseNumber, observed);
+  };
+
+  const setHouseCoordinates = (smartHomes: SmartHomeSummary[]) => {
+    const nextCoordinates: Record<number, HouseCoordinate> = {};
+
+    for (const smartHome of smartHomes) {
+      const houseNumber = parseHouseNumberFromBuildingId(smartHome.id);
+      if (houseNumber === null) {
+        continue;
+      }
+
+      nextCoordinates[houseNumber] = {
+        x: smartHome.xCoordinate ?? 0,
+        y: smartHome.yCoordinate ?? 0,
+      };
+    }
+
+    houseCoordinates.value = nextCoordinates;
   };
 
   const fetchHistory = async () => {
@@ -672,6 +833,7 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
     close,
     toggleActionState,
     setHouseObserved,
+    setHouseCoordinates,
     fetchHistory,
     startLiveUpdates,
     stopLiveUpdates,

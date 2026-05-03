@@ -37,12 +37,7 @@
       </v-row>
     </div>
     <HouseDetailsDialog />
-    <ActionsSidebar
-      :actions="actions"
-      :observed-houses="observedHouses"
-      @toggle-action="toggleAction"
-      @toggle-observed-house="toggleObservedHouse"
-    />
+    <ActionsSidebar :actions="actions" @toggle-action="toggleAction" />
   </div>
 </template>
 
@@ -54,16 +49,15 @@ import EventsSidebar from "@/components/dashboard/EventsSidebar.vue";
 import HouseDetailsDialog from "@/components/dashboard/HouseDetailsDialog.vue";
 import SmartHomeCard from "@/components/smart-homes/SmartHomeCard.vue";
 import SmartHomesLandscape from "@/components/smart-homes/SmartHomesLandscape.vue";
-import { onMounted, onUnmounted, ref } from "vue";
-import { storeToRefs } from "pinia";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useHouseDetailsStore } from "@/stores/houseDetails";
 import type { SmartHomeSummary } from "@/types/smartHomes";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n({ useScope: "global" });
 const houseDetailsStore = useHouseDetailsStore();
-const { observedHouses, sidebarEvents, actions } =
-  storeToRefs(houseDetailsStore);
+const sidebarEvents = computed(() => houseDetailsStore.sidebarEvents);
+const actions = computed(() => houseDetailsStore.actions);
 
 const smartHomes = ref<SmartHomeSummary[]>([]);
 const smartHomesError = ref("");
@@ -92,6 +86,7 @@ const loadSmartHomes = async () => {
   try {
     const response = await apiClient.getSmartHomes();
     smartHomes.value = mapSmartHomes((response ?? []) as SmartHomeSummary[]);
+    houseDetailsStore.setHouseCoordinates(smartHomes.value);
     smartHomesError.value = "";
   } catch {
     smartHomesError.value = t("smartHomes.loadError");
@@ -117,6 +112,7 @@ onMounted(async () => {
     "smartHomesChanged",
     (payload: SmartHomeSummary[]) => {
       smartHomes.value = mapSmartHomes(payload);
+      houseDetailsStore.setHouseCoordinates(smartHomes.value);
     },
   );
 
@@ -144,13 +140,6 @@ const openSmartHomeDetails = (smartHomeId: string) => {
 
 const toggleAction = (actionKey: string) => {
   houseDetailsStore.toggleActionState(actionKey);
-};
-
-const toggleObservedHouse = (payload: {
-  houseNumber: number;
-  observed: boolean;
-}) => {
-  houseDetailsStore.setHouseObserved(payload.houseNumber, payload.observed);
 };
 </script>
 

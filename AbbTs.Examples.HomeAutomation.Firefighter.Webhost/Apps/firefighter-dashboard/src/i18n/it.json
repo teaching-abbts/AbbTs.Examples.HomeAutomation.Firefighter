@@ -127,6 +127,19 @@
         "loadDetailError": "Impossibile caricare i dettagli della casa intelligente.",
         "commandError": "Impossibile consegnare il comando."
     },
+    "settings": {
+        "nav": "Impostazioni",
+        "badge": "Configurazione",
+        "title": "Impostazioni dashboard",
+        "subtitle": "Configura come vengono generate automaticamente le azioni di monitoraggio.",
+        "threshold": {
+            "title": "Distanza incendio del vicino",
+            "description": "Un'azione Monitora viene creata quando una casa vicina è in fiamme ed è entro questa distanza.",
+            "label": "Soglia distanza",
+            "sliderLabel": "Soglia",
+            "current": "Soglia attuale: {value}"
+        }
+    },
     "message": {
         "hello": "Ciao mondo"
     }

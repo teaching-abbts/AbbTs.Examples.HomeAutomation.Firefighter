@@ -127,6 +127,19 @@
     "loadDetailError": "Die Smart-Home-Details konnten nicht geladen werden.",
     "commandError": "Das Kommando konnte nicht zugestellt werden."
   },
+  "settings": {
+    "nav": "Einstellungen",
+    "badge": "Konfiguration",
+    "title": "Dashboard-Einstellungen",
+    "subtitle": "Konfiguriere, wie automatische Beobachten-Aktionen erzeugt werden.",
+    "threshold": {
+      "title": "Nachbar-Feuerdistanz",
+      "description": "Eine Beobachten-Aktion wird erzeugt, wenn ein Nachbarhaus brennt und innerhalb dieser Distanz liegt.",
+      "label": "Distanzschwelle",
+      "sliderLabel": "Schwelle",
+      "current": "Aktuelle Schwelle: {value}"
+    }
+  },
   "message": {
     "hello": "Hallo Welt"
   }

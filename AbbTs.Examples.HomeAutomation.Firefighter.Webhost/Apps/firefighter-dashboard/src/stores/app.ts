@@ -13,9 +13,10 @@ const STORAGE_KEYS = {
   onlyOpenAlarms: "ff.settings.onlyOpenAlarms",
   eventTypes: "ff.settings.eventTypes",
   lastEventsLimit: "ff.settings.lastEventsLimit",
+  neighborFireDistanceThreshold: "ff.settings.neighborFireDistanceThreshold",
 } as const;
 
-const ALL_EVENT_TYPES: AppEventType[] = ["fire", "gas", "motion"];
+const ALL_EVENT_TYPES: AppEventType[] = ["fire", "gas"];
 
 const normalizeLimit = (value: number) => {
   if (!Number.isFinite(value)) {
@@ -23,6 +24,14 @@ const normalizeLimit = (value: number) => {
   }
 
   return Math.min(500, Math.max(1, Math.trunc(value)));
+};
+
+const normalizeNeighborFireDistanceThreshold = (value: number) => {
+  if (!Number.isFinite(value)) {
+    return 15;
+  }
+
+  return Math.min(1000, Math.max(1, Math.trunc(value)));
 };
 
 export const useAppStore = defineStore("app", () => {
@@ -44,6 +53,10 @@ export const useAppStore = defineStore("app", () => {
     STORAGE_KEYS.lastEventsLimit,
     100,
   );
+  const neighborFireDistanceThreshold = useLocalStorage<number>(
+    STORAGE_KEYS.neighborFireDistanceThreshold,
+    15,
+  );
 
   const normalizedEventTypeFilter = computed<AppEventType[]>(() => {
     const allowed = new Set(ALL_EVENT_TYPES);
@@ -62,6 +75,12 @@ export const useAppStore = defineStore("app", () => {
 
   const normalizedLastEventsLimit = computed(() => {
     return normalizeLimit(lastEventsLimit.value);
+  });
+
+  const normalizedNeighborFireDistanceThreshold = computed(() => {
+    return normalizeNeighborFireDistanceThreshold(
+      neighborFireDistanceThreshold.value,
+    );
   });
 
   const setLocale = (nextLocale: AppLocale) => {
@@ -103,6 +122,11 @@ export const useAppStore = defineStore("app", () => {
     lastEventsLimit.value = normalizeLimit(value);
   };
 
+  const setNeighborFireDistanceThreshold = (value: number) => {
+    neighborFireDistanceThreshold.value =
+      normalizeNeighborFireDistanceThreshold(value);
+  };
+
   return {
     locale,
     theme,
@@ -110,9 +134,11 @@ export const useAppStore = defineStore("app", () => {
     onlyOpenAlarms,
     eventTypeFilter,
     lastEventsLimit,
+    neighborFireDistanceThreshold,
     normalizedEventTypeFilter,
     effectiveEventTypeFilter,
     normalizedLastEventsLimit,
+    normalizedNeighborFireDistanceThreshold,
     setLocale,
     setTheme,
     setHouseObserved,
@@ -120,5 +146,6 @@ export const useAppStore = defineStore("app", () => {
     toggleEventType,
     setEventTypes,
     setLastEventsLimit,
+    setNeighborFireDistanceThreshold,
   };
 });

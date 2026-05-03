@@ -127,6 +127,19 @@
     "loadDetailError": "The smart-home detail could not be loaded.",
     "commandError": "The command could not be delivered."
   },
+  "settings": {
+    "nav": "Settings",
+    "badge": "Configuration",
+    "title": "Dashboard settings",
+    "subtitle": "Configure how automatic observe actions are generated.",
+    "threshold": {
+      "title": "Neighbor fire distance",
+      "description": "An Observe action is created when any neighboring house is on fire and within this distance.",
+      "label": "Distance threshold",
+      "sliderLabel": "Threshold",
+      "current": "Current threshold: {value}"
+    }
+  },
   "message": {
     "hello": "Hello world"
   }

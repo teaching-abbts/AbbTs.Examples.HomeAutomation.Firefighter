@@ -127,6 +127,19 @@
     "loadDetailError": "スマートホーム詳細を読み込めませんでした。",
     "commandError": "コマンドを送信できませんでした。"
   },
+  "settings": {
+    "nav": "設定",
+    "badge": "構成",
+    "title": "ダッシュボード設定",
+    "subtitle": "監視アクションの自動生成ルールを設定します。",
+    "threshold": {
+      "title": "近隣火災の距離",
+      "description": "近隣の家で火災が発生し、この距離以内にある場合に監視アクションを生成します。",
+      "label": "距離しきい値",
+      "sliderLabel": "しきい値",
+      "current": "現在のしきい値: {value}"
+    }
+  },
   "message": {
     "hello": "こんにちは、世界"
   }

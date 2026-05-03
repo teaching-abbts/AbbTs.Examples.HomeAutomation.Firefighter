@@ -96,7 +96,6 @@ const { normalizedEventTypeFilter, normalizedLastEventsLimit } =
 const eventTypeOptions = computed(() => [
   { title: t("dashboard.events.fire"), value: "fire" },
   { title: t("dashboard.events.gas"), value: "gas" },
-  { title: t("dashboard.events.motion"), value: "motion" },
 ]);
 
 const selectedEventTypes = computed({
