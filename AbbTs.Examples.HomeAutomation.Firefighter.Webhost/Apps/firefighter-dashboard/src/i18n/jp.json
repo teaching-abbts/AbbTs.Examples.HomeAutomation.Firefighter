@@ -1,7 +1,9 @@
 {
   "dashboard": {
     "nav": "ダッシュボード",
+    "badge": "運用概要",
     "title": "消防ダッシュボード",
+    "subtitle": "スマートホーム地区の状況把握のため、イベントとアクションをリアルタイムで表示します。",
     "loading": "読み込み中...",
     "sections": {
       "events": "イベント",
@@ -111,6 +113,8 @@
     "detailSubtitle": "所有者: {owner} • 座標 x={x}, y={y}",
     "detailSubtitleUnknown": "スマートホームのメタデータを待機しています。",
     "backToList": "一覧へ戻る",
+    "backToDashboard": "ダッシュボードへ戻る",
+    "eventHistory": "イベント",
     "notFound": "指定したスマートホームは Webhost に登録されていません。",
     "connection": "接続",
     "ownerLabel": "所有者: {owner}",

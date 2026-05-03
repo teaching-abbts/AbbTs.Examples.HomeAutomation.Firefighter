@@ -1,7 +1,9 @@
 {
   "dashboard": {
     "nav": "Dashboard",
+    "badge": "Lageübersicht",
     "title": "Feuerwehr-Dashboard",
+    "subtitle": "Live-Ereignisse und Aktionen zur Lagebeurteilung im Smart-Home-Quartier.",
     "loading": "Lädt...",
     "sections": {
       "events": "Ereignisse",
@@ -111,6 +113,8 @@
     "detailSubtitle": "Besitzer: {owner} • Koordinaten x={x}, y={y}",
     "detailSubtitleUnknown": "Warte auf Smart-Home-Metadaten.",
     "backToList": "Zurück zur Liste",
+    "backToDashboard": "Zurück zum Dashboard",
+    "eventHistory": "Ereignisse",
     "notFound": "Das angeforderte Smart-Home ist dem Webhost nicht bekannt.",
     "connection": "Verbindung",
     "ownerLabel": "Besitzer: {owner}",

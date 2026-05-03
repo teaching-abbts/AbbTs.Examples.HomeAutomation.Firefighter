@@ -4,11 +4,7 @@
       <v-layout class="dashboard-layout">
         <v-app-bar class="px-6" color="surface" elevation="0">
           <v-app-bar-title class="d-flex align-center ga-2 text-h6">
-            <span>{{ t("dashboard.title") }}</span>
-            <v-progress-circular v-if="loading" color="primary" indeterminate />
-            <span v-if="loading" class="text-caption">{{
-              t("dashboard.loading")
-            }}</span>
+            <span>{{ t(currentAppBarTitleKey) }}</span>
           </v-app-bar-title>
           <v-btn
             :color="isActiveRoute(item.path) ? 'primary' : 'default'"
@@ -34,8 +30,6 @@
 <script lang="ts" setup>
 import LanguageSwitcher from "@/components/dashboard/LanguageSwitcher.vue";
 import ThemeSwitcher from "@/components/dashboard/ThemeSwitcher.vue";
-import { storeToRefs } from "pinia";
-import { useHouseDetailsStore } from "@/stores/houseDetails";
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -43,9 +37,6 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n({ useScope: "global" });
 const router = useRouter();
 const route = useRoute();
-const houseDetailsStore = useHouseDetailsStore();
-
-const { loading } = storeToRefs(houseDetailsStore);
 
 type AppBarNavItem = {
   path: string;
@@ -72,11 +63,18 @@ const appBarNavItems = computed<AppBarNavItem[]>(() => {
     .sort((left, right) => left.order - right.order);
 });
 
-const isActiveRoute = (targetPath: string): boolean => {
+function isActiveRoute(targetPath: string): boolean {
   if (targetPath === "/") {
     return route.path === "/";
   }
 
   return route.path === targetPath || route.path.startsWith(`${targetPath}/`);
-};
+}
+
+const currentAppBarTitleKey = computed(() => {
+  return (
+    appBarNavItems.value.find((item) => isActiveRoute(item.path))?.labelKey ??
+    "dashboard.title"
+  );
+});
 </script>

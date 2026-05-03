@@ -1,7 +1,9 @@
 {
   "dashboard": {
     "nav": "Dashboard",
+    "badge": "Operations overview",
     "title": "Firefighter Dashboard",
+    "subtitle": "Live events and actions for situational awareness across the smart-home district.",
     "loading": "Loading...",
     "sections": {
       "events": "Events",
@@ -111,6 +113,8 @@
     "detailSubtitle": "Owner: {owner} • Coordinates x={x}, y={y}",
     "detailSubtitleUnknown": "Waiting for smart-home metadata.",
     "backToList": "Back to list",
+    "backToDashboard": "Back to dashboard",
+    "eventHistory": "Events",
     "notFound": "The requested smart-home is not known by the webhost.",
     "connection": "Connection",
     "ownerLabel": "Owner: {owner}",

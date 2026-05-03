@@ -1,7 +1,9 @@
 {
     "dashboard": {
         "nav": "Irányítópult",
+        "badge": "Műveleti áttekintés",
         "title": "Tűzoltói irányítópult",
+        "subtitle": "Élő események és műveletek a helyzetképhez az okosotthon negyedben.",
         "loading": "Betöltés...",
         "sections": {
             "events": "Események",
@@ -111,6 +113,8 @@
         "detailSubtitle": "Tulajdonos: {owner} • Koordináták x={x}, y={y}",
         "detailSubtitleUnknown": "Várakozás az okosotthon metaadataira.",
         "backToList": "Vissza a listához",
+        "backToDashboard": "Vissza az irányítópultra",
+        "eventHistory": "Események",
         "notFound": "A kért okosotthon nem ismert a webhost számára.",
         "connection": "Kapcsolat",
         "ownerLabel": "Tulajdonos: {owner}",

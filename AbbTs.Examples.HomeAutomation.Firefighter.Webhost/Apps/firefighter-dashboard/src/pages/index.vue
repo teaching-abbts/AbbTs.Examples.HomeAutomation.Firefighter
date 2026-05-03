@@ -2,6 +2,20 @@
   <div class="dashboard-page mt-10">
     <EventsSidebar :events="sidebarEvents" />
     <div class="dashboard-content">
+      <v-row class="mb-4" justify="space-between" align="center">
+        <v-col cols="12" md="8">
+          <div class="text-overline text-primary">
+            {{ t("dashboard.badge") }}
+          </div>
+          <h1 class="text-h4 font-weight-bold mb-2">
+            {{ t("dashboard.title") }}
+          </h1>
+          <p class="text-body-1 text-medium-emphasis mb-0">
+            {{ t("dashboard.subtitle") }}
+          </p>
+        </v-col>
+      </v-row>
+
       <v-alert
         v-if="smartHomesError"
         class="mb-4"
@@ -16,6 +30,7 @@
           <SmartHomesLandscape
             :homes="smartHomes"
             :title="t('smartHomes.landscapeTitle')"
+            :house-colors="houseAlertColors"
             @select="openSmartHomeDetails"
           />
         </v-col>
@@ -36,7 +51,6 @@
         </v-col>
       </v-row>
     </div>
-    <HouseDetailsDialog />
     <ActionsSidebar :actions="actions" @toggle-action="toggleAction" />
   </div>
 </template>
@@ -46,18 +60,40 @@ import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { Client } from "@/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost";
 import ActionsSidebar from "@/components/dashboard/ActionsSidebar.vue";
 import EventsSidebar from "@/components/dashboard/EventsSidebar.vue";
-import HouseDetailsDialog from "@/components/dashboard/HouseDetailsDialog.vue";
 import SmartHomeCard from "@/components/smart-homes/SmartHomeCard.vue";
 import SmartHomesLandscape from "@/components/smart-homes/SmartHomesLandscape.vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useHouseDetailsStore } from "@/stores/houseDetails";
 import type { SmartHomeSummary } from "@/types/smartHomes";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n({ useScope: "global" });
+const router = useRouter();
 const houseDetailsStore = useHouseDetailsStore();
 const sidebarEvents = computed(() => houseDetailsStore.sidebarEvents);
 const actions = computed(() => houseDetailsStore.actions);
+
+const COLOR_PRIORITY: Record<string, number> = {
+  "#c62828": 4, // endangeredLives
+  "#F44336": 3, // fire
+  "#FFEB3B": 2, // gas
+  "#FF9800": 1, // observe
+};
+
+const houseAlertColors = computed(() => {
+  const result: Record<number, string> = {};
+  const bestPriority: Record<number, number> = {};
+  for (const action of actions.value) {
+    if (action.state !== "open") continue;
+    const prio = COLOR_PRIORITY[action.color] ?? 0;
+    if (prio > (bestPriority[action.houseNumber] ?? 0)) {
+      bestPriority[action.houseNumber] = prio;
+      result[action.houseNumber] = action.color;
+    }
+  }
+  return result;
+});
 
 const smartHomes = ref<SmartHomeSummary[]>([]);
 const smartHomesError = ref("");
@@ -93,15 +129,6 @@ const loadSmartHomes = async () => {
   }
 };
 
-const extractHouseNumber = (smartHomeId: string): number | null => {
-  const match = smartHomeId.match(/\d+/);
-  if (!match) {
-    return null;
-  }
-
-  return Number.parseInt(match[0], 10);
-};
-
 onMounted(async () => {
   await houseDetailsStore.fetchHistory();
   await houseDetailsStore.startLiveUpdates();
@@ -130,12 +157,7 @@ onUnmounted(async () => {
 });
 
 const openSmartHomeDetails = (smartHomeId: string) => {
-  const houseNumber = extractHouseNumber(smartHomeId);
-  if (houseNumber === null || Number.isNaN(houseNumber)) {
-    return;
-  }
-
-  houseDetailsStore.open(houseNumber);
+  router.push(`/smart-homes/${encodeURIComponent(smartHomeId)}`);
 };
 
 const toggleAction = (actionKey: string) => {

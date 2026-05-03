@@ -1,7 +1,9 @@
 {
     "dashboard": {
         "nav": "Pannello",
+        "badge": "Panoramica operativa",
         "title": "Pannello Vigili del Fuoco",
+        "subtitle": "Eventi e azioni in tempo reale per la consapevolezza situazionale nel quartiere smart-home.",
         "loading": "Caricamento...",
         "sections": {
             "events": "Eventi",
@@ -111,6 +113,8 @@
         "detailSubtitle": "Proprietario: {owner} • Coordinate x={x}, y={y}",
         "detailSubtitleUnknown": "In attesa di metadati della casa intelligente.",
         "backToList": "Torna all'elenco",
+        "backToDashboard": "Torna alla dashboard",
+        "eventHistory": "Eventi",
         "notFound": "La casa intelligente richiesta non è nota all'host web.",
         "connection": "Connessione",
         "ownerLabel": "Proprietario: {owner}",

@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer
     class="sidebar-fill"
-    :style="{ backgroundColor: '#8fb1d5' }"
+    color="surface-variant"
     permanent
     width="260"
   >

@@ -28,7 +28,7 @@
             v-for="home in positionedHomes"
             :key="home.id"
             :position="[home.sceneX, 0.6, home.sceneZ]"
-            :color="home.isConnected ? '#2e7d32' : '#F44336'"
+            :color="houseColor(home)"
             :is-connected="home.isConnected"
             :house-name="home.id"
             @select="emit('select', home.id)"
@@ -49,11 +49,22 @@ import { computed } from "vue";
 const props = defineProps<{
   homes: SmartHomeSummary[];
   title: string;
+  houseColors?: Record<number, string>;
 }>();
 
 const emit = defineEmits<{
   select: [smartHomeId: string];
 }>();
+
+const houseColor = (home: PositionedHome): string => {
+  const match = home.id.match(/\d+/);
+  if (match && props.houseColors) {
+    const num = Number.parseInt(match[0], 10);
+    const alertColor = props.houseColors[num];
+    if (alertColor) return alertColor;
+  }
+  return home.isConnected ? "#2e7d32" : "#F44336";
+};
 
 type PositionedHome = SmartHomeSummary & {
   sceneX: number;

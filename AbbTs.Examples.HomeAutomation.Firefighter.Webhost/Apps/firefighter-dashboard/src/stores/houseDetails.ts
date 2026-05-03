@@ -32,8 +32,8 @@ const EVENT_ICON_BY_TYPE: Record<AlertType, string> = {
 };
 
 const EVENT_COLOR_BY_TYPE: Record<AlertType, string> = {
-  fire: "#ed8936",
-  gas: "#facc15",
+  fire: "#F44336",
+  gas: "#FFEB3B",
   motion: "#8fd3ff",
 };
 
@@ -51,9 +51,9 @@ const ACTION_TITLE_BY_TYPE: Record<ActionAlertType, string> = {
 };
 
 const ACTION_COLOR_BY_TYPE: Record<ActionAlertType, string> = {
-  fire: "#f07f2f",
-  gas: "#facc15",
-  observe: "#6f42c1",
+  fire: "#F44336",
+  gas: "#FFEB3B",
+  observe: "#FF9800",
   endangeredLives: "#c62828",
 };
 
