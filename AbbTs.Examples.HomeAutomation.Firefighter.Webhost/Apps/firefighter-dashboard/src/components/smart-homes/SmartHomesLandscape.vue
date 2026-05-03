@@ -24,18 +24,14 @@
             <TresMeshStandardMaterial color="#b7c9d8" />
           </TresMesh>
 
-          <TresMesh
+          <House
             v-for="home in positionedHomes"
             :key="home.id"
             :position="[home.sceneX, 0.6, home.sceneZ]"
-            cast-shadow
-            @click="emit('select', home.id)"
-          >
-            <TresBoxGeometry :args="[1.8, 1.2, 1.8]" />
-            <TresMeshStandardMaterial
-              :color="home.isConnected ? '#2e7d32' : '#f57c00'"
-            />
-          </TresMesh>
+            :color="home.isConnected ? '#2e7d32' : '#f57c00'"
+            :is-connected="home.isConnected"
+            @select="emit('select', home.id)"
+          />
         </TresCanvas>
       </div>
     </v-card-text>
@@ -44,6 +40,7 @@
 
 <script lang="ts" setup>
 import Camera from "./SmartHomesLandscape/Camera.vue";
+import House from "./SmartHomesLandscape/House.vue";
 import type { SmartHomeSummary } from "@/types/smartHomes";
 import { TresCanvas } from "@tresjs/core";
 import { computed } from "vue";
