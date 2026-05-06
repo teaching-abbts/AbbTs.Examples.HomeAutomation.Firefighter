@@ -24,32 +24,41 @@
       >
         {{ smartHomesError }}
       </v-alert>
-
-      <v-row v-if="smartHomes.length > 0" class="mb-2">
-        <v-col cols="12">
-          <SmartHomesLandscape
-            :homes="smartHomes"
-            :title="t('smartHomes.landscapeTitle')"
-            :house-colors="houseAlertColors"
-            @select="openSmartHomeDetails"
-          />
-        </v-col>
-      </v-row>
-
-      <v-row v-if="smartHomes.length > 0">
-        <v-col
-          v-for="smartHome in smartHomes"
-          :key="smartHome.id"
-          cols="12"
-          md="6"
-          xl="4"
-        >
-          <SmartHomeCard
-            :summary="smartHome"
-            @select="openSmartHomeDetails(smartHome.id)"
-          />
-        </v-col>
-      </v-row>
+      <v-tabs v-model="landscapeView" color="primary">
+        <v-tab v-for="view in views" :key="view" :value="view">{{
+          view
+        }}</v-tab>
+      </v-tabs>
+      <v-tabs-window v-model="landscapeView">
+        <v-tabs-window-item value="3d">
+          <v-row v-if="smartHomes.length > 0" class="mb-2">
+            <v-col cols="12">
+              <SmartHomesLandscape
+                :homes="smartHomes"
+                :title="t('smartHomes.landscapeTitle')"
+                :house-colors="houseAlertColors"
+                @select="openSmartHomeDetails"
+              />
+            </v-col>
+          </v-row>
+        </v-tabs-window-item>
+        <v-tabs-window-item value="2d">
+          <v-row v-if="smartHomes.length > 0" class="ma-2">
+            <v-col
+              v-for="smartHome in smartHomes"
+              :key="smartHome.id"
+              cols="12"
+              md="6"
+              xl="4"
+            >
+              <SmartHomeCard
+                :summary="smartHome"
+                @select="openSmartHomeDetails(smartHome.id)"
+              />
+            </v-col>
+          </v-row>
+        </v-tabs-window-item>
+      </v-tabs-window>
     </div>
     <ActionsSidebar :actions="actions" @toggle-action="toggleAction" />
   </div>
@@ -74,8 +83,12 @@ const houseDetailsStore = useHouseDetailsStore();
 const sidebarEvents = computed(() => houseDetailsStore.sidebarEvents);
 const actions = computed(() => houseDetailsStore.actions);
 
+const views = ["2d", "3d"];
+
+const landscapeView = ref(views[0]);
+
 const COLOR_PRIORITY: Record<string, number> = {
-  "#c62828": 4, // endangeredLives
+  "#C62828": 4, // endangeredLives
   "#F44336": 3, // fire
   "#FFEB3B": 2, // gas
   "#FF9800": 1, // observe
