@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer
     class="sidebar-fill"
-    :style="{ backgroundColor: '#8fb1d5' }"
+    color="surface-variant"
     location="right"
     permanent
     width="300"
@@ -35,6 +35,18 @@
           <v-card-subtitle :style="{ color: action.textColor, opacity: 1 }">{{
             t("dashboard.houseName", { id: action.houseNumber })
           }}</v-card-subtitle>
+          <div class="text-body-2 mt-1" :style="{ color: action.textColor }">
+            <strong>{{ t("dashboard.actions.createdAt") }}:</strong>
+            {{ formatActionTimestamp(action.openedAt) }}
+          </div>
+          <div class="text-body-2" :style="{ color: action.textColor }">
+            <strong>{{ t("dashboard.actions.resolvedAt") }}:</strong>
+            {{
+              action.closedAt
+                ? formatActionTimestamp(action.closedAt)
+                : t("dashboard.actions.notResolved")
+            }}
+          </div>
           <v-chip
             v-if="!showOnlyOpenActions"
             class="mt-2"
@@ -67,39 +79,6 @@
           >
         </v-card-actions>
       </v-card>
-
-      <v-card
-        rounded="lg"
-        :style="{ backgroundColor: '#5aa1dc' }"
-        variant="flat"
-      >
-        <v-card-title :style="{ color: '#ffffff' }">{{
-          t("dashboard.actions.observe")
-        }}</v-card-title>
-        <v-list class="pt-0" density="comfortable">
-          <v-list-item
-            v-for="house in observedHouses"
-            :key="house.id"
-            class="mb-2 rounded-lg"
-            :style="{ backgroundColor: '#b0b4b8', color: '#ffffff' }"
-            :title="t('dashboard.houseName', { id: house.number })"
-          >
-            <template #append>
-              <v-checkbox-btn
-                :model-value="house.active"
-                color="success"
-                hide-details
-                @update:model-value="
-                  emit('toggle-observed-house', {
-                    houseNumber: house.number,
-                    observed: Boolean($event),
-                  })
-                "
-              />
-            </template>
-          </v-list-item>
-        </v-list>
-      </v-card>
     </div>
   </v-navigation-drawer>
 </template>
@@ -109,19 +88,15 @@ import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 
-import type { ActionItem, ObservedHouseItem } from "./types";
+import type { ActionItem } from "./types";
 import { useAppStore } from "@/stores/app";
 
 const props = defineProps<{
   actions: ActionItem[];
-  observedHouses: ObservedHouseItem[];
 }>();
 
 const emit = defineEmits<{
   "toggle-action": [actionKey: string];
-  "toggle-observed-house": [
-    payload: { houseNumber: number; observed: boolean },
-  ];
 }>();
 
 const { t } = useI18n();
@@ -136,6 +111,16 @@ const showOnlyOpenActions = computed({
 const filteredActions = computed(() => {
   return props.actions;
 });
+
+const formatActionTimestamp = (timestamp: number) => {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(timestamp));
+};
 </script>
 
 <style scoped>

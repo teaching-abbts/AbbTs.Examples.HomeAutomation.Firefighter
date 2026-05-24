@@ -14,11 +14,11 @@
       </v-col>
       <v-col cols="12" md="4" class="d-flex justify-md-end ga-2 flex-wrap">
         <v-btn
-          prepend-icon="mdi-home-group"
-          to="/smart-homes"
+          prepend-icon="mdi-view-dashboard"
           variant="outlined"
+          @click="router.back()"
         >
-          {{ t("smartHomes.backToList") }}
+          {{ t("smartHomes.backToDashboard") }}
         </v-btn>
       </v-col>
     </v-row>
@@ -128,45 +128,87 @@
 
       <v-col cols="12" lg="7">
         <v-card rounded="xl" class="log-card">
-          <v-card-title class="d-flex align-center justify-space-between">
-            <span>{{ t("smartHomes.liveLog") }}</span>
+          <div class="d-flex align-center">
+            <v-tabs v-model="activeTab" grow>
+              <v-tab value="log">{{ t("smartHomes.liveLog") }}</v-tab>
+              <v-tab value="events">{{ t("smartHomes.eventHistory") }}</v-tab>
+            </v-tabs>
             <v-btn
+              v-if="activeTab === 'log'"
               :title="t('smartHomes.clear')"
               icon="mdi-delete-outline"
               size="small"
               variant="text"
+              class="mr-2"
               @click="clearMessages()"
             />
-          </v-card-title>
+          </div>
           <v-divider />
-          <v-card-text class="log-area">
-            <v-alert v-if="messages.length === 0" type="info" variant="tonal">
-              {{ t("smartHomes.noMessages") }}
-            </v-alert>
-
-            <v-sheet
-              v-for="(item, index) in messages"
-              :key="`${item.receivedAtUtc ?? 'na'}-${item.messageType}-${index}`"
-              class="pa-3 mb-3 rounded-lg"
-              color="surface-variant"
-            >
-              <div class="d-flex align-center justify-space-between mb-1">
-                <v-chip
-                  size="x-small"
-                  variant="flat"
-                  :color="chipColor(item.messageType)"
+          <v-window v-model="activeTab">
+            <v-window-item value="log">
+              <v-card-text class="log-area">
+                <v-alert
+                  v-if="messages.length === 0"
+                  type="info"
+                  variant="tonal"
                 >
-                  {{ item.messageType }}
-                </v-chip>
-                <span class="text-caption">{{
-                  formatTimestamp(item.receivedAtUtc)
-                }}</span>
-              </div>
-              <pre class="text-caption code-block">{{
-                formatPayload(item.payload)
-              }}</pre>
-            </v-sheet>
-          </v-card-text>
+                  {{ t("smartHomes.noMessages") }}
+                </v-alert>
+
+                <v-sheet
+                  v-for="(item, index) in messages"
+                  :key="`${item.receivedAtUtc ?? 'na'}-${item.messageType}-${index}`"
+                  class="pa-3 mb-3 rounded-lg"
+                  color="surface-variant"
+                >
+                  <div class="d-flex align-center justify-space-between mb-1">
+                    <v-chip
+                      size="x-small"
+                      variant="flat"
+                      :color="chipColor(item.messageType)"
+                    >
+                      {{ item.messageType }}
+                    </v-chip>
+                    <span class="text-caption">{{
+                      formatTimestamp(item.receivedAtUtc)
+                    }}</span>
+                  </div>
+                  <pre class="text-caption code-block">{{
+                    formatPayload(item.payload)
+                  }}</pre>
+                </v-sheet>
+              </v-card-text>
+            </v-window-item>
+
+            <v-window-item value="events">
+              <v-card-text>
+                <v-progress-linear
+                  v-if="eventsLoading"
+                  color="primary"
+                  indeterminate
+                  rounded
+                />
+                <v-alert
+                  v-else-if="eventsError"
+                  class="mb-3"
+                  type="error"
+                  variant="tonal"
+                >
+                  {{ t("dashboard.houseDetails.error") }}
+                </v-alert>
+                <v-data-table-virtual
+                  v-else
+                  :headers="eventTableHeaders"
+                  :items="eventTableItems"
+                  class="history-table"
+                  density="comfortable"
+                  height="360"
+                  item-value="id"
+                  :no-data-text="t('dashboard.houseDetails.noData')"
+                />
+              </v-card-text>
+            </v-window-item>
+          </v-window>
         </v-card>
       </v-col>
     </v-row>
@@ -180,7 +222,8 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { useHouseDetailsStore } from "@/stores/houseDetails";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -209,7 +252,15 @@ const commandMap: Record<string, string[]> = {
 };
 
 const route = useRoute();
-const { t } = useI18n({ useScope: "global" });
+const router = useRouter();
+const { locale, t, te } = useI18n({ useScope: "global" });
+
+const eventsStore = useHouseDetailsStore();
+const eventsLoading = computed(() => eventsStore.loading);
+const eventsError = computed(() => eventsStore.error);
+const selectedHouseEvents = computed(() => eventsStore.selectedHouseEvents);
+
+const activeTab = ref("log");
 
 const detail = ref<SmartHomeDetails | null>(null);
 const hubConnected = ref(false);
@@ -401,6 +452,54 @@ const sendCommand = async () => {
   }
 };
 
+const houseNumberFromId = computed(() => {
+  const match = smartHomeId.value.match(/\d+/);
+  return match ? Number.parseInt(match[0], 10) : null;
+});
+
+const sortedHouseEvents = computed(() =>
+  [...selectedHouseEvents.value].sort((a, b) => {
+    const aMs = a.timeStamp ? a.timeStamp.getTime() : 0;
+    const bMs = b.timeStamp ? b.timeStamp.getTime() : 0;
+    return bMs - aMs;
+  }),
+);
+
+const eventTableHeaders = computed(() => [
+  { title: t("dashboard.houseDetails.timestamp"), key: "timestamp" },
+  { title: t("dashboard.houseDetails.type"), key: "type" },
+  { title: t("dashboard.houseDetails.details"), key: "details" },
+]);
+
+const formatEventType = (type: string | undefined) => {
+  if (!type) return "...";
+  const key = `dashboard.events.${type.trim().toLowerCase()}`;
+  return te(key) ? t(key) : type;
+};
+
+const formatEventTimestamp = (timeStamp: Date | undefined) => {
+  if (!timeStamp) return "...";
+  return new Intl.DateTimeFormat(locale.value, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(timeStamp);
+};
+
+const eventTableItems = computed(() =>
+  sortedHouseEvents.value.map((event, index) => {
+    const ts = event.timeStamp?.toISOString() ?? "na";
+    return {
+      id: `${ts}-${event.type ?? "unknown"}-${index}`,
+      timestamp: formatEventTimestamp(event.timeStamp),
+      type: formatEventType(event.type),
+      details: event.data || "...",
+    };
+  }),
+);
+
 const clearMessages = () => {
   if (!detail.value) {
     return;
@@ -442,14 +541,22 @@ const formatPayload = (payload: unknown) => {
 
 onMounted(async () => {
   await initializePage();
+  if (houseNumberFromId.value !== null) {
+    eventsStore.open(houseNumberFromId.value);
+  }
+  await eventsStore.startLiveUpdates();
 });
 
 onUnmounted(() => {
   void disconnectHub();
+  eventsStore.stopLiveUpdates();
 });
 
 watch(smartHomeId, async () => {
   await initializePage();
+  if (houseNumberFromId.value !== null) {
+    eventsStore.open(houseNumberFromId.value);
+  }
 });
 </script>
 

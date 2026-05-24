@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Threading.Tasks;
 
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Models;
 
@@ -8,61 +9,67 @@ namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Servic
 
 public sealed class SmartHomeHub(ISmartHomeGateway gateway) : Hub
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
-    public const string DashboardGroupName = "dashboard:history";
+  private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+  public const string DashboardGroupName = "dashboard:history";
 
-    public static string GetGroupName(string smartHomeId) => $"smart-home:{smartHomeId}";
+  public static string GetGroupName(string smartHomeId) => $"smart-home:{smartHomeId}";
 
-    public async Task Subscribe(string smartHomeId)
+  public async Task Subscribe(string smartHomeId)
+  {
+    await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(smartHomeId));
+
+    var snapshot = await gateway.GetSmartHomeAsync(smartHomeId, Context.ConnectionAborted);
+    if (snapshot is not null)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(smartHomeId));
-
-        var snapshot = await gateway.GetSmartHomeAsync(smartHomeId, Context.ConnectionAborted);
-        if (snapshot is not null)
-        {
-            await Clients.Caller.SendAsync("smartHomeUpdated", snapshot, Context.ConnectionAborted);
-        }
+      await Clients.Caller.SendAsync("smartHomeUpdated", snapshot, Context.ConnectionAborted);
     }
+  }
 
-    public Task Unsubscribe(string smartHomeId)
-    {
-        return Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(smartHomeId));
-    }
+  public Task Unsubscribe(string smartHomeId)
+  {
+    return Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(smartHomeId));
+  }
 
-    public async Task SubscribeDashboardHistory()
-    {
-        await Groups.AddToGroupAsync(Context.ConnectionId, DashboardGroupName);
+  public async Task SubscribeDashboardHistory()
+  {
+    await Groups.AddToGroupAsync(Context.ConnectionId, DashboardGroupName);
 
-        var snapshot = await gateway.GetDashboardHistoryAsync(Context.ConnectionAborted);
-        await Clients.Caller.SendAsync("historyUpdated", snapshot, Context.ConnectionAborted);
-    }
+    var snapshot = await gateway.GetDashboardHistoryAsync(Context.ConnectionAborted);
+    await Clients.Caller.SendAsync("historyUpdated", snapshot, Context.ConnectionAborted);
+  }
 
-    public Task UnsubscribeDashboardHistory()
-    {
-        return Groups.RemoveFromGroupAsync(Context.ConnectionId, DashboardGroupName);
-    }
+  public Task UnsubscribeDashboardHistory()
+  {
+    return Groups.RemoveFromGroupAsync(Context.ConnectionId, DashboardGroupName);
+  }
 
-    public Task RequestState(string smartHomeId)
-    {
-        return gateway.SendDashboardCommandAsync(
-            smartHomeId,
-            new SmartHomeDashboardCommand("get state", null),
-            Context.ConnectionAborted);
-    }
+  public Task RequestState(string smartHomeId)
+  {
+    return gateway.SendDashboardCommandAsync(
+      smartHomeId,
+      new SmartHomeDashboardCommand("get state", null),
+      Context.ConnectionAborted
+    );
+  }
 
-    public Task RequestMeasurement(string smartHomeId)
-    {
-        return gateway.SendDashboardCommandAsync(
-            smartHomeId,
-            new SmartHomeDashboardCommand("get measurement", null),
-            Context.ConnectionAborted);
-    }
+  public Task RequestMeasurement(string smartHomeId)
+  {
+    return gateway.SendDashboardCommandAsync(
+      smartHomeId,
+      new SmartHomeDashboardCommand("get measurement", null),
+      Context.ConnectionAborted
+    );
+  }
 
-    public Task SendCommand(string smartHomeId, SmartHomeCommand command)
-    {
-        return gateway.SendDashboardCommandAsync(
-            smartHomeId,
-            new SmartHomeDashboardCommand("send command", JsonSerializer.SerializeToElement(command, JsonOptions)),
-            Context.ConnectionAborted);
-    }
+  public Task SendCommand(string smartHomeId, SmartHomeCommand command)
+  {
+    return gateway.SendDashboardCommandAsync(
+      smartHomeId,
+      new SmartHomeDashboardCommand(
+        "send command",
+        JsonSerializer.SerializeToElement(command, JsonOptions)
+      ),
+      Context.ConnectionAborted
+    );
+  }
 }

@@ -4,5 +4,6 @@
   ],
   "i18n-ally.localesPaths": [
     "AbbTs.Examples.HomeAutomation.Firefighter.Webhost/Apps/firefighter-dashboard/src/i18n"
-  ]
+  ],
+  "i18n-ally.keystyle": "nested"
 }

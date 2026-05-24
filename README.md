@@ -91,6 +91,10 @@ Use the root script to start all required local processes:
 ./run.ps1 -Action start
 ```
 
+```bash
+./run.sh --action start
+```
+
 This starts:
 
 - `smart-lodge/.assets/SmartHome/SmartHome.jar` (multiple instances based on config)
@@ -116,7 +120,48 @@ Status and shutdown:
 ./run.ps1 -Action stop
 ```
 
+```bash
+./run.sh --action status
+./run.sh --action stop
+```
+
 The stop action first tries graceful window close (where supported), then force-terminates remaining processes.
+
+## Artifact Build and Runtime
+
+Build runtime artifacts into `.artifacts`:
+
+```powershell
+./build.ps1 --target Artifacts-Build
+```
+
+```bash
+./build.sh --target Artifacts-Build
+```
+
+The `.artifacts` folder contains:
+
+- `webhost` (published ASP.NET Core app via `dotnet publish`)
+- `DataService` (copied from `smart-lodge/.assets/DataService`)
+- `SmartHome` (copied from `smart-lodge/.assets/SmartHome`)
+- `build/smart-homes.json` (runtime smart-home instance config)
+- `run.ps1` and `run.sh` (artifact runtime wrappers)
+
+Run the artifact runtime (from repo root):
+
+```powershell
+./run.ps1 -Mode artifacts -Action start
+./run.ps1 -Mode artifacts -Action status
+./run.ps1 -Mode artifacts -Action stop
+```
+
+```bash
+./run.sh --mode artifacts --action start
+./run.sh --mode artifacts --action status
+./run.sh --mode artifacts --action stop
+```
+
+The same scripts can also be executed from inside `.artifacts`.
 
 ## Optional Tilt Workflow
 

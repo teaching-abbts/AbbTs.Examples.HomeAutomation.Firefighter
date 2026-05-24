@@ -13,12 +13,7 @@
             :position="[8, 14, 10]"
             cast-shadow
           />
-          <TresPerspectiveCamera
-            make-default
-            :position="[0, 18, 20]"
-            :fov="45"
-            :look-at="[0, 0, 0]"
-          />
+          <Camera />
 
           <TresMesh
             :position="[0, -0.05, 0]"
@@ -29,51 +24,47 @@
             <TresMeshStandardMaterial color="#b7c9d8" />
           </TresMesh>
 
-          <TresMesh
+          <House
             v-for="home in positionedHomes"
             :key="home.id"
             :position="[home.sceneX, 0.6, home.sceneZ]"
-            cast-shadow
-            @click="emit('select', home.id)"
-          >
-            <TresBoxGeometry :args="[1.8, 1.2, 1.8]" />
-            <TresMeshStandardMaterial
-              :color="home.isConnected ? '#2e7d32' : '#f57c00'"
-            />
-          </TresMesh>
+            :color="houseColor(home)"
+            :is-connected="home.isConnected"
+            :house-name="home.id"
+            @select="emit('select', home.id)"
+          />
         </TresCanvas>
-      </div>
-
-      <div class="d-flex flex-wrap ga-2 mt-4">
-        <v-chip
-          v-for="home in homes"
-          :key="home.id"
-          :color="home.isConnected ? 'success' : 'warning'"
-          size="small"
-          variant="flat"
-          @click="emit('select', home.id)"
-        >
-          {{ home.id }}
-        </v-chip>
       </div>
     </v-card-text>
   </v-card>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
-import { TresCanvas } from "@tresjs/core";
-
+import Camera from "./SmartHomesLandscape/Camera.vue";
+import House from "./SmartHomesLandscape/House.vue";
 import type { SmartHomeSummary } from "@/types/smartHomes";
+import { TresCanvas } from "@tresjs/core";
+import { computed } from "vue";
 
 const props = defineProps<{
   homes: SmartHomeSummary[];
   title: string;
+  houseColors?: Record<number, string>;
 }>();
 
 const emit = defineEmits<{
   select: [smartHomeId: string];
 }>();
+
+const houseColor = (home: PositionedHome): string => {
+  const match = home.id.match(/\d+/);
+  if (match && props.houseColors) {
+    const num = Number.parseInt(match[0], 10);
+    const alertColor = props.houseColors[num];
+    if (alertColor) return alertColor;
+  }
+  return home.isConnected ? "#2e7d32" : "#F44336";
+};
 
 type PositionedHome = SmartHomeSummary & {
   sceneX: number;

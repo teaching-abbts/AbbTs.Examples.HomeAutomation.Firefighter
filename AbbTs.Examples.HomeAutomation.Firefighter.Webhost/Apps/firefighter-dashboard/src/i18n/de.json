@@ -1,7 +1,9 @@
 {
   "dashboard": {
     "nav": "Dashboard",
+    "badge": "Lageübersicht",
     "title": "Feuerwehr-Dashboard",
+    "subtitle": "Live-Ereignisse und Aktionen zur Lagebeurteilung im Smart-Home-Quartier.",
     "loading": "Lädt...",
     "sections": {
       "events": "Ereignisse",
@@ -27,19 +29,25 @@
     },
     "actions": {
       "extinguishFire": "Brandlöschung",
-      "openDoors": "Türen öffnen",
+      "openDoors": "Lüften",
       "execute": "Ausführen",
       "observe": "Beobachten",
+      "endangeredLives": "Menschenleben gefährdet",
       "open": "Offen",
       "done": "Erledigt",
       "markDone": "Als erledigt markieren",
       "reopen": "Wieder öffnen",
-      "onlyOpen": "Nur offene Aktionen"
+      "onlyOpen": "Nur offene Aktionen",
+      "createdAt": "Erstellt am",
+      "resolvedAt": "Erledigt am",
+      "notResolved": "Noch offen"
     },
     "language": {
       "label": "Sprache",
       "german": "Deutsch",
       "english": "English",
+      "hungarian": "Ungarisch (Magyar)",
+      "italian": "Italiano",
       "japanese": "日本語"
     },
     "theme": {
@@ -105,6 +113,8 @@
     "detailSubtitle": "Besitzer: {owner} • Koordinaten x={x}, y={y}",
     "detailSubtitleUnknown": "Warte auf Smart-Home-Metadaten.",
     "backToList": "Zurück zur Liste",
+    "backToDashboard": "Zurück zum Dashboard",
+    "eventHistory": "Ereignisse",
     "notFound": "Das angeforderte Smart-Home ist dem Webhost nicht bekannt.",
     "connection": "Verbindung",
     "ownerLabel": "Besitzer: {owner}",
@@ -124,6 +134,29 @@
     "noMessages": "Noch keine Nachrichten empfangen.",
     "loadDetailError": "Die Smart-Home-Details konnten nicht geladen werden.",
     "commandError": "Das Kommando konnte nicht zugestellt werden."
+  },
+  "settings": {
+    "nav": "Einstellungen",
+    "badge": "Konfiguration",
+    "title": "Dashboard-Einstellungen",
+    "subtitle": "Konfiguriere, wie automatische Beobachten-Aktionen erzeugt werden.",
+    "threshold": {
+      "title": "Nachbar-Feuerdistanz",
+      "description": "Eine Beobachten-Aktion wird erzeugt, wenn ein Nachbarhaus brennt und innerhalb dieser Distanz liegt.",
+      "label": "Distanzschwelle",
+      "sliderLabel": "Schwelle",
+      "current": "Aktuelle Schwelle: {value}"
+    },
+    "motionEscalation": {
+      "title": "Bewegungs-Hochstufung",
+      "description": "Hochstufung auf 'Menschenleben gefährdet', wenn Bewegung X-mal innerhalb des Zeitfensters nach Brand auftritt.",
+      "label": "Anzahl Bewegungen (X)",
+      "sliderLabel": "Bewegungsanzahl",
+      "current": "Aktueller Wert: {value}",
+      "windowLabel": "Zeitfenster in Minuten (Y)",
+      "windowSliderLabel": "Zeitfenster",
+      "windowCurrent": "Aktuelles Zeitfenster: {value} min"
+    }
   },
   "message": {
     "hello": "Hallo Welt"

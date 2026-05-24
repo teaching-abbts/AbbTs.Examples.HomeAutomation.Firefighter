@@ -2,6 +2,20 @@
   <div class="dashboard-page mt-10">
     <EventsSidebar :events="sidebarEvents" />
     <div class="dashboard-content">
+      <v-row class="mb-4" justify="space-between" align="center">
+        <v-col cols="12" md="8">
+          <div class="text-overline text-primary">
+            {{ t("dashboard.badge") }}
+          </div>
+          <h1 class="text-h4 font-weight-bold mb-2">
+            {{ t("dashboard.title") }}
+          </h1>
+          <p class="text-body-1 text-medium-emphasis mb-0">
+            {{ t("dashboard.subtitle") }}
+          </p>
+        </v-col>
+      </v-row>
+
       <v-alert
         v-if="smartHomesError"
         class="mb-4"
@@ -10,39 +24,43 @@
       >
         {{ smartHomesError }}
       </v-alert>
-
-      <v-row v-if="smartHomes.length > 0" class="mb-2">
-        <v-col cols="12">
-          <SmartHomesLandscape
-            :homes="smartHomes"
-            :title="t('smartHomes.landscapeTitle')"
-            @select="openSmartHomeDetails"
-          />
-        </v-col>
-      </v-row>
-
-      <v-row v-if="smartHomes.length > 0">
-        <v-col
-          v-for="smartHome in smartHomes"
-          :key="smartHome.id"
-          cols="12"
-          md="6"
-          xl="4"
-        >
-          <SmartHomeCard
-            :summary="smartHome"
-            @select="openSmartHomeDetails(smartHome.id)"
-          />
-        </v-col>
-      </v-row>
+      <v-tabs v-model="landscapeView" color="primary">
+        <v-tab v-for="view in views" :key="view" :value="view">{{
+          view
+        }}</v-tab>
+      </v-tabs>
+      <v-tabs-window v-model="landscapeView">
+        <v-tabs-window-item value="3d">
+          <v-row v-if="smartHomes.length > 0" class="mb-2">
+            <v-col cols="12">
+              <SmartHomesLandscape
+                :homes="smartHomes"
+                :title="t('smartHomes.landscapeTitle')"
+                :house-colors="houseAlertColors"
+                @select="openSmartHomeDetails"
+              />
+            </v-col>
+          </v-row>
+        </v-tabs-window-item>
+        <v-tabs-window-item value="2d">
+          <v-row v-if="smartHomes.length > 0" class="ma-2">
+            <v-col
+              v-for="smartHome in smartHomes"
+              :key="smartHome.id"
+              cols="12"
+              md="6"
+              xl="4"
+            >
+              <SmartHomeCard
+                :summary="smartHome"
+                @select="openSmartHomeDetails(smartHome.id)"
+              />
+            </v-col>
+          </v-row>
+        </v-tabs-window-item>
+      </v-tabs-window>
     </div>
-    <HouseDetailsDialog />
-    <ActionsSidebar
-      :actions="actions"
-      :observed-houses="observedHouses"
-      @toggle-action="toggleAction"
-      @toggle-observed-house="toggleObservedHouse"
-    />
+    <ActionsSidebar :actions="actions" @toggle-action="toggleAction" />
   </div>
 </template>
 
@@ -51,19 +69,44 @@ import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { Client } from "@/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost";
 import ActionsSidebar from "@/components/dashboard/ActionsSidebar.vue";
 import EventsSidebar from "@/components/dashboard/EventsSidebar.vue";
-import HouseDetailsDialog from "@/components/dashboard/HouseDetailsDialog.vue";
 import SmartHomeCard from "@/components/smart-homes/SmartHomeCard.vue";
 import SmartHomesLandscape from "@/components/smart-homes/SmartHomesLandscape.vue";
-import { onMounted, onUnmounted, ref } from "vue";
-import { storeToRefs } from "pinia";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useHouseDetailsStore } from "@/stores/houseDetails";
 import type { SmartHomeSummary } from "@/types/smartHomes";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n({ useScope: "global" });
+const router = useRouter();
 const houseDetailsStore = useHouseDetailsStore();
-const { observedHouses, sidebarEvents, actions } =
-  storeToRefs(houseDetailsStore);
+const sidebarEvents = computed(() => houseDetailsStore.sidebarEvents);
+const actions = computed(() => houseDetailsStore.actions);
+
+const views = ["2d", "3d"];
+
+const landscapeView = ref(views[0]);
+
+const COLOR_PRIORITY: Record<string, number> = {
+  "#C62828": 4, // endangeredLives
+  "#F44336": 3, // fire
+  "#FFEB3B": 2, // gas
+  "#FF9800": 1, // observe
+};
+
+const houseAlertColors = computed(() => {
+  const result: Record<number, string> = {};
+  const bestPriority: Record<number, number> = {};
+  for (const action of actions.value) {
+    if (action.state !== "open") continue;
+    const prio = COLOR_PRIORITY[action.color] ?? 0;
+    if (prio > (bestPriority[action.houseNumber] ?? 0)) {
+      bestPriority[action.houseNumber] = prio;
+      result[action.houseNumber] = action.color;
+    }
+  }
+  return result;
+});
 
 const smartHomes = ref<SmartHomeSummary[]>([]);
 const smartHomesError = ref("");
@@ -92,19 +135,11 @@ const loadSmartHomes = async () => {
   try {
     const response = await apiClient.getSmartHomes();
     smartHomes.value = mapSmartHomes((response ?? []) as SmartHomeSummary[]);
+    houseDetailsStore.setHouseCoordinates(smartHomes.value);
     smartHomesError.value = "";
   } catch {
     smartHomesError.value = t("smartHomes.loadError");
   }
-};
-
-const extractHouseNumber = (smartHomeId: string): number | null => {
-  const match = smartHomeId.match(/\d+/);
-  if (!match) {
-    return null;
-  }
-
-  return Number.parseInt(match[0], 10);
 };
 
 onMounted(async () => {
@@ -117,6 +152,7 @@ onMounted(async () => {
     "smartHomesChanged",
     (payload: SmartHomeSummary[]) => {
       smartHomes.value = mapSmartHomes(payload);
+      houseDetailsStore.setHouseCoordinates(smartHomes.value);
     },
   );
 
@@ -134,23 +170,11 @@ onUnmounted(async () => {
 });
 
 const openSmartHomeDetails = (smartHomeId: string) => {
-  const houseNumber = extractHouseNumber(smartHomeId);
-  if (houseNumber === null || Number.isNaN(houseNumber)) {
-    return;
-  }
-
-  houseDetailsStore.open(houseNumber);
+  router.push(`/smart-homes/${encodeURIComponent(smartHomeId)}`);
 };
 
 const toggleAction = (actionKey: string) => {
   houseDetailsStore.toggleActionState(actionKey);
-};
-
-const toggleObservedHouse = (payload: {
-  houseNumber: number;
-  observed: boolean;
-}) => {
-  houseDetailsStore.setHouseObserved(payload.houseNumber, payload.observed);
 };
 </script>
 

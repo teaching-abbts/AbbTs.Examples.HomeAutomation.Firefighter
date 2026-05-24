@@ -7,8 +7,8 @@
 // Composables
 import { createRouter, createWebHashHistory } from "vue-router";
 import Index from "@/pages/index.vue";
+import Settings from "@/pages/settings.vue";
 import SmartHomeDetail from "@/pages/smart-home-detail.vue";
-import SmartHomes from "@/pages/smart-homes.vue";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -36,18 +36,14 @@ const router = createRouter({
       },
     },
     {
-      path: "/smart-home",
-      redirect: "/smart-homes",
-    },
-    {
-      name: "smart-homes",
-      path: "/smart-homes",
-      component: SmartHomes,
+      name: "settings",
+      path: "/settings",
+      component: Settings,
       meta: {
         appBar: {
-          icon: "mdi-home-automation",
-          labelKey: "smartHomes.nav",
-          order: 20,
+          icon: "mdi-cog",
+          labelKey: "settings.nav",
+          order: 30,
         },
       },
     },

@@ -1,7 +1,9 @@
 {
   "dashboard": {
     "nav": "Dashboard",
+    "badge": "Operations overview",
     "title": "Firefighter Dashboard",
+    "subtitle": "Live events and actions for situational awareness across the smart-home district.",
     "loading": "Loading...",
     "sections": {
       "events": "Events",
@@ -30,16 +32,22 @@
       "openDoors": "Open doors",
       "execute": "Execute",
       "observe": "Observe",
+      "endangeredLives": "Lives endangered",
       "open": "Open",
       "done": "Done",
       "markDone": "Mark done",
       "reopen": "Reopen",
-      "onlyOpen": "Only open actions"
+      "onlyOpen": "Only open actions",
+      "createdAt": "Created at",
+      "resolvedAt": "Resolved at",
+      "notResolved": "Not resolved yet"
     },
     "language": {
       "label": "Language",
       "german": "Deutsch",
       "english": "English",
+      "hungarian": "Hungarian (Magyar)",
+      "italian": "Italiano",
       "japanese": "日本語"
     },
     "theme": {
@@ -105,6 +113,8 @@
     "detailSubtitle": "Owner: {owner} • Coordinates x={x}, y={y}",
     "detailSubtitleUnknown": "Waiting for smart-home metadata.",
     "backToList": "Back to list",
+    "backToDashboard": "Back to dashboard",
+    "eventHistory": "Events",
     "notFound": "The requested smart-home is not known by the webhost.",
     "connection": "Connection",
     "ownerLabel": "Owner: {owner}",
@@ -124,6 +134,29 @@
     "noMessages": "No messages received yet.",
     "loadDetailError": "The smart-home detail could not be loaded.",
     "commandError": "The command could not be delivered."
+  },
+  "settings": {
+    "nav": "Settings",
+    "badge": "Configuration",
+    "title": "Dashboard settings",
+    "subtitle": "Configure how automatic observe actions are generated.",
+    "threshold": {
+      "title": "Neighbor fire distance",
+      "description": "An Observe action is created when any neighboring house is on fire and within this distance.",
+      "label": "Distance threshold",
+      "sliderLabel": "Threshold",
+      "current": "Current threshold: {value}"
+    },
+    "motionEscalation": {
+      "title": "Motion escalation",
+      "description": "Escalate to 'Lives endangered' when motion occurs X times within the time window after a fire alert.",
+      "label": "Motion count (X)",
+      "sliderLabel": "Motion count",
+      "current": "Current value: {value}",
+      "windowLabel": "Time window in minutes (Y)",
+      "windowSliderLabel": "Time window",
+      "windowCurrent": "Current time window: {value} min"
+    }
   },
   "message": {
     "hello": "Hello world"

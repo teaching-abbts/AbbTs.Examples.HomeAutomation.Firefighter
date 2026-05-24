@@ -6,11 +6,15 @@
     <File Path="GitVersion.yaml" />
     <File Path="LICENSE" />
     <File Path="README.md" />
+    <File Path="Tiltfile" />
     <File Path="global.json" />
     <File Path="nuget.config" />
+    <File Path="run.ps1" />
+    <File Path="run.sh" />
   </Folder>
-  <Folder Name="/build/">
-    <Project Path="build/Build.csproj" />
+  <Project Path="build/Build.csproj" />
+  <Folder Name="/.global/.vscode/">
+    <File Path=".vscode/settings.json" />
   </Folder>
   <Project Path="AbbTs.Examples.HomeAutomation.Firefighter.Webhost/AbbTs.Examples.HomeAutomation.Firefighter.Webhost.csproj" />
 </Solution>

@@ -4,13 +4,19 @@ using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Models;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Actors.Messages;
 
-public sealed record ConnectSmartHomeSession(SmartHomeRegistration Registration, WebSocket WebSocket);
+public sealed record ConnectSmartHomeSession(
+  SmartHomeRegistration Registration,
+  WebSocket WebSocket
+);
 
 public sealed record RecordSmartHomeEnvelope(string SmartHomeId, SmartHomeGatewayEnvelope Envelope);
 
 public sealed record DisconnectSmartHomeSession(string SmartHomeId, WebSocket WebSocket);
 
-public sealed record SendSmartHomeDashboardCommand(string SmartHomeId, SmartHomeDashboardCommand Command);
+public sealed record SendSmartHomeDashboardCommand(
+  string SmartHomeId,
+  SmartHomeDashboardCommand Command
+);
 
 public sealed record GetSmartHomes;
 
@@ -28,22 +34,21 @@ public sealed record GetSmartQuartierHistory(int? RequestedEventLimit = null);
 
 public sealed record GetSmartQuartierStatistic;
 
-public sealed record ObserveSmartQuartierEnvelope(string SmartHomeId, SmartHomeGatewayEnvelope Envelope);
+public sealed record ObserveSmartQuartierEnvelope(
+  string SmartHomeId,
+  SmartHomeGatewayEnvelope Envelope
+);
 
 public sealed class InitializeSmartQuartierStatistics
 {
-    public static readonly InitializeSmartQuartierStatistics Instance = new();
+  public static readonly InitializeSmartQuartierStatistics Instance = new();
 
-    private InitializeSmartQuartierStatistics()
-    {
-    }
+  private InitializeSmartQuartierStatistics() { }
 }
 
 public sealed class ScheduleDashboardHistoryBroadcast
 {
-    public static readonly ScheduleDashboardHistoryBroadcast Instance = new();
+  public static readonly ScheduleDashboardHistoryBroadcast Instance = new();
 
-    private ScheduleDashboardHistoryBroadcast()
-    {
-    }
+  private ScheduleDashboardHistoryBroadcast() { }
 }
