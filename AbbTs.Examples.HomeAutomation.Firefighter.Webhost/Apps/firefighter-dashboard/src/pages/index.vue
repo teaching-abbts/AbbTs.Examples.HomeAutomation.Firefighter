@@ -60,7 +60,11 @@
         </v-tabs-window-item>
       </v-tabs-window>
     </div>
-    <ActionsSidebar :actions="actions" @toggle-action="toggleAction" />
+    <ActionsSidebar
+      :actions="actions"
+      @toggle-action="toggleAction"
+      @quick-action="handleQuickAction"
+    />
   </div>
 </template>
 
@@ -68,17 +72,20 @@
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { Client } from "@/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost";
 import ActionsSidebar from "@/components/dashboard/ActionsSidebar.vue";
+import type { QuickActionPayload } from "@/components/dashboard/ActionsSidebar.vue";
 import EventsSidebar from "@/components/dashboard/EventsSidebar.vue";
 import SmartHomeCard from "@/components/smart-homes/SmartHomeCard.vue";
 import SmartHomesLandscape from "@/components/smart-homes/SmartHomesLandscape.vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useAppStore } from "@/stores/app";
 import { useHouseDetailsStore } from "@/stores/houseDetails";
-import type { SmartHomeSummary } from "@/types/smartHomes";
+import type { SmartHomeCommand, SmartHomeSummary } from "@/types/smartHomes";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n({ useScope: "global" });
 const router = useRouter();
+const appStore = useAppStore();
 const houseDetailsStore = useHouseDetailsStore();
 const sidebarEvents = computed(() => houseDetailsStore.sidebarEvents);
 const actions = computed(() => houseDetailsStore.actions);
@@ -175,6 +182,119 @@ const openSmartHomeDetails = (smartHomeId: string) => {
 
 const toggleAction = (actionKey: string) => {
   houseDetailsStore.toggleActionState(actionKey);
+};
+
+const parseHouseNumberFromId = (id: string | undefined): number | null => {
+  if (!id) {
+    return null;
+  }
+
+  const match = /\d+/.exec(id);
+  return match ? Number(match[0]) : null;
+};
+
+const findSmartHomeByHouseNumber = (houseNumber: number) => {
+  return smartHomes.value.find(
+    (home) => parseHouseNumberFromId(home.id) === houseNumber,
+  );
+};
+
+const ensureSmartHomesConnection = async (): Promise<boolean> => {
+  if (smartHomesConnection.state === "Connected") {
+    return true;
+  }
+
+  try {
+    await smartHomesConnection.start();
+    return true;
+  } catch {
+    smartHomesError.value ||= t("smartHomes.liveUnavailable");
+    return false;
+  }
+};
+
+const sendSmartHomeCommand = async (
+  smartHomeId: string,
+  command: SmartHomeCommand,
+) => {
+  const ready = await ensureSmartHomesConnection();
+  if (!ready) {
+    return;
+  }
+
+  try {
+    await smartHomesConnection.invoke("SendCommand", smartHomeId, command);
+  } catch {
+    smartHomesError.value = t("smartHomes.commandError");
+  }
+};
+
+const getSmartHomesWithinFireDistance = (originHouseNumber: number) => {
+  const origin = findSmartHomeByHouseNumber(originHouseNumber);
+  if (!origin) {
+    return [] as SmartHomeSummary[];
+  }
+
+  const threshold = appStore.normalizedNeighborFireDistanceThreshold;
+  const originX = origin.xCoordinate ?? 0;
+  const originY = origin.yCoordinate ?? 0;
+
+  return smartHomes.value.filter((home) => {
+    const dx = (home.xCoordinate ?? 0) - originX;
+    const dy = (home.yCoordinate ?? 0) - originY;
+    return Math.hypot(dx, dy) <= threshold;
+  });
+};
+
+const handleQuickAction = async (payload: QuickActionPayload) => {
+  const { id, action, message } = payload;
+
+  if (id === "open-doors") {
+    const target = findSmartHomeByHouseNumber(action.houseNumber);
+    if (!target) {
+      return;
+    }
+
+    await sendSmartHomeCommand(target.id, {
+      device: "Door",
+      command: "open",
+      value: "",
+    });
+    return;
+  }
+
+  if (id === "heating-off") {
+    const target = findSmartHomeByHouseNumber(action.houseNumber);
+    if (!target) {
+      return;
+    }
+
+    await sendSmartHomeCommand(target.id, {
+      device: "HeatingControl",
+      command: "off",
+      value: "",
+    });
+    return;
+  }
+
+  if (id === "fire-alarm-broadcast") {
+    const targets = getSmartHomesWithinFireDistance(action.houseNumber);
+    const displayValue = (message ?? "Feueralarm\nFeuerwehr unterwegs!")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .join(";");
+
+    await Promise.all(
+      targets.map((target) =>
+        sendSmartHomeCommand(target.id, {
+          device: "Display",
+          command: "set",
+          value: displayValue,
+        }),
+      ),
+    );
+  }
 };
 </script>
 
