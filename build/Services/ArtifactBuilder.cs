@@ -57,7 +57,7 @@ public static class ArtifactBuilder
     var smartHomeTarget = Path.Combine(context.ArtifactsRoot, "SmartHome");
     var buildTarget = Path.Combine(context.ArtifactsRoot, "build");
 
-    CopyDirectory(context.DataServiceSourceAssetsDirectory, dataServiceTarget);
+    CopyDirectory(context.SmartQuartierDataServiceSourceAssetsDirectory, dataServiceTarget);
     CopyDirectory(context.SmartHomeSourceAssetsDirectory, smartHomeTarget);
     Directory.CreateDirectory(buildTarget);
     File.Copy(

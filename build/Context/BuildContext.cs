@@ -23,7 +23,7 @@ public sealed class BuildContext : FrostingContext
   public string WebhostProjectPath { get; }
   public string SmartHomesSourceConfigFile { get; }
   public string SmartHomeSourceAssetsDirectory { get; }
-  public string DataServiceSourceAssetsDirectory { get; }
+  public string SmartQuartierDataServiceSourceAssetsDirectory { get; }
 
   public BuildContext(ICakeContext context)
     : base(context)
@@ -36,12 +36,11 @@ public sealed class BuildContext : FrostingContext
       "AbbTs.Examples.HomeAutomation.Firefighter.Webhost.csproj"
     );
     SmartHomesSourceConfigFile = Path.Combine(RepoRoot, "build", "smart-homes.json");
-    SmartHomeSourceAssetsDirectory = Path.Combine(RepoRoot, "smart-lodge", ".assets", "SmartHome");
-    DataServiceSourceAssetsDirectory = Path.Combine(
+    SmartHomeSourceAssetsDirectory = Path.Combine(RepoRoot, "Assets", "SmartHome");
+    SmartQuartierDataServiceSourceAssetsDirectory = Path.Combine(
       RepoRoot,
-      "smart-lodge",
-      ".assets",
-      "DataService"
+      "Assets",
+      "SmartQuartierDataService"
     );
   }
 
@@ -58,7 +57,7 @@ public sealed class BuildContext : FrostingContext
         SmartHomesConfigFile = SmartHomesSourceConfigFile,
         SmartHomeTemplateDirectory = SmartHomeSourceAssetsDirectory,
         SmartHomeJarPath = Path.Combine(SmartHomeSourceAssetsDirectory, "SmartHome.jar"),
-        DataServiceDirectory = DataServiceSourceAssetsDirectory,
+        DataServiceDirectory = SmartQuartierDataServiceSourceAssetsDirectory,
         SmartHomeInstancesRoot = Path.Combine(RepoRoot, ".run", "smarthomes"),
         WebhostProjectPath = WebhostProjectPath,
       },
@@ -99,14 +98,11 @@ public sealed class BuildContext : FrostingContext
         $"Failed to parse settings file '{smartHomesConfigFile}'."
       );
 
-    if (settings.SmartHomes.Count == 0)
-    {
-      throw new InvalidOperationException(
+    return settings.SmartHomes.Count == 0
+      ? throw new InvalidOperationException(
         "At least one smart-home instance must be defined in the settings file."
-      );
-    }
-
-    return settings;
+      )
+      : settings;
   }
 
   public List<TrackedProcess> LoadTrackedProcesses(string processesFile)
@@ -123,7 +119,7 @@ public sealed class BuildContext : FrostingContext
       : JsonSerializer.Deserialize<List<TrackedProcess>>(json, JsonOptions) ?? [];
   }
 
-  public void SaveTrackedProcesses(
+  public static void SaveTrackedProcesses(
     string processesFile,
     IReadOnlyCollection<TrackedProcess> tracked
   )
@@ -136,7 +132,7 @@ public sealed class BuildContext : FrostingContext
     File.WriteAllText(processesFile, json);
   }
 
-  public void RemoveTrackedProcessesFile(string processesFile)
+  public static void RemoveTrackedProcessesFile(string processesFile)
   {
     if (File.Exists(processesFile))
     {
@@ -156,12 +152,8 @@ public sealed class BuildContext : FrostingContext
       }
 
       var parent = Path.GetFullPath(Path.Combine(candidate, ".."));
-      if (IsRepoRoot(parent))
-      {
-        return parent;
-      }
 
-      return candidate;
+      return IsRepoRoot(parent) ? parent : candidate;
     }
 
     var currentDirectory = context.Environment.WorkingDirectory.FullPath;

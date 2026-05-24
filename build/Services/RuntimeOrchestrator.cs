@@ -69,7 +69,7 @@ public static class RuntimeOrchestrator
         }
       }
 
-      context.SaveTrackedProcesses(paths.ProcessesFile, started);
+      BuildContext.SaveTrackedProcesses(paths.ProcessesFile, started);
       context.Log.Information("All components started.");
     }
     catch
@@ -101,7 +101,7 @@ public static class RuntimeOrchestrator
       );
     }
 
-    context.RemoveTrackedProcessesFile(paths.ProcessesFile);
+    BuildContext.RemoveTrackedProcessesFile(paths.ProcessesFile);
     context.Log.Information("Stopped all tracked components.");
   }
 
