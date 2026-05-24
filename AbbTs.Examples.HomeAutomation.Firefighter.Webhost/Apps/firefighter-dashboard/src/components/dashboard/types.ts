@@ -20,6 +20,7 @@ export type HouseItem = {
 export type ActionItem = {
   id: string;
   actionKey: string;
+  alertType: "fire" | "gas" | "observe" | "endangeredLives";
   titleKey: string;
   houseNumber: number;
   color: string;

@@ -30,6 +30,15 @@
     "actions": {
       "extinguishFire": "Extinguish fire",
       "openDoors": "Open doors",
+      "quickActionsLabel": "Quick actions",
+      "quickVentilate": "Open door for ventilation",
+      "quickStopHeating": "Turn heating off",
+      "quickNotification": "Notify neighbors",
+      "fireDialogTitle": "Notify neighbors",
+      "fireDialogDescription": "This message will be sent to all neighboring houses within the configured range. Line breaks are preserved for the display.",
+      "fireDialogMessageLabel": "Message",
+      "fireDialogCancel": "Cancel",
+      "fireDialogSend": "Send",
       "execute": "Execute",
       "observe": "Observe",
       "endangeredLives": "Lives endangered",
@@ -40,7 +49,21 @@
       "onlyOpen": "Only open actions",
       "createdAt": "Created at",
       "resolvedAt": "Resolved at",
-      "notResolved": "Not resolved yet"
+      "notResolved": "Not resolved yet",
+      "errors": {
+        "hubDisconnected": "Live channel is disconnected. Please reload the page.",
+        "houseNotFound": "Target house could not be found.",
+        "actionNotFound": "Action could not be resolved.",
+        "noNeighborsFound": "No neighboring houses found within configured range.",
+        "emptyMessage": "Please enter a message.",
+        "commandFailed": "Quick action could not be completed.",
+        "notifyFailed": "Neighbors could not be notified."
+      },
+      "feedback": {
+        "ventilationSent": "The door was opened for ventilation.",
+        "heatingOffSent": "The heating was turned off.",
+        "neighborsNotified": "Notified {count} neighboring house(s)."
+      }
     },
     "language": {
       "label": "Language",

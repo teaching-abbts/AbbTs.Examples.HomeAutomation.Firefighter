@@ -913,6 +913,7 @@ export const useHouseDetailsStore = defineStore("house-details", () => {
       generatedActions.push({
         id: selectedActionKey,
         actionKey: selectedActionKey,
+        alertType: grouped.alertType,
         titleKey: grouped.titleKey,
         houseNumber: grouped.houseNumber,
         color,

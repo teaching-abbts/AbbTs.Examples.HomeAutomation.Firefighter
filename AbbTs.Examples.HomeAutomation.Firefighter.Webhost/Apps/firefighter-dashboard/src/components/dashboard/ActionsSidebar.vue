@@ -60,6 +60,58 @@
                 : t("dashboard.actions.open")
             }}
           </v-chip>
+
+          <div
+            v-if="hasQuickActions(action)"
+            class="mt-4 d-flex flex-column ga-2"
+          >
+            <div
+              class="text-caption font-weight-bold"
+              :style="{ color: action.textColor }"
+            >
+              {{ t("dashboard.actions.quickActionsLabel") }}
+            </div>
+
+            <v-btn
+              v-if="action.alertType === 'gas'"
+              class="quick-action-btn"
+              block
+              rounded="lg"
+              variant="elevated"
+              :style="quickActionStyle('gas-ventilate')"
+              @click="emit('quick-action', action.actionKey, 'gas-ventilate')"
+            >
+              {{ t("dashboard.actions.quickVentilate") }}
+            </v-btn>
+
+            <v-btn
+              v-if="action.alertType === 'fire'"
+              class="quick-action-btn"
+              block
+              rounded="lg"
+              variant="elevated"
+              :style="quickActionStyle('fire-stop-heating')"
+              @click="
+                emit('quick-action', action.actionKey, 'fire-stop-heating')
+              "
+            >
+              {{ t("dashboard.actions.quickStopHeating") }}
+            </v-btn>
+
+            <v-btn
+              v-if="action.alertType === 'fire'"
+              class="quick-action-btn"
+              block
+              rounded="lg"
+              variant="elevated"
+              :style="quickActionStyle('fire-neighbor-display')"
+              @click="
+                emit('quick-action', action.actionKey, 'fire-neighbor-display')
+              "
+            >
+              {{ t("dashboard.actions.quickNotification") }}
+            </v-btn>
+          </div>
         </v-card-item>
 
         <v-card-actions>
@@ -97,6 +149,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   "toggle-action": [actionKey: string];
+  "quick-action": [
+    actionKey: string,
+    quickAction:
+      | "gas-ventilate"
+      | "fire-stop-heating"
+      | "fire-neighbor-display",
+  ];
 }>();
 
 const { t } = useI18n();
@@ -111,6 +170,32 @@ const showOnlyOpenActions = computed({
 const filteredActions = computed(() => {
   return props.actions;
 });
+
+const hasQuickActions = (action: ActionItem) => {
+  return action.alertType === "gas" || action.alertType === "fire";
+};
+
+const quickActionStyle = (
+  quickAction: "gas-ventilate" | "fire-stop-heating" | "fire-neighbor-display",
+) => {
+  switch (quickAction) {
+    case "gas-ventilate":
+      return {
+        backgroundColor: "#455a64",
+        color: "#ffffff",
+      };
+    case "fire-stop-heating":
+      return {
+        backgroundColor: "#6d4c41",
+        color: "#ffffff",
+      };
+    case "fire-neighbor-display":
+      return {
+        backgroundColor: "#37474f",
+        color: "#ffffff",
+      };
+  }
+};
 
 const formatActionTimestamp = (timestamp: number) => {
   return new Intl.DateTimeFormat("de-DE", {
@@ -130,5 +215,13 @@ const formatActionTimestamp = (timestamp: number) => {
 
 .action-card {
   border-top-right-radius: 28px !important;
+}
+
+.quick-action-btn {
+  font-weight: 700;
+}
+
+.quick-action-btn :deep(.v-btn__content) {
+  color: inherit !important;
 }
 </style>

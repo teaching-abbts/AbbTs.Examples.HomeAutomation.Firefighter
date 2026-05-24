@@ -30,6 +30,15 @@
     "actions": {
       "extinguishFire": "Brandlöschung",
       "openDoors": "Lüften",
+      "quickActionsLabel": "Schnellaktionen",
+      "quickVentilate": "Tür zum Lüften öffnen",
+      "quickStopHeating": "Heizung ausschalten",
+      "quickNotification": "Nachbarn benachrichtigen",
+      "fireDialogTitle": "Nachbarn benachrichtigen",
+      "fireDialogDescription": "Diese Nachricht wird an alle Nachbarhäuser im eingestellten Radius gesendet. Zeilenumbrüche werden für das Display übernommen.",
+      "fireDialogMessageLabel": "Nachricht",
+      "fireDialogCancel": "Abbrechen",
+      "fireDialogSend": "Senden",
       "execute": "Ausführen",
       "observe": "Beobachten",
       "endangeredLives": "Menschenleben gefährdet",
@@ -40,7 +49,21 @@
       "onlyOpen": "Nur offene Aktionen",
       "createdAt": "Erstellt am",
       "resolvedAt": "Erledigt am",
-      "notResolved": "Noch offen"
+      "notResolved": "Noch offen",
+      "errors": {
+        "hubDisconnected": "Live-Kanal ist nicht verbunden. Bitte Seite neu laden.",
+        "houseNotFound": "Zielhaus konnte nicht gefunden werden.",
+        "actionNotFound": "Aktion konnte nicht aufgelöst werden.",
+        "noNeighborsFound": "Keine Nachbarhäuser im eingestellten Radius gefunden.",
+        "emptyMessage": "Bitte eine Nachricht eingeben.",
+        "commandFailed": "Schnellaktion konnte nicht ausgeführt werden.",
+        "notifyFailed": "Nachbarn konnten nicht benachrichtigt werden."
+      },
+      "feedback": {
+        "ventilationSent": "Die Tür wurde zum Lüften geöffnet.",
+        "heatingOffSent": "Die Heizung wurde ausgeschaltet.",
+        "neighborsNotified": "{count} Nachbarhaus/Nachbarhäuser benachrichtigt."
+      }
     },
     "language": {
       "label": "Sprache",

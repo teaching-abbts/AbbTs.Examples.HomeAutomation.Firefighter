@@ -60,12 +60,58 @@
         </v-tabs-window-item>
       </v-tabs-window>
     </div>
-    <ActionsSidebar :actions="actions" @toggle-action="toggleAction" />
+
+    <v-dialog v-model="showFireDisplayDialog" max-width="640">
+      <v-card>
+        <v-card-title>{{
+          t("dashboard.actions.fireDialogTitle")
+        }}</v-card-title>
+        <v-card-text>
+          <p class="mb-3 text-body-2 text-medium-emphasis">
+            {{ t("dashboard.actions.fireDialogDescription") }}
+          </p>
+          <v-textarea
+            v-model="fireDisplayMessage"
+            auto-grow
+            :label="t('dashboard.actions.fireDialogMessageLabel')"
+            rows="3"
+            variant="outlined"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="cancelFireDisplayDialog">
+            {{ t("dashboard.actions.fireDialogCancel") }}
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="elevated"
+            @click="confirmFireDisplayDialog"
+          >
+            {{ t("dashboard.actions.fireDialogSend") }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-snackbar v-model="showQuickActionToast" :color="quickActionToastColor">
+      {{ quickActionToastMessage }}
+    </v-snackbar>
+
+    <ActionsSidebar
+      :actions="actions"
+      @toggle-action="toggleAction"
+      @quick-action="handleQuickAction"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import {
+  HubConnectionBuilder,
+  HubConnectionState,
+  LogLevel,
+} from "@microsoft/signalr";
 import { Client } from "@/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost";
 import ActionsSidebar from "@/components/dashboard/ActionsSidebar.vue";
 import EventsSidebar from "@/components/dashboard/EventsSidebar.vue";
@@ -74,14 +120,18 @@ import SmartHomesLandscape from "@/components/smart-homes/SmartHomesLandscape.vu
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useHouseDetailsStore } from "@/stores/houseDetails";
-import type { SmartHomeSummary } from "@/types/smartHomes";
+import { storeToRefs } from "pinia";
+import { useAppStore } from "@/stores/app";
+import type { SmartHomeCommand, SmartHomeSummary } from "@/types/smartHomes";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n({ useScope: "global" });
 const router = useRouter();
 const houseDetailsStore = useHouseDetailsStore();
+const appStore = useAppStore();
 const sidebarEvents = computed(() => houseDetailsStore.sidebarEvents);
 const actions = computed(() => houseDetailsStore.actions);
+const { normalizedNeighborFireDistanceThreshold } = storeToRefs(appStore);
 
 const views = ["2d", "3d"];
 
@@ -110,6 +160,12 @@ const houseAlertColors = computed(() => {
 
 const smartHomes = ref<SmartHomeSummary[]>([]);
 const smartHomesError = ref("");
+const showFireDisplayDialog = ref(false);
+const fireDisplayMessage = ref("Feueralarm\nFeuerwehr unterwegs!");
+const pendingFireActionHouseNumber = ref<number | null>(null);
+const quickActionToastMessage = ref("");
+const quickActionToastColor = ref<"success" | "warning" | "error">("success");
+const showQuickActionToast = ref(false);
 const apiClient = new Client();
 
 const smartHomesConnection = new HubConnectionBuilder()
@@ -175,6 +231,227 @@ const openSmartHomeDetails = (smartHomeId: string) => {
 
 const toggleAction = (actionKey: string) => {
   houseDetailsStore.toggleActionState(actionKey);
+};
+
+const parseHouseNumberFromSmartHomeId = (smartHomeId: string) => {
+  const match = smartHomeId.match(/\d+/);
+  return match ? Number.parseInt(match[0], 10) : null;
+};
+
+const showQuickActionFeedback = (
+  message: string,
+  color: "success" | "warning" | "error",
+) => {
+  quickActionToastMessage.value = message;
+  quickActionToastColor.value = color;
+  showQuickActionToast.value = true;
+};
+
+const getSmartHomeIdByHouseNumber = (houseNumber: number) => {
+  const match = smartHomes.value.find((home) => {
+    return parseHouseNumberFromSmartHomeId(home.id) === houseNumber;
+  });
+
+  return match?.id ?? null;
+};
+
+const getNeighborSmartHomeIds = (sourceHouseNumber: number) => {
+  const sourceHome = smartHomes.value.find((home) => {
+    return parseHouseNumberFromSmartHomeId(home.id) === sourceHouseNumber;
+  });
+
+  if (!sourceHome) {
+    return [];
+  }
+
+  const threshold = normalizedNeighborFireDistanceThreshold.value;
+
+  return smartHomes.value
+    .filter((candidate) => {
+      if (candidate.id === sourceHome.id) {
+        return false;
+      }
+
+      const dx = (candidate.xCoordinate ?? 0) - (sourceHome.xCoordinate ?? 0);
+      const dy = (candidate.yCoordinate ?? 0) - (sourceHome.yCoordinate ?? 0);
+      const distance = Math.hypot(dx, dy);
+
+      return distance <= threshold;
+    })
+    .map((home) => home.id);
+};
+
+const sendCommandToSmartHome = async (
+  smartHomeId: string,
+  payload: SmartHomeCommand,
+) => {
+  if (smartHomesConnection.state !== HubConnectionState.Connected) {
+    throw new Error(t("dashboard.actions.errors.hubDisconnected"));
+  }
+
+  await smartHomesConnection.invoke("SendCommand", smartHomeId, payload);
+};
+
+const sendDoorOpenForGas = async (houseNumber: number) => {
+  const smartHomeId = getSmartHomeIdByHouseNumber(houseNumber);
+  if (!smartHomeId) {
+    showQuickActionFeedback(
+      t("dashboard.actions.errors.houseNotFound"),
+      "error",
+    );
+    return;
+  }
+
+  await sendCommandToSmartHome(smartHomeId, {
+    device: "Door",
+    command: "open",
+    value: "",
+  });
+
+  showQuickActionFeedback(
+    t("dashboard.actions.feedback.ventilationSent"),
+    "success",
+  );
+};
+
+const sendHeatingOffForFire = async (houseNumber: number) => {
+  const smartHomeId = getSmartHomeIdByHouseNumber(houseNumber);
+  if (!smartHomeId) {
+    showQuickActionFeedback(
+      t("dashboard.actions.errors.houseNotFound"),
+      "error",
+    );
+    return;
+  }
+
+  await sendCommandToSmartHome(smartHomeId, {
+    device: "HeatingControl",
+    command: "off",
+    value: "",
+  });
+
+  showQuickActionFeedback(
+    t("dashboard.actions.feedback.heatingOffSent"),
+    "success",
+  );
+};
+
+const openFireDisplayDialog = (houseNumber: number) => {
+  pendingFireActionHouseNumber.value = houseNumber;
+  fireDisplayMessage.value = "Feueralarm\nFeuerwehr unterwegs!";
+  showFireDisplayDialog.value = true;
+};
+
+const cancelFireDisplayDialog = () => {
+  showFireDisplayDialog.value = false;
+  pendingFireActionHouseNumber.value = null;
+};
+
+const confirmFireDisplayDialog = async () => {
+  const sourceHouseNumber = pendingFireActionHouseNumber.value;
+  if (!sourceHouseNumber) {
+    cancelFireDisplayDialog();
+    return;
+  }
+
+  const neighborIds = getNeighborSmartHomeIds(sourceHouseNumber);
+  if (neighborIds.length === 0) {
+    showQuickActionFeedback(
+      t("dashboard.actions.errors.noNeighborsFound"),
+      "warning",
+    );
+    cancelFireDisplayDialog();
+    return;
+  }
+
+  const message = fireDisplayMessage.value.trim();
+  if (!message) {
+    showQuickActionFeedback(
+      t("dashboard.actions.errors.emptyMessage"),
+      "warning",
+    );
+    return;
+  }
+
+  const displayValue = message
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .join(";");
+
+  if (!displayValue) {
+    showQuickActionFeedback(
+      t("dashboard.actions.errors.emptyMessage"),
+      "warning",
+    );
+    return;
+  }
+
+  let successCount = 0;
+  for (const neighborId of neighborIds) {
+    try {
+      await sendCommandToSmartHome(neighborId, {
+        device: "Display",
+        command: "set",
+        value: displayValue,
+      });
+      successCount += 1;
+    } catch {
+      // Continue with remaining neighbors.
+    }
+  }
+
+  if (successCount === 0) {
+    showQuickActionFeedback(
+      t("dashboard.actions.errors.notifyFailed"),
+      "error",
+    );
+  } else {
+    showQuickActionFeedback(
+      t("dashboard.actions.feedback.neighborsNotified", {
+        count: successCount,
+      }),
+      successCount === neighborIds.length ? "success" : "warning",
+    );
+  }
+
+  cancelFireDisplayDialog();
+};
+
+const handleQuickAction = async (
+  actionKey: string,
+  quickAction: "gas-ventilate" | "fire-stop-heating" | "fire-neighbor-display",
+) => {
+  const targetAction = actions.value.find(
+    (action) => action.actionKey === actionKey,
+  );
+  if (!targetAction) {
+    showQuickActionFeedback(
+      t("dashboard.actions.errors.actionNotFound"),
+      "error",
+    );
+    return;
+  }
+
+  try {
+    if (quickAction === "gas-ventilate") {
+      await sendDoorOpenForGas(targetAction.houseNumber);
+      return;
+    }
+
+    if (quickAction === "fire-stop-heating") {
+      await sendHeatingOffForFire(targetAction.houseNumber);
+      return;
+    }
+
+    openFireDisplayDialog(targetAction.houseNumber);
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : t("dashboard.actions.errors.commandFailed");
+    showQuickActionFeedback(message, "error");
+  }
 };
 </script>
 
