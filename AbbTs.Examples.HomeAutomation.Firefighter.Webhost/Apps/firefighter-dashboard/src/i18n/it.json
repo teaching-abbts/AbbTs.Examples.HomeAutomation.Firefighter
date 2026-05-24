@@ -40,7 +40,17 @@
             "onlyOpen": "Solo azioni aperte",
             "createdAt": "Creato il",
             "resolvedAt": "Risolto il",
-            "notResolved": "Non ancora risolto"
+            "notResolved": "Non ancora risolto",
+            "quickOpenDoors": "Apri porte",
+            "quickHeatingOff": "Spegni riscaldamento",
+            "quickFireAlarm": "Invia allarme incendio"
+        },
+        "fireAlarm": {
+            "title": "Invia allarme incendio alle case vicine",
+            "description": "Un messaggio verrà inviato a tutte le case nel raggio della casa {id}.",
+            "messageLabel": "Messaggio",
+            "cancel": "Annulla",
+            "send": "Invia allarme"
         },
         "language": {
             "label": "Lingua",

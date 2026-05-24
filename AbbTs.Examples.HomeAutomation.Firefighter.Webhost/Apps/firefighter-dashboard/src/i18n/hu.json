@@ -40,7 +40,17 @@
             "onlyOpen": "Csak nyitott műveletek",
             "createdAt": "Létrehozva",
             "resolvedAt": "Lezárva",
-            "notResolved": "Még nyitott"
+            "notResolved": "Még nyitott",
+            "quickOpenDoors": "Ajtók nyitása",
+            "quickHeatingOff": "Fűtés kikapcsolása",
+            "quickFireAlarm": "Tűzriadó küldése"
+        },
+        "fireAlarm": {
+            "title": "Tűzriadó küldése a szomszédos házaknak",
+            "description": "Üzenet kerül kiküldésre minden, a(z) {id}. ház közelében lévő házba.",
+            "messageLabel": "Üzenet",
+            "cancel": "Mégse",
+            "send": "Riadó küldése"
         },
         "language": {
             "label": "Nyelv",

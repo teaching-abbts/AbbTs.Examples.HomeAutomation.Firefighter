@@ -40,7 +40,17 @@
       "onlyOpen": "Only open actions",
       "createdAt": "Created at",
       "resolvedAt": "Resolved at",
-      "notResolved": "Not resolved yet"
+      "notResolved": "Not resolved yet",
+      "quickOpenDoors": "Open doors",
+      "quickHeatingOff": "Turn off heating",
+      "quickFireAlarm": "Send fire alarm"
+    },
+    "fireAlarm": {
+      "title": "Send fire alarm to neighbouring houses",
+      "description": "A message will be sent to every house within range of house {id}.",
+      "messageLabel": "Message",
+      "cancel": "Cancel",
+      "send": "Send alarm"
     },
     "language": {
       "label": "Language",

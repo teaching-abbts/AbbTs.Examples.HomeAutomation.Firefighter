@@ -40,7 +40,17 @@
       "onlyOpen": "未完了のみ表示",
       "createdAt": "作成日時",
       "resolvedAt": "解決日時",
-      "notResolved": "未解決"
+      "notResolved": "未解決",
+      "quickOpenDoors": "ドアを開く",
+      "quickHeatingOff": "暖房を停止",
+      "quickFireAlarm": "火災警報を送信"
+    },
+    "fireAlarm": {
+      "title": "近隣の家に火災警報を送信",
+      "description": "ハウス {id} の範囲内にあるすべての家にメッセージが送信されます。",
+      "messageLabel": "メッセージ",
+      "cancel": "キャンセル",
+      "send": "警報を送信"
     },
     "language": {
       "label": "言語",

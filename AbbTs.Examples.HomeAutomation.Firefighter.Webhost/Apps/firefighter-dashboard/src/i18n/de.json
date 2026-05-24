@@ -40,7 +40,17 @@
       "onlyOpen": "Nur offene Aktionen",
       "createdAt": "Erstellt am",
       "resolvedAt": "Erledigt am",
-      "notResolved": "Noch offen"
+      "notResolved": "Noch offen",
+      "quickOpenDoors": "Türen öffnen",
+      "quickHeatingOff": "Heizung abstellen",
+      "quickFireAlarm": "Feueralarm senden"
+    },
+    "fireAlarm": {
+      "title": "Feueralarm an Nachbarhäuser senden",
+      "description": "Eine Nachricht wird an alle Häuser in Reichweite von Haus {id} gesendet.",
+      "messageLabel": "Nachricht",
+      "cancel": "Abbrechen",
+      "send": "Alarm senden"
     },
     "language": {
       "label": "Sprache",

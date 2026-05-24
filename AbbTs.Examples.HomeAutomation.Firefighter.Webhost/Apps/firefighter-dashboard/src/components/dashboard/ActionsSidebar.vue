@@ -62,9 +62,23 @@
           </v-chip>
         </v-card-item>
 
-        <v-card-actions>
+        <v-card-actions class="flex-wrap">
+          <v-btn
+            v-for="quick in getQuickActionsFor(action)"
+            :key="quick.id"
+            block
+            class="mb-2 mx-0"
+            :prepend-icon="quick.icon"
+            rounded="lg"
+            size="small"
+            :style="{ backgroundColor: '#ffffff', color: '#212121' }"
+            variant="elevated"
+            @click="onQuickAction(quick.id, action)"
+            >{{ t(quick.labelKey) }}</v-btn
+          >
           <v-btn
             block
+            class="mx-0"
             rounded="lg"
             :style="{ backgroundColor: '#b0b4b8', color: '#ffffff' }"
             variant="elevated"
@@ -80,16 +94,86 @@
         </v-card-actions>
       </v-card>
     </div>
+
+    <v-dialog v-model="fireAlarmDialogOpen" max-width="520">
+      <v-card rounded="lg">
+        <v-card-title>{{ t("dashboard.fireAlarm.title") }}</v-card-title>
+        <v-card-text>
+          <p class="text-body-2 mb-3">
+            {{
+              t("dashboard.fireAlarm.description", {
+                id: fireAlarmHouseNumber ?? "?",
+              })
+            }}
+          </p>
+          <v-textarea
+            v-model="fireAlarmMessage"
+            auto-grow
+            :label="t('dashboard.fireAlarm.messageLabel')"
+            rows="3"
+            variant="outlined"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="closeFireAlarmDialog">{{
+            t("dashboard.fireAlarm.cancel")
+          }}</v-btn>
+          <v-btn color="error" variant="elevated" @click="confirmFireAlarm">{{
+            t("dashboard.fireAlarm.send")
+          }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-navigation-drawer>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 
 import type { ActionItem } from "./types";
 import { useAppStore } from "@/stores/app";
+
+export type QuickActionId =
+  | "open-doors"
+  | "heating-off"
+  | "fire-alarm-broadcast";
+
+export type QuickActionPayload = {
+  id: QuickActionId;
+  action: ActionItem;
+  message?: string;
+};
+
+type QuickActionDescriptor = {
+  id: QuickActionId;
+  labelKey: string;
+  icon: string;
+};
+
+const QUICK_ACTIONS_BY_COLOR: Record<string, QuickActionDescriptor[]> = {
+  "#FFEB3B": [
+    {
+      id: "open-doors",
+      labelKey: "dashboard.actions.quickOpenDoors",
+      icon: "mdi-door-open",
+    },
+  ],
+  "#F44336": [
+    {
+      id: "heating-off",
+      labelKey: "dashboard.actions.quickHeatingOff",
+      icon: "mdi-radiator-off",
+    },
+    {
+      id: "fire-alarm-broadcast",
+      labelKey: "dashboard.actions.quickFireAlarm",
+      icon: "mdi-bullhorn",
+    },
+  ],
+};
 
 const props = defineProps<{
   actions: ActionItem[];
@@ -97,6 +181,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   "toggle-action": [actionKey: string];
+  "quick-action": [payload: QuickActionPayload];
 }>();
 
 const { t } = useI18n();
@@ -120,6 +205,56 @@ const formatActionTimestamp = (timestamp: number) => {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(timestamp));
+};
+
+const getQuickActionsFor = (action: ActionItem): QuickActionDescriptor[] => {
+  if (action.state !== "open") {
+    return [];
+  }
+
+  return QUICK_ACTIONS_BY_COLOR[action.color] ?? [];
+};
+
+const fireAlarmDialogOpen = ref(false);
+const fireAlarmMessage = ref("Feueralarm\nFeuerwehr unterwegs!");
+const fireAlarmHouseNumber = ref<number | null>(null);
+const pendingFireAlarmAction = ref<ActionItem | null>(null);
+
+const openFireAlarmDialog = (action: ActionItem) => {
+  pendingFireAlarmAction.value = action;
+  fireAlarmHouseNumber.value = action.houseNumber;
+  fireAlarmMessage.value = "Feueralarm\nFeuerwehr unterwegs!";
+  fireAlarmDialogOpen.value = true;
+};
+
+const closeFireAlarmDialog = () => {
+  fireAlarmDialogOpen.value = false;
+  pendingFireAlarmAction.value = null;
+};
+
+const confirmFireAlarm = () => {
+  const action = pendingFireAlarmAction.value;
+  if (!action) {
+    closeFireAlarmDialog();
+    return;
+  }
+
+  emit("quick-action", {
+    id: "fire-alarm-broadcast",
+    action,
+    message: fireAlarmMessage.value,
+  });
+
+  closeFireAlarmDialog();
+};
+
+const onQuickAction = (id: QuickActionId, action: ActionItem) => {
+  if (id === "fire-alarm-broadcast") {
+    openFireAlarmDialog(action);
+    return;
+  }
+
+  emit("quick-action", { id, action });
 };
 </script>
 
