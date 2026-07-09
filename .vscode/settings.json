@@ -1,9 +1,27 @@
 {
-  "i18n-ally.enabledFrameworks": [
-    "vue"
-  ],
+  "i18n-ally.enabledFrameworks": ["vue"],
   "i18n-ally.localesPaths": [
     "AbbTs.Examples.HomeAutomation.Firefighter.Webhost/Apps/firefighter-dashboard/src/i18n"
   ],
-  "i18n-ally.keystyle": "nested"
+  "i18n-ally.keystyle": "nested",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#049724",
+    "activityBar.background": "#049724",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#3b07f8",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#049724",
+    "statusBar.background": "#036518",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#049724",
+    "statusBarItem.remoteBackground": "#036518",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#036518",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#03651899",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.color": "#036518"
 }
