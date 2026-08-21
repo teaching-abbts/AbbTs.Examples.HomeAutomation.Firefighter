@@ -12,6 +12,13 @@ namespace Build.Services;
 
 public static class RuntimeOrchestrator
 {
+  public static void Prepare(BuildContext context, RuntimeMode mode)
+  {
+    var paths = context.GetRuntimePaths(mode);
+    var settings = context.LoadSmartHomeSettings(paths.SmartHomesConfigFile);
+    SmartHomeInitializer.Initialize(paths, settings.SmartHomes);
+  }
+
   public static void Start(BuildContext context, RuntimeMode mode)
   {
     var paths = context.GetRuntimePaths(mode);

@@ -67,22 +67,6 @@ public static class ArtifactBuilder
     );
   }
 
-  public static void StageRuntimeScripts(BuildContext context)
-  {
-    var scripts = new[] { "run.ps1", "run.sh" };
-    foreach (var scriptName in scripts)
-    {
-      var source = Path.Combine(context.RepoRoot, scriptName);
-      if (!File.Exists(source))
-      {
-        throw new FileNotFoundException($"Required runtime script was not found at '{source}'.");
-      }
-
-      var destination = Path.Combine(context.ArtifactsRoot, scriptName);
-      File.Copy(source, destination, overwrite: true);
-    }
-  }
-
   private static void CopyDirectory(string sourceDirectory, string targetDirectory)
   {
     if (!Directory.Exists(sourceDirectory))

@@ -65,7 +65,7 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="mb-4" rounded="xl">
+        <v-card v-if="authStore.isOperator" class="mb-4" rounded="xl">
           <v-card-title>{{ t("smartHomes.quick") }}</v-card-title>
           <v-card-text>
             <div class="d-flex flex-wrap ga-2">
@@ -85,7 +85,7 @@
           </v-card-text>
         </v-card>
 
-        <v-card rounded="xl">
+        <v-card v-if="authStore.isOperator" rounded="xl">
           <v-card-title>{{ t("smartHomes.sendCommand") }}</v-card-title>
           <v-card-text>
             <v-select
@@ -124,6 +124,9 @@
             </v-btn>
           </v-card-text>
         </v-card>
+        <v-alert v-else class="text-body-2" type="info" variant="tonal">
+          {{ t("auth.operatorOnlyTooltip") }}
+        </v-alert>
       </v-col>
 
       <v-col cols="12" lg="7">
@@ -224,6 +227,7 @@ import {
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHouseDetailsStore } from "@/stores/houseDetails";
+import { useAuthStore } from "@/stores/auth";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -253,6 +257,7 @@ const commandMap: Record<string, string[]> = {
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 const { locale, t, te } = useI18n({ useScope: "global" });
 
 const eventsStore = useHouseDetailsStore();

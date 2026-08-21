@@ -12,12 +12,17 @@ Install the following tools before running the app:
 
 1. .NET SDK 10.0.100 (or a compatible 10.0.x version)
 2. VitePlus CLI <https://viteplus.dev/> as the central JavaScript toolchain manager
+3. A Java runtime with bundled JavaFX on your PATH as `java` (e.g. Azul Zulu OpenJDK FX 21) — required by Tilt to start the smart-lodge `DataService` and `SmartHome` Java processes. `SmartHome` is compiled with JDK 11 but needs a JavaFX-enabled JRE/JDK to run.
+4. Docker Desktop with Docker Compose v2 on your PATH — required for the Authentik stack
+
+On Windows, Docker Desktop must be allowed to share the drive containing this repository. If Compose reports that `infra/authentik/blueprints` is not shared, open Docker Desktop settings and enable file sharing or WSL access for that drive, then retry the start command.
 
 Version checks:
 
 ```bash
 dotnet --version
 vp --version
+java --version
 ```
 
 Reference sources:
@@ -83,51 +88,7 @@ vp run type-check
 vp run lint
 ```
 
-## Unified Local Runtime (SmartHome + DataService + Webhost)
-
-Use the root script to start all required local processes:
-
-```powershell
-./run.ps1 -Action start
-```
-
-```bash
-./run.sh --action start
-```
-
-This starts:
-
-- `smart-lodge/.assets/SmartHome/SmartHome.jar` (multiple instances based on config)
-- `smart-lodge/.assets/DataService/SmartQuartierDataService.jar`
-- `AbbTs.Examples.HomeAutomation.Firefighter.Webhost`
-
-Process IDs are tracked in `.run/processes.json`.
-
-Smart-home instance definitions are read from:
-
-- `build/smart-homes.json`
-
-The script is a thin wrapper around Cake Frosting targets:
-
-- `Run-Start`
-- `Run-Stop`
-- `Run-Status`
-
-Status and shutdown:
-
-```powershell
-./run.ps1 -Action status
-./run.ps1 -Action stop
-```
-
-```bash
-./run.sh --action status
-./run.sh --action stop
-```
-
-The stop action first tries graceful window close (where supported), then force-terminates remaining processes.
-
-## Artifact Build and Runtime
+## Artifact Build
 
 Build runtime artifacts into `.artifacts`:
 
@@ -145,43 +106,40 @@ The `.artifacts` folder contains:
 - `DataService` (copied from `smart-lodge/.assets/DataService`)
 - `SmartHome` (copied from `smart-lodge/.assets/SmartHome`)
 - `build/smart-homes.json` (runtime smart-home instance config)
-- `run.ps1` and `run.sh` (artifact runtime wrappers)
 
-Run the artifact runtime (from repo root):
+## Local Runtime With Tilt
 
-```powershell
-./run.ps1 -Mode artifacts -Action start
-./run.ps1 -Mode artifacts -Action status
-./run.ps1 -Mode artifacts -Action stop
-```
-
-```bash
-./run.sh --mode artifacts --action start
-./run.sh --mode artifacts --action status
-./run.sh --mode artifacts --action stop
-```
-
-The same scripts can also be executed from inside `.artifacts`.
-
-## Optional Tilt Workflow
-
-An optional `Tiltfile` is included to run `data-service` and `webhost` as local resources:
+Tilt is the single entry point for the complete local stack. It starts Authentik, DataService, Webhost, and all three configured SmartHome instances:
 
 ```powershell
 tilt up
 ```
 
-Because SmartHome is JavaFX-based, it is intentionally kept outside container workflows. Start SmartHome separately:
+To pass custom arguments to Tilt using the convenience wrappers:
 
 ```powershell
-pwsh -NoProfile -Command "Set-Location smart-lodge/.assets/SmartHome; java -jar SmartHome.jar"
+./run.ps1 --port 10351
 ```
 
-Shutdown with Tilt:
+```bash
+./run.sh --port 10351
+```
 
-```powershell
+The SmartHome instances are generated from `build/smart-homes.json` and run with isolated configuration directories under `.run/smarthomes`.
+
+Inspect resource status:
+
+```bash
+tilt get uiresources
+```
+
+Open the Tilt dashboard at <http://localhost:10350> and stop the stack with:
+
+```bash
 tilt down
 ```
+
+Authentik is available at <http://localhost:9000> and the Webhost at <http://localhost:5099>.
 
 ## SmartHome WebSocket Integration (Webhost)
 

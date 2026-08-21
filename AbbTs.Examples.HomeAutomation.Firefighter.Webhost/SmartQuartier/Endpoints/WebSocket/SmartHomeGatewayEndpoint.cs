@@ -12,19 +12,21 @@ public static class SmartHomeGatewayEndpoint
   public static void MapSmartHomeGatewayEndpoints(this WebApplication app)
   {
     app.Map(
-      "/smart-home/data",
-      async (HttpContext context, ISmartHomeGateway gateway, CancellationToken cancellationToken) =>
-      {
-        if (!context.WebSockets.IsWebSocketRequest)
+        "/smart-home/data",
+        async (HttpContext context, ISmartHomeGateway gateway, CancellationToken cancellationToken) =>
         {
-          context.Response.StatusCode = StatusCodes.Status400BadRequest;
-          await context.Response.WriteAsync("Expected a WebSocket request.", cancellationToken);
-          return;
-        }
+          if (!context.WebSockets.IsWebSocketRequest)
+          {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsync("Expected a WebSocket request.", cancellationToken);
+            return;
+          }
 
-        using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-        await gateway.HandleSmartHomeSessionAsync(webSocket, cancellationToken);
-      }
-    );
+          using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+          await gateway.HandleSmartHomeSessionAsync(webSocket, cancellationToken);
+        }
+      )
+      // Physical SmartHome/DataService processes connect here without a browser session cookie.
+      .AllowAnonymous();
   }
 }

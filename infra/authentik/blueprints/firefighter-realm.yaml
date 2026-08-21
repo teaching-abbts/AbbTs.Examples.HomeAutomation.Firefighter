@@ -1,0 +1,104 @@
+# DEV ONLY blueprint — auto-provisions the Firefighter demo realm on Authentik startup.
+# Targets authentik 2025.8 blueprint schema. Mounted read-only into the server/worker containers.
+version: 1
+metadata:
+  name: Firefighter demo realm
+entries:
+  - model: authentik_core.group
+    id: group-viewer
+    identifiers:
+      name: viewer
+    attrs:
+      name: viewer
+
+  - model: authentik_core.group
+    id: group-operator
+    identifiers:
+      name: operator
+    attrs:
+      name: operator
+
+  - model: authentik_core.user
+    id: user-citizen
+    identifiers:
+      username: citizen
+    attrs:
+      username: citizen
+      name: Citizen (viewer)
+      email: citizen@firefighter.local
+      is_active: true
+      path: users
+      groups:
+        - !KeyOf group-viewer
+      password: !Env [AUTHENTIK_DEMO_USER_PASSWORD, dev-only-demo-user-password]
+
+  - model: authentik_core.user
+    id: user-firefighter
+    identifiers:
+      username: firefighter
+    attrs:
+      username: firefighter
+      name: Firefighter (operator)
+      email: firefighter@firefighter.local
+      is_active: true
+      path: users
+      groups:
+        - !KeyOf group-operator
+      password: !Env [AUTHENTIK_DEMO_USER_PASSWORD, dev-only-demo-user-password]
+
+  # Exposes a "groups" claim in the ID token so the Webhost can map roles.
+  - model: authentik_providers_oauth2.scopemapping
+    id: scope-groups
+    identifiers:
+      scope_name: groups
+      name: "Firefighter: Groups"
+    attrs:
+      scope_name: groups
+      description: Group membership for the Firefighter dashboard
+      expression: |
+        return {"groups": [group.name for group in request.user.ak_groups.all()]}
+
+  - model: authentik_providers_oauth2.oauth2provider
+    id: provider-firefighter
+    identifiers:
+      name: firefighter-webhost
+    attrs:
+      name: firefighter-webhost
+      client_type: confidential
+      client_id: firefighter-webhost
+      client_secret:
+        !Env [
+          AUTHENTIK_FIREFIGHTER_CLIENT_SECRET,
+          dev-only-firefighter-client-secret-change-me,
+        ]
+      authorization_flow:
+        !Find [
+          authentik_flows.flow,
+          [slug, default-provider-authorization-implicit-consent],
+        ]
+      invalidation_flow:
+        !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      signing_key:
+        !Find [
+          authentik_crypto.certificatekeypair,
+          [name, authentik Self-signed Certificate],
+        ]
+      redirect_uris:
+        - matching_mode: strict
+          url: https://localhost:7118/signin-oidc
+        - matching_mode: strict
+          url: http://localhost:5099/signin-oidc
+      property_mappings:
+        - !Find [authentik_providers_oauth2.scopemapping, [scope_name, openid]]
+        - !Find [authentik_providers_oauth2.scopemapping, [scope_name, profile]]
+        - !Find [authentik_providers_oauth2.scopemapping, [scope_name, email]]
+        - !KeyOf scope-groups
+
+  - model: authentik_core.application
+    id: app-firefighter
+    identifiers:
+      slug: firefighter
+    attrs:
+      name: Firefighter Dashboard
+      slug: firefighter
+      provider: !KeyOf provider-firefighter

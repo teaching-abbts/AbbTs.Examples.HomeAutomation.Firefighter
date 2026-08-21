@@ -1,4 +1,9 @@
 {
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "operatorOnlyTooltip": "Nur die Rolle Operator (Feuerwehr) kann diese Aktion ausführen."
+  },
   "dashboard": {
     "nav": "Dashboard",
     "badge": "Lageübersicht",

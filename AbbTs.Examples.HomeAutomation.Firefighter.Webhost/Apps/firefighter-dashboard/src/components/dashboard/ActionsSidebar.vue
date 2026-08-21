@@ -79,6 +79,12 @@
               rounded="lg"
               variant="elevated"
               :style="quickActionStyle('gas-ventilate')"
+              :disabled="!authStore.isOperator"
+              :title="
+                !authStore.isOperator
+                  ? t('auth.operatorOnlyTooltip')
+                  : undefined
+              "
               @click="emit('quick-action', action.actionKey, 'gas-ventilate')"
             >
               {{ t("dashboard.actions.quickVentilate") }}
@@ -91,6 +97,12 @@
               rounded="lg"
               variant="elevated"
               :style="quickActionStyle('fire-stop-heating')"
+              :disabled="!authStore.isOperator"
+              :title="
+                !authStore.isOperator
+                  ? t('auth.operatorOnlyTooltip')
+                  : undefined
+              "
               @click="
                 emit('quick-action', action.actionKey, 'fire-stop-heating')
               "
@@ -105,6 +117,12 @@
               rounded="lg"
               variant="elevated"
               :style="quickActionStyle('fire-neighbor-display')"
+              :disabled="!authStore.isOperator"
+              :title="
+                !authStore.isOperator
+                  ? t('auth.operatorOnlyTooltip')
+                  : undefined
+              "
               @click="
                 emit('quick-action', action.actionKey, 'fire-neighbor-display')
               "
@@ -120,6 +138,10 @@
             rounded="lg"
             :style="{ backgroundColor: '#b0b4b8', color: '#ffffff' }"
             variant="elevated"
+            :disabled="!authStore.isOperator"
+            :title="
+              !authStore.isOperator ? t('auth.operatorOnlyTooltip') : undefined
+            "
             @click="emit('toggle-action', action.actionKey)"
             >{{
               showOnlyOpenActions
@@ -142,6 +164,7 @@ import { useI18n } from "vue-i18n";
 
 import type { ActionItem } from "./types";
 import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
 
 const props = defineProps<{
   actions: ActionItem[];
@@ -160,6 +183,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const appStore = useAppStore();
+const authStore = useAuthStore();
 const { onlyOpenAlarms } = storeToRefs(appStore);
 
 const showOnlyOpenActions = computed({

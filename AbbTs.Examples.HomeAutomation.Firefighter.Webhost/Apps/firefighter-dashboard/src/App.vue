@@ -20,6 +20,22 @@
           </v-btn>
           <LanguageSwitcher class="mr-4" />
           <ThemeSwitcher />
+          <v-divider class="mx-4" vertical />
+          <span
+            v-if="authStore.isAuthenticated"
+            class="d-flex align-center ga-2"
+          >
+            <v-icon icon="mdi-account-circle" />
+            <span class="text-body-2">{{
+              authStore.currentUser.displayName
+            }}</span>
+            <v-btn size="small" variant="text" @click="authStore.logout()">
+              {{ t("auth.logout") }}
+            </v-btn>
+          </span>
+          <v-btn v-else size="small" variant="text" @click="authStore.login()">
+            {{ t("auth.login") }}
+          </v-btn>
         </v-app-bar>
         <router-view />
       </v-layout>
@@ -30,13 +46,19 @@
 <script lang="ts" setup>
 import LanguageSwitcher from "@/components/dashboard/LanguageSwitcher.vue";
 import ThemeSwitcher from "@/components/dashboard/ThemeSwitcher.vue";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { useAuthStore } from "@/stores/auth";
 
 const { t } = useI18n({ useScope: "global" });
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
+
+onMounted(() => {
+  authStore.fetchCurrentUser();
+});
 
 type AppBarNavItem = {
   path: string;

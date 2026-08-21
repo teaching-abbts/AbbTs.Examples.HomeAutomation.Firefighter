@@ -168,7 +168,7 @@ public sealed class BuildContext : FrostingContext
 
     if (
       Directory.Exists(Path.Combine(currentDirectory, "build"))
-      && File.Exists(Path.Combine(currentDirectory, "run.ps1"))
+      && File.Exists(Path.Combine(currentDirectory, "Tiltfile"))
     )
     {
       return currentDirectory;
@@ -180,6 +180,6 @@ public sealed class BuildContext : FrostingContext
   private static bool IsRepoRoot(string directory)
   {
     return Directory.Exists(Path.Combine(directory, "build"))
-      && File.Exists(Path.Combine(directory, "run.ps1"));
+      && File.Exists(Path.Combine(directory, "Tiltfile"));
   }
 }

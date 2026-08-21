@@ -1,4 +1,9 @@
 {
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "operatorOnlyTooltip": "Only the operator role (firefighter) can perform this action."
+  },
   "dashboard": {
     "nav": "Dashboard",
     "badge": "Operations overview",

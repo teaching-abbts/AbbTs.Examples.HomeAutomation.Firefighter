@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.Configuration;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.Authentication;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.Authentication.Endpoints;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.GitVersion.Endpoints.About;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.GitVersion.Extensions;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.NSwag;
@@ -43,6 +45,7 @@ public static class Program
     if (builder.Environment.EnvironmentName != "NSWAG")
     {
       builder.SetupSpaMiddleware(appSettings);
+      builder.Services.AddFirefighterAuthentication(builder.Configuration);
     }
 
     builder.Services.AddSmartQuartier(builder.Configuration);
@@ -105,6 +108,15 @@ public static class Program
     );
 
     app.UseWebSockets();
+
+    if (app.Environment.EnvironmentName != "NSWAG")
+    {
+      app.UseAuthentication();
+      app.UseAuthorization();
+    }
+
+    // Mapped unconditionally so NSwag can discover it and generate a typed client.
+    app.MapAccountEndpoints();
 
     app.UseNSwag();
     app.MapSmartQuartierHistoryEndpoint();

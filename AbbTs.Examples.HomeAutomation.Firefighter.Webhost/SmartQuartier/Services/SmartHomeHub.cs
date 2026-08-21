@@ -1,12 +1,15 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.Authentication;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Models;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.SmartQuartier.Services;
 
+[Authorize]
 public sealed class SmartHomeHub(ISmartHomeGateway gateway) : Hub
 {
   private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -43,6 +46,7 @@ public sealed class SmartHomeHub(ISmartHomeGateway gateway) : Hub
     return Groups.RemoveFromGroupAsync(Context.ConnectionId, DashboardGroupName);
   }
 
+  [Authorize(Policy = ServiceCollectionExtensions.OperatorPolicy)]
   public Task RequestState(string smartHomeId)
   {
     return gateway.SendDashboardCommandAsync(
@@ -52,6 +56,7 @@ public sealed class SmartHomeHub(ISmartHomeGateway gateway) : Hub
     );
   }
 
+  [Authorize(Policy = ServiceCollectionExtensions.OperatorPolicy)]
   public Task RequestMeasurement(string smartHomeId)
   {
     return gateway.SendDashboardCommandAsync(
@@ -61,6 +66,7 @@ public sealed class SmartHomeHub(ISmartHomeGateway gateway) : Hub
     );
   }
 
+  [Authorize(Policy = ServiceCollectionExtensions.OperatorPolicy)]
   public Task SendCommand(string smartHomeId, SmartHomeCommand command)
   {
     return gateway.SendDashboardCommandAsync(

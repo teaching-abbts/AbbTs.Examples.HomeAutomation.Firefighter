@@ -1,4 +1,9 @@
 {
+  "auth": {
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "operatorOnlyTooltip": "この操作はオペレーター（消防士）のみ実行できます。"
+  },
   "dashboard": {
     "nav": "ダッシュボード",
     "badge": "運用概要",

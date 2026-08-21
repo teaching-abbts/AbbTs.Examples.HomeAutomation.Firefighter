@@ -3,7 +3,7 @@ using Cake.Frosting;
 namespace Build.Tasks.Artifacts;
 
 [TaskName("Artifacts-Build")]
-[IsDependentOn(typeof(ArtifactsStageScriptsTask))]
+[IsDependentOn(typeof(ArtifactsStageAssetsTask))]
 public sealed class ArtifactsBuildTask : FrostingTask
 {
 }

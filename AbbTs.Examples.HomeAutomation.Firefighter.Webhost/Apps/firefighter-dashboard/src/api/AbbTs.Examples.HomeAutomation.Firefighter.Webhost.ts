@@ -17,6 +17,102 @@ export class Client {
         this.baseUrl = baseUrl ?? "";
     }
 
+    getAccountLogin(returnUrl: string | null | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/account/login?";
+        if (returnUrl !== undefined && returnUrl !== null)
+            url_ += "returnUrl=" + encodeURIComponent("" + returnUrl) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAccountLogin(_response);
+        });
+    }
+
+    protected processGetAccountLogin(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    getAccountLogout(): Promise<void> {
+        let url_ = this.baseUrl + "/account/logout";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAccountLogout(_response);
+        });
+    }
+
+    protected processGetAccountLogout(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    getAccountUser(): Promise<CurrentUserResponse> {
+        let url_ = this.baseUrl + "/account/user";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAccountUser(_response);
+        });
+    }
+
+    protected processGetAccountUser(response: Response): Promise<CurrentUserResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CurrentUserResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CurrentUserResponse>(null as any);
+    }
+
     getSmartQuartierHistory(): Promise<SmartQuartierHistoryResponse> {
         let url_ = this.baseUrl + "/smart-quartier/history";
         url_ = url_.replace(/[?&]$/, "");
@@ -200,6 +296,62 @@ export class Client {
         }
         return Promise.resolve<SmartHomeDetails>(null as any);
     }
+}
+
+export class CurrentUserResponse implements ICurrentUserResponse {
+    isAuthenticated?: boolean;
+    userName?: string | undefined;
+    displayName?: string | undefined;
+    roles?: string[];
+
+    constructor(data?: ICurrentUserResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isAuthenticated = _data["isAuthenticated"];
+            this.userName = _data["userName"];
+            this.displayName = _data["displayName"];
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): CurrentUserResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new CurrentUserResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isAuthenticated"] = this.isAuthenticated;
+        data["userName"] = this.userName;
+        data["displayName"] = this.displayName;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ICurrentUserResponse {
+    isAuthenticated?: boolean;
+    userName?: string | undefined;
+    displayName?: string | undefined;
+    roles?: string[];
 }
 
 export class SmartQuartierHistoryResponse implements ISmartQuartierHistoryResponse {
