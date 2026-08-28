@@ -55,6 +55,7 @@
       "createdAt": "Erstellt am",
       "resolvedAt": "Erledigt am",
       "notResolved": "Noch offen",
+      "toggleSidebar": "Seitenleiste umschalten",
       "errors": {
         "hubDisconnected": "Live-Kanal ist nicht verbunden. Bitte Seite neu laden.",
         "houseNotFound": "Zielhaus konnte nicht gefunden werden.",

@@ -1,8 +1,8 @@
 <template>
   <v-navigation-drawer
-    v-model="isOpen"
     class="sidebar-fill"
     color="surface-variant"
+    permanent
     width="260"
   >
     <div class="px-4 py-4 text-h5 font-weight-bold">
@@ -84,19 +84,9 @@ import { useI18n } from "vue-i18n";
 import type { EventItem } from "./types";
 import { useAppStore, type AppEventType } from "@/stores/app";
 
-const props = defineProps<{
+defineProps<{
   events: EventItem[];
-  modelValue: boolean;
 }>();
-
-const emit = defineEmits<{
-  "update:modelValue": [value: boolean];
-}>();
-
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value: boolean) => emit("update:modelValue", value),
-});
 
 const { t } = useI18n();
 const appStore = useAppStore();

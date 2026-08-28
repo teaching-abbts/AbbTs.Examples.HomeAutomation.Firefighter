@@ -45,7 +45,8 @@
       "onlyOpen": "Csak nyitott műveletek",
       "createdAt": "Létrehozva",
       "resolvedAt": "Lezárva",
-      "notResolved": "Még nyitott"
+      "notResolved": "Még nyitott",
+      "toggleSidebar": "Oldalsáv váltása"
     },
     "language": {
       "label": "Nyelv",

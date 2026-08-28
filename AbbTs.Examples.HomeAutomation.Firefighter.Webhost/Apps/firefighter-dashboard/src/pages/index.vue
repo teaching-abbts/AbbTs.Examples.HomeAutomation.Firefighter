@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-page mt-10">
-    <EventsSidebar v-model="showEventsSidebar" :events="sidebarEvents" />
+    <EventsSidebar v-if="showEventsSidebar" :events="sidebarEvents" />
     <div
       class="dashboard-content"
       :class="{
@@ -105,7 +105,7 @@
     </v-snackbar>
 
     <ActionsSidebar
-      v-model="showActionsSidebar"
+      v-if="showActionsSidebar"
       :actions="actions"
       @toggle-action="toggleAction"
       @quick-action="handleQuickAction"
@@ -498,10 +498,7 @@ const handleQuickAction = async (
 
 @media (max-width: 1280px) {
   .dashboard-content {
-    width: auto;
     padding: 1rem;
-    margin-left: 0;
-    margin-right: 0;
   }
 }
 </style>

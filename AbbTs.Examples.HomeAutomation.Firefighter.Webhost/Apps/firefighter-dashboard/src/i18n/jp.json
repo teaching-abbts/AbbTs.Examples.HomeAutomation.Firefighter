@@ -45,7 +45,8 @@
       "onlyOpen": "未完了のみ表示",
       "createdAt": "作成日時",
       "resolvedAt": "解決日時",
-      "notResolved": "未解決"
+      "notResolved": "未解決",
+      "toggleSidebar": "サイドバーの切り替え"
     },
     "language": {
       "label": "言語",

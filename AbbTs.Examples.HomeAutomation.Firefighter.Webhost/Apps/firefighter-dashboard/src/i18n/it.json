@@ -45,7 +45,8 @@
       "onlyOpen": "Solo azioni aperte",
       "createdAt": "Creato il",
       "resolvedAt": "Risolto il",
-      "notResolved": "Non ancora risolto"
+      "notResolved": "Non ancora risolto",
+      "toggleSidebar": "Attiva/disattiva barra laterale"
     },
     "language": {
       "label": "Lingua",
