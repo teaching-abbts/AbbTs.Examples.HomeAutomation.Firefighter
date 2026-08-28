@@ -58,6 +58,40 @@ entries:
       expression: |
         return {"groups": [group.name for group in request.user.ak_groups.all()]}
 
+  - model: authentik_flows.flow
+    id: flow-firefighter-auth
+    identifiers:
+      slug: firefighter-authentication-flow
+    attrs:
+      name: Firefighter Authentication Flow
+      slug: firefighter-authentication-flow
+      title: Firefighter Dashboard - Demo Login Credentials
+      designation: authentication
+      description: |
+        Demo Credentials:
+        👤 Citizen (viewer): citizen / dev-only-demo-user-password
+        👨‍🚒 Firefighter (operator): firefighter / dev-only-demo-user-password
+
+  - model: authentik_stages_prompt.promptstage
+    id: stage-firefighter-info
+    identifiers:
+      name: firefighter-demo-info
+    attrs:
+      name: firefighter-demo-info
+      fields:
+        - !Find [authentik_stages_prompt.prompt, [field_name, username]]
+        - !Find [authentik_stages_prompt.prompt, [field_name, password]]
+
+  - model: authentik_flows.flowstagebinding
+    id: firefighter-auth-binding
+    identifiers:
+      target: !KeyOf flow-firefighter-auth
+      stage: !KeyOf stage-firefighter-info
+      order: 0
+    attrs:
+      target: !KeyOf flow-firefighter-auth
+      stage: !KeyOf stage-firefighter-info
+
   - model: authentik_providers_oauth2.oauth2provider
     id: provider-firefighter
     identifiers:
@@ -71,11 +105,7 @@ entries:
           AUTHENTIK_FIREFIGHTER_CLIENT_SECRET,
           dev-only-firefighter-client-secret-change-me,
         ]
-      authorization_flow:
-        !Find [
-          authentik_flows.flow,
-          [slug, default-provider-authorization-implicit-consent],
-        ]
+      authorization_flow: !KeyOf flow-firefighter-auth
       invalidation_flow:
         !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
       signing_key:
@@ -102,3 +132,11 @@ entries:
       name: Firefighter Dashboard
       slug: firefighter
       provider: !KeyOf provider-firefighter
+      meta_description: |
+        Login to continue to Firefighter Dashboard:
+        - Citizen (viewer):
+          - UN: citizen
+            PW: dev-only-demo-user-password
+        - Firefighter (operator):
+          - UN: firefighter
+            PW: dev-only-demo-user-password

@@ -31,7 +31,71 @@ Reference sources:
 - Frontend package manager pin: `AbbTs.Examples.HomeAutomation.Firefighter.Webhost/Apps/firefighter-dashboard/package.json` (`pnpm@10.32.1`, managed by VitePlus)
 - SPA integration commands: `AbbTs.Examples.HomeAutomation.Firefighter.Webhost/AbbTs.Examples.HomeAutomation.Firefighter.Webhost.csproj` (`vp install`, `vp run build`)
 
-## Quick Start (Firefighter Webhost)
+## Quick Start
+
+The recommended local setup uses Tilt to start Authentik, the SmartQuartier
+DataService, the Firefighter Webhost, and the three sample SmartHomes together.
+
+1. Verify the prerequisites listed above.
+
+2. Start the complete local runtime:
+
+```powershell
+tilt up
+```
+
+3. Open the dashboard at <http://localhost:5099> and sign in with one of the
+  development accounts listed in [Local Credentials](#local-credentials).
+
+Tilt starts the DataService through
+`smart-lodge/.assets/DataService/start-data-service.ps1`. The launcher creates
+the CSV persistence files when they are missing, which allows the DataService
+history endpoint to work on a fresh checkout.
+
+To inspect resource status:
+
+```powershell
+tilt get uiresources
+```
+
+Open the Tilt dashboard at <http://localhost:10350>. Stop the stack with:
+
+```powershell
+tilt down
+```
+
+## Local Credentials
+
+These credentials are for local development only and are defined in
+`infra/authentik/.env`.
+
+| Account                  | Username      | Password                      | Role          |
+| ------------------------ | ------------- | ----------------------------- | ------------- |
+| Firefighter dashboard    | `citizen`     | `dev-only-demo-user-password` | Viewer        |
+| Firefighter dashboard    | `firefighter` | `dev-only-demo-user-password` | Operator      |
+| Authentik administration | `akadmin`     | `dev-only-akadmin-password`   | Administrator |
+
+Use `citizen` or `firefighter` at the Firefighter dashboard. Use `akadmin` at
+the Authentik administration interface at <http://localhost:9000>.
+
+Never reuse these development credentials outside the local environment.
+
+## Local Endpoints
+
+Use these hostnames and ports while the local Tilt stack is running:
+
+| Service                     | Address                                            | Purpose                                    |
+| --------------------------- | -------------------------------------------------- | ------------------------------------------ |
+| Firefighter dashboard       | <http://localhost:5099>                            | Main application                           |
+| Firefighter Webhost (HTTPS) | <https://localhost:7118>                           | Main application over HTTPS                |
+| Swagger                     | <http://localhost:5099/swagger>                    | Webhost API documentation                  |
+| Authentik administration    | <http://localhost:9000>                            | Manage users, groups, providers, and flows |
+| Authentik OAuth authority   | <http://localhost:9000/application/o/firefighter/> | Sign-in authority used by the Webhost      |
+| Frontend Vite dev server    | <http://localhost:3000>                            | Direct SPA development server              |
+| SmartQuartier DataService   | <http://127.0.0.1:11001>                           | History, statistics, and forecast API      |
+| Tilt dashboard              | <http://localhost:10350>                           | Runtime and resource status                |
+
+## Manual Webhost Development
 
 1. Install frontend dependencies:
 
@@ -40,25 +104,18 @@ cd AbbTs.Examples.HomeAutomation.Firefighter.Webhost/Apps/firefighter-dashboard
 vp install
 ```
 
-1. Start backend (ASP.NET Core Webhost):
+2. Start the backend (ASP.NET Core Webhost):
 
 ```bash
 dotnet run --project AbbTs.Examples.HomeAutomation.Firefighter.Webhost/AbbTs.Examples.HomeAutomation.Firefighter.Webhost.csproj
 ```
 
-1. In a second terminal, start the frontend dev server:
+3. In a second terminal, start the frontend dev server:
 
 ```bash
 cd AbbTs.Examples.HomeAutomation.Firefighter.Webhost/Apps/firefighter-dashboard
 vp run dev
 ```
-
-Local URLs:
-
-- Backend: <http://localhost:5099>
-- Backend HTTPS: <https://localhost:7118>
-- Frontend dev server: <http://localhost:3000>
-- Swagger: <http://localhost:5099/swagger>
 
 ## Runtime Dependency
 
@@ -109,12 +166,6 @@ The `.artifacts` folder contains:
 
 ## Local Runtime With Tilt
 
-Tilt is the single entry point for the complete local stack. It starts Authentik, DataService, Webhost, and all three configured SmartHome instances:
-
-```powershell
-tilt up
-```
-
 To pass custom arguments to Tilt using the convenience wrappers:
 
 ```powershell
@@ -125,27 +176,12 @@ To pass custom arguments to Tilt using the convenience wrappers:
 ./run.sh --port 10351
 ```
 
-The SmartHome instances are generated from `build/smart-homes.json` and run with isolated configuration directories under `.run/smarthomes`.
-
-Inspect resource status:
-
-```bash
-tilt get uiresources
-```
-
-Open the Tilt dashboard at <http://localhost:10350> and stop the stack with:
-
-```bash
-tilt down
-```
-
-Authentik is available at <http://localhost:9000> and the Webhost at <http://localhost:5099>.
+The SmartHome instances are generated from `build/smart-homes.json` and run
+with isolated configuration directories under `.run/smarthomes`.
 
 ## SmartHome WebSocket Integration (Webhost)
 
 The Webhost now supports the SmartHome gateway WebSocket protocol directly.
-
-### Endpoints
 
 - SmartHome -> Webhost: `ws://127.0.0.1:5099/smart-home/data`
 - Dashboard client -> Webhost: `ws://127.0.0.1:5099/smart-home/ws`
@@ -187,11 +223,6 @@ Send JSON messages to `/smart-home/ws`:
   }
 }
 ```
-
-Supported `send command` targets (from the SmartHome protocol docs/source):
-
-- `LightControl` with `on`, `off`, `setpoint`
-- `HeatingControl` with `on`, `off`, `setpoint`
 - `AlarmControl` with `on`, `off`
 - `Door` with `open`, `close`
 - `Display` with value format `line1;line2`
@@ -207,8 +238,6 @@ The Webhost forwards SmartHome messages to `/smart-home/ws` as envelopes:
   "receivedAtUtc": "2026-03-22T12:00:00.0000000Z"
 }
 ```
-
-System and outbound tracing events are also emitted:
 
 - `system status` with `{ "smartHomeConnected": true|false }`
 - `outbound get state`, `outbound get measurement`, `outbound send command`

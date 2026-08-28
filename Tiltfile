@@ -10,7 +10,7 @@ dc_resource('authentik-worker', labels=['authentik'])
 
 local_resource(
     name='data-service',
-    serve_cmd='java -jar SmartQuartierDataService.jar',
+    serve_cmd='powershell -NoProfile -ExecutionPolicy Bypass -File start-data-service.ps1',
     serve_dir='smart-lodge/.assets/DataService',
     labels=['smart-lodge'],
 )
