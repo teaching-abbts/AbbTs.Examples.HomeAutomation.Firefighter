@@ -3,6 +3,11 @@
     <v-main>
       <v-layout class="dashboard-layout">
         <v-app-bar class="px-6" color="surface" elevation="0">
+          <v-app-bar-nav-icon
+            v-if="isActiveRoute('/')"
+            :aria-label="t('dashboard.actions.toggleSidebar')"
+            @click="showEventsSidebar = !showEventsSidebar"
+          />
           <v-app-bar-title class="d-flex align-center ga-2 text-h6">
             <span>{{ t(currentAppBarTitleKey) }}</span>
           </v-app-bar-title>
@@ -36,6 +41,12 @@
           <v-btn v-else size="small" variant="text" @click="authStore.login()">
             {{ t("auth.login") }}
           </v-btn>
+          <v-app-bar-nav-icon
+            v-if="isActiveRoute('/')"
+            :aria-label="t('dashboard.actions.toggleSidebar')"
+            icon="mdi-menu-open"
+            @click="showActionsSidebar = !showActionsSidebar"
+          />
         </v-app-bar>
         <router-view />
       </v-layout>
@@ -50,11 +61,15 @@ import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/auth";
+import { useAppStore } from "@/stores/app";
+import { storeToRefs } from "pinia";
 
 const { t } = useI18n({ useScope: "global" });
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const appStore = useAppStore();
+const { showEventsSidebar, showActionsSidebar } = storeToRefs(appStore);
 
 onMounted(() => {
   authStore.fetchCurrentUser();

@@ -1,7 +1,13 @@
 <template>
   <div class="dashboard-page mt-10">
-    <EventsSidebar :events="sidebarEvents" />
-    <div class="dashboard-content">
+    <EventsSidebar v-model="showEventsSidebar" :events="sidebarEvents" />
+    <div
+      class="dashboard-content"
+      :class="{
+        'no-left-sidebar': !showEventsSidebar,
+        'no-right-sidebar': !showActionsSidebar,
+      }"
+    >
       <v-row class="mb-4" justify="space-between" align="center">
         <v-col cols="12" md="8">
           <div class="text-overline text-primary">
@@ -99,6 +105,7 @@
     </v-snackbar>
 
     <ActionsSidebar
+      v-model="showActionsSidebar"
       :actions="actions"
       @toggle-action="toggleAction"
       @quick-action="handleQuickAction"
@@ -131,7 +138,11 @@ const houseDetailsStore = useHouseDetailsStore();
 const appStore = useAppStore();
 const sidebarEvents = computed(() => houseDetailsStore.sidebarEvents);
 const actions = computed(() => houseDetailsStore.actions);
-const { normalizedNeighborFireDistanceThreshold } = storeToRefs(appStore);
+const {
+  normalizedNeighborFireDistanceThreshold,
+  showEventsSidebar,
+  showActionsSidebar,
+} = storeToRefs(appStore);
 
 const views = ["2d", "3d"];
 
@@ -466,6 +477,23 @@ const handleQuickAction = async (
   margin-right: 300px;
   width: calc(100vw - 560px);
   min-height: calc(100vh - 64px);
+  transition:
+    margin 0.2s ease-in-out,
+    width 0.2s ease-in-out;
+}
+
+.dashboard-content.no-left-sidebar {
+  margin-left: 0;
+  width: calc(100vw - 300px);
+}
+
+.dashboard-content.no-right-sidebar {
+  margin-right: 0;
+  width: calc(100vw - 260px);
+}
+
+.dashboard-content.no-left-sidebar.no-right-sidebar {
+  width: 100vw;
 }
 
 @media (max-width: 1280px) {

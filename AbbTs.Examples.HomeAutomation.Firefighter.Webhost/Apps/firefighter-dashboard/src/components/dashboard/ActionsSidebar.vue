@@ -1,9 +1,9 @@
 <template>
   <v-navigation-drawer
+    v-model="isOpen"
     class="sidebar-fill"
     color="surface-variant"
     location="right"
-    permanent
     width="300"
   >
     <div class="px-4 py-4 text-h5 font-weight-bold">
@@ -168,6 +168,7 @@ import { useAuthStore } from "@/stores/auth";
 
 const props = defineProps<{
   actions: ActionItem[];
+  modelValue: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -179,7 +180,13 @@ const emit = defineEmits<{
       | "fire-stop-heating"
       | "fire-neighbor-display",
   ];
+  "update:modelValue": [value: boolean];
 }>();
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value: boolean) => emit("update:modelValue", value),
+});
 
 const { t } = useI18n();
 const appStore = useAppStore();

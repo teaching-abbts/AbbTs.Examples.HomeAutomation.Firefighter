@@ -1,5 +1,5 @@
 import { useLocalStorage } from "@vueuse/core";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 
 export type AppTheme = "light" | "dark";
@@ -83,6 +83,9 @@ export const useAppStore = defineStore("app", () => {
     STORAGE_KEYS.motionEscalationWindowMinutes,
     10,
   );
+
+  const showEventsSidebar = ref(true);
+  const showActionsSidebar = ref(true);
 
   const normalizedEventTypeFilter = computed<AppEventType[]>(() => {
     const allowed = new Set(ALL_EVENT_TYPES);
@@ -172,6 +175,14 @@ export const useAppStore = defineStore("app", () => {
       normalizeMotionEscalationWindowMinutes(value);
   };
 
+  const toggleEventsSidebar = () => {
+    showEventsSidebar.value = !showEventsSidebar.value;
+  };
+
+  const toggleActionsSidebar = () => {
+    showActionsSidebar.value = !showActionsSidebar.value;
+  };
+
   return {
     locale,
     theme,
@@ -188,6 +199,8 @@ export const useAppStore = defineStore("app", () => {
     normalizedNeighborFireDistanceThreshold,
     normalizedMotionEscalationCount,
     normalizedMotionEscalationWindowMinutes,
+    showEventsSidebar,
+    showActionsSidebar,
     setLocale,
     setTheme,
     setHouseObserved,
@@ -198,5 +211,7 @@ export const useAppStore = defineStore("app", () => {
     setNeighborFireDistanceThreshold,
     setMotionEscalationCount,
     setMotionEscalationWindowMinutes,
+    toggleEventsSidebar,
+    toggleActionsSidebar,
   };
 });

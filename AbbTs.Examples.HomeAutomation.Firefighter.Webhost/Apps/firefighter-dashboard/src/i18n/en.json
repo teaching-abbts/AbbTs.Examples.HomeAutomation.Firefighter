@@ -55,6 +55,7 @@
       "createdAt": "Created at",
       "resolvedAt": "Resolved at",
       "notResolved": "Not resolved yet",
+      "toggleSidebar": "Toggle sidebar",
       "errors": {
         "hubDisconnected": "Live channel is disconnected. Please reload the page.",
         "houseNotFound": "Target house could not be found.",
