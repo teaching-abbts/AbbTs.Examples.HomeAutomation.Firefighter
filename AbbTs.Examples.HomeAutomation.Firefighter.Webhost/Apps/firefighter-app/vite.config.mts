@@ -77,7 +77,7 @@ export default defineConfig({
       "import/no-duplicates": [
         "error",
         {
-          "prefer-inline": false,
+          preferInline: false,
         },
       ],
       "import/no-mutable-exports": "error",
@@ -221,7 +221,12 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: ["**/*.?([cm])js", "**/*.?([cm])ts", "**/*.?([cm])jsx", "**/*.?([cm])tsx"],
+        files: [
+          "**/*.?([cm])js",
+          "**/*.?([cm])ts",
+          "**/*.?([cm])jsx",
+          "**/*.?([cm])tsx",
+        ],
         rules: {
           "constructor-super": "error",
           "for-direction": "error",

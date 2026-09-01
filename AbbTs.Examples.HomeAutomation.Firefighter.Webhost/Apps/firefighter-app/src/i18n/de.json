@@ -51,8 +51,12 @@
     "detail": {
       "outline-table": {
         "key-title": "Sensortyp",
-        "value-title": "Aktueller Wert"
-      }
+        "value-title": "Aktueller Wert",
+        "control-title": "Steuerfläche",
+        "setting-title": "Einstellung"
+      },
+      "sensors-title": "Sensoren",
+      "settings-title": "Einstellungen"
     },
     "setting": {
       "alarm": "Ist der Alarm aktiviert?",
@@ -61,7 +65,8 @@
       "heating": "Ist die Heizung an?",
       "heating-intensity": "Heizintensität",
       "light": "Ist das Licht an?",
-      "light-intensity": "Lichtintensität"
+      "light-intensity": "Lichtintensität",
+      "display": "Anzeige"
     }
   },
   "wiki": {

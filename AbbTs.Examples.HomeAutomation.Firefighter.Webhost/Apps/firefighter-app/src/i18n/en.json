@@ -51,8 +51,12 @@
     "detail": {
       "outline-table": {
         "key-title": "Sensor type",
-        "value-title": "Current Value"
-      }
+        "value-title": "Current Value",
+        "setting-title": "Setting",
+        "control-title": "Control"
+      },
+      "sensors-title": "Sensors",
+      "settings-title": "Settings"
     },
     "setting": {
       "light": "Is the light on?",
@@ -61,7 +65,8 @@
       "alarm": "Is the alarm enabled?",
       "light-intensity": "Light intensity",
       "heating-intensity": "Heating intensity",
-      "display-value": "Display Text"
+      "display-value": "Display Text",
+      "display": "Display"
     }
   },
   "wiki": {

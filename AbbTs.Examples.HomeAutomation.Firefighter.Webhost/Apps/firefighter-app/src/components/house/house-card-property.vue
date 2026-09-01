@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip interactive location="bottom">
+  <v-tooltip interactive location="top">
     <template #activator="activatorProps">
       <v-list-item
         :prepend-icon="props.icon"

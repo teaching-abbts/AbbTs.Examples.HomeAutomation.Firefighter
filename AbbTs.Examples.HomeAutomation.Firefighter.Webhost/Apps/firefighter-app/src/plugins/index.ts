@@ -1,21 +1,12 @@
-import router from '../router';
-import i18n from './i18n';
-import {createPinia} from 'pinia';
-/**
- * plugins/index.ts
- *
- * Automatically included in `./src/main.ts`
- */
+import i18n from "./i18n";
+import router from "../router";
+import type { App } from "vue";
+import vuetify from "./vuetify";
+import { createPinia } from "pinia";
 
-// Types
-import type { App } from 'vue'
-
-// Plugins
-import vuetify from './vuetify'
-
-export function registerPlugins (app: App) {
- app.use(vuetify)
- app.use(createPinia());
- app.use(i18n);
- app.use(router);
+export function registerPlugins(app: App) {
+  app.use(vuetify);
+  app.use(createPinia());
+  app.use(i18n);
+  app.use(router);
 }

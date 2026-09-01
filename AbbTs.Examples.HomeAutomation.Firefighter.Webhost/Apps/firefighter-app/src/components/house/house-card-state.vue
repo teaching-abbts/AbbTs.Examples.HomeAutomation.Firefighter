@@ -1,29 +1,27 @@
 <template>
-  <div class="d-flex justify-space-around text-display-large">
-    <v-tooltip interactive location="bottom">
-      <template #activator="{ props }">
-        <v-icon v-bind="props" :color="iconProps.color">{{
-          iconProps.icon
-        }}</v-icon>
-      </template>
-      <div>
-        <ul>
-          <li>
-            {{ t("house.state.endangerment.label") }}:
-            <router-link :to="{ name: 'wiki-endangerment' }">
-              {{ t(`house.state.endangerment.${props.endangerment}`) }}
-            </router-link>
-          </li>
-          <li>
-            {{ t("house.state.danger-kind.label") }}:
-            <router-link :to="{ name: 'wiki-danger-kind' }">
-              {{ t(`house.state.danger-kind.${props.dangerKind}`) }}
-            </router-link>
-          </li>
-        </ul>
-      </div>
-    </v-tooltip>
-  </div>
+  <v-tooltip interactive location="top">
+    <template #activator="{ props }">
+      <v-icon v-bind="props" :color="iconProps.color">{{
+        iconProps.icon
+      }}</v-icon>
+    </template>
+    <div>
+      <ul>
+        <li>
+          {{ t("house.state.endangerment.label") }}:
+          <router-link :to="{ name: 'wiki-endangerment' }">
+            {{ t(`house.state.endangerment.${props.endangerment}`) }}
+          </router-link>
+        </li>
+        <li>
+          {{ t("house.state.danger-kind.label") }}:
+          <router-link :to="{ name: 'wiki-danger-kind' }">
+            {{ t(`house.state.danger-kind.${props.dangerKind}`) }}
+          </router-link>
+        </li>
+      </ul>
+    </div>
+  </v-tooltip>
 </template>
 
 <script setup lang="ts">

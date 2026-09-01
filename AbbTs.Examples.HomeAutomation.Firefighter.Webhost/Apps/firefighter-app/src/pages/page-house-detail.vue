@@ -1,179 +1,199 @@
 <template>
   <v-container fluid>
     <template v-if="currentHouse">
-      <h1>{{ currentHouse.buildingId }}</h1>
-      <h2>{{ currentHouse.owner }}</h2>
-      <h3>
-        [{{ currentHouse.coordinates.x }}, {{ currentHouse.coordinates.y }}]
-      </h3>
-      <h4>State</h4>
-      <v-card-text class="py-0">
-        <house-card-state
-          :danger-kind="currentHouse.state.dangerKind"
-          :endangerment="currentHouse.state.endangerment"
-        />
-      </v-card-text>
-      <h4>Sensors</h4>
-      <v-table>
-        <thead>
-          <tr>
-            <th id="key" class="text-left">
-              {{ t("house.detail.outline-table.key-title") }}
-            </th>
-            <th id="value" class="text-left">
-              {{ t("house.detail.outline-table.value-title") }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ t("house.property.humidity") }}</td>
-            <td>
-              <house-card-property
-                :title="currentHouse.humidity"
-                :tooltip-text="$t('house.property.humidity')"
-                icon="mdi-water-percent"
-                tooltip-to="/wiki/humidity"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>{{ t("house.property.gas-smoke") }}</td>
-            <td>
-              <house-card-property
-                :title="currentHouse.gasLevel"
-                :tooltip-text="$t('house.property.gas-smoke')"
-                icon="mdi-smoke-detector"
-                tooltip-to="/wiki/smoke"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>{{ t("house.property.temperature") }}</td>
-            <td>
-              <house-card-property
-                :title="currentHouse.temperature"
-                :tooltip-text="$t('house.property.temperature')"
-                icon="mdi-thermometer"
-                tooltip-to="/wiki/temperature"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>{{ t("house.property.brightness") }}</td>
-            <td>
-              <house-card-property
-                :title="currentHouse.brightness"
-                :tooltip-text="$t('house.property.brightness')"
-                icon="mdi-brightness-5"
-                tooltip-to="/wiki/brightness"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-      <h4>Settings</h4>
-      <v-table>
-        <thead>
-          <tr>
-            <th id="setting-key" class="text-left">Setting</th>
-            <th id="setting-control" class="text-left">Control</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Display</td>
-            <td>
-              <v-text-field
-                :label="t('house.setting.display-value')"
-                max="33"
-                v-model="displayValue"
-                :validate="validateDisplayValue"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Light</td>
-            <td>
-              <v-switch
-                color="primary"
-                v-model="isLightOn"
-                :label="t('house.setting.light')"
-              />
-              <v-slider
-                v-model="lightIntensity"
-                :label="t('house.setting.light-intensity')"
-                min="0"
-                max="1023"
-                step="1"
-              >
-                <template #append>
-                  <v-text-field
-                    density="compact"
-                    hide-details
-                    max="1023"
-                    min="0"
-                    single-line
-                    step="1"
-                    type="number"
-                    v-model="lightIntensity"
-                  />
-                </template>
-              </v-slider>
-            </td>
-          </tr>
-          <tr>
-            <td>Door Lock</td>
-            <td>
-              <v-switch
-                color="primary"
-                v-model="isDoorLocked"
-                :label="t('house.setting.door-lock')"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Heating</td>
-            <td>
-              <v-switch
-                color="primary"
-                v-model="isHeatingOn"
-                :label="t('house.setting.heating')"
-              />
-              <v-slider
-                v-model="heatingIntensity"
-                :label="t('house.setting.heating-intensity')"
-                min="0"
-                max="30"
-                step="1"
-              >
-                <template #append>
-                  <v-text-field
-                    density="compact"
-                    hide-details
-                    max="30"
-                    min="0"
-                    single-line
-                    step="1"
-                    type="number"
-                    v-model="heatingIntensity"
-                  />
-                </template>
-              </v-slider>
-            </td>
-          </tr>
-          <tr>
-            <td>Alarm</td>
-            <td>
-              <v-switch
-                color="primary"
-                v-model="isAlarmOn"
-                :label="t('house.setting.alarm')"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
+      <v-row>
+        <v-col cols="12">
+          <v-card>
+            <v-card-title>{{ currentHouse.buildingId }}</v-card-title>
+            <v-card-subtitle>{{ currentHouse.owner }}</v-card-subtitle>
+            <v-card-text class="py-0">
+              <div class="d-flex justify-space-around text-display-large">
+                <v-chip prepend-icon="mdi-map-marker" size="large">
+                  [ x = {{ currentHouse.coordinates.x }}, y =
+                  {{ currentHouse.coordinates.y }} ]
+                </v-chip>
+                <house-card-state
+                  :danger-kind="currentHouse.state.dangerKind"
+                  :endangerment="currentHouse.state.endangerment"
+                />
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" lg="1/2">
+          <v-card min-width="500">
+            <v-card-title>{{ t("house.detail.sensors-title") }}</v-card-title>
+            <v-table>
+              <thead>
+                <tr>
+                  <th id="key" class="text-left">
+                    {{ t("house.detail.outline-table.key-title") }}
+                  </th>
+                  <th id="value" class="text-left">
+                    {{ t("house.detail.outline-table.value-title") }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ t("house.property.humidity") }}</td>
+                  <td>
+                    <house-card-property
+                      :title="currentHouse.humidity"
+                      :tooltip-text="$t('house.property.humidity')"
+                      icon="mdi-water-percent"
+                      tooltip-to="/wiki/humidity"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ t("house.property.gas-smoke") }}</td>
+                  <td>
+                    <house-card-property
+                      :title="currentHouse.gasLevel"
+                      :tooltip-text="$t('house.property.gas-smoke')"
+                      icon="mdi-smoke-detector"
+                      tooltip-to="/wiki/smoke"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ t("house.property.temperature") }}</td>
+                  <td>
+                    <house-card-property
+                      :title="currentHouse.temperature"
+                      :tooltip-text="$t('house.property.temperature')"
+                      icon="mdi-thermometer"
+                      tooltip-to="/wiki/temperature"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ t("house.property.brightness") }}</td>
+                  <td>
+                    <house-card-property
+                      :title="currentHouse.brightness"
+                      :tooltip-text="$t('house.property.brightness')"
+                      icon="mdi-brightness-5"
+                      tooltip-to="/wiki/brightness"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-card>
+        </v-col>
+        <v-col cols="12" lg="1/2">
+          <v-card min-width="500">
+            <v-card-title>{{ t("house.detail.settings-title") }}</v-card-title>
+            <v-table>
+              <thead>
+                <tr>
+                  <th id="setting-key" class="text-left">
+                    {{ t("house.detail.outline-table.setting-title") }}
+                  </th>
+                  <th id="setting-control" class="text-left">
+                    {{ t("house.detail.outline-table.control-title") }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ t("house.setting.display") }}</td>
+                  <td>
+                    <v-text-field
+                      :label="t('house.setting.display-value')"
+                      max="33"
+                      v-model="displayValue"
+                      :validate="validateDisplayValue"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ t("house.setting.light") }}</td>
+                  <td>
+                    <v-switch
+                      color="primary"
+                      v-model="isLightOn"
+                      :label="t('house.setting.light')"
+                    />
+                    <v-slider
+                      v-model="lightIntensity"
+                      :label="t('house.setting.light-intensity')"
+                      min="0"
+                      max="1023"
+                      step="1"
+                    >
+                      <template #append>
+                        <v-text-field
+                          density="compact"
+                          hide-details
+                          max="1023"
+                          min="0"
+                          single-line
+                          step="1"
+                          type="number"
+                          v-model="lightIntensity"
+                        />
+                      </template>
+                    </v-slider>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ t("house.setting.door-lock") }}</td>
+                  <td>
+                    <v-switch
+                      color="primary"
+                      v-model="isDoorLocked"
+                      :label="t('house.setting.door-lock')"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ t("house.setting.heating") }}</td>
+                  <td>
+                    <v-switch
+                      color="primary"
+                      v-model="isHeatingOn"
+                      :label="t('house.setting.heating')"
+                    />
+                    <v-slider
+                      v-model="heatingIntensity"
+                      :label="t('house.setting.heating-intensity')"
+                      min="0"
+                      max="30"
+                      step="1"
+                    >
+                      <template #append>
+                        <v-text-field
+                          density="compact"
+                          hide-details
+                          max="30"
+                          min="0"
+                          single-line
+                          step="1"
+                          type="number"
+                          v-model="heatingIntensity"
+                        />
+                      </template>
+                    </v-slider>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ t("house.setting.alarm") }}</td>
+                  <td>
+                    <v-switch
+                      color="primary"
+                      v-model="isAlarmOn"
+                      :label="t('house.setting.alarm')"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-card>
+        </v-col>
+      </v-row>
     </template>
   </v-container>
 </template>

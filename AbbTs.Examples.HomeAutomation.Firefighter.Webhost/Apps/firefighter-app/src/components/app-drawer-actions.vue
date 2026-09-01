@@ -1,5 +1,4 @@
 <template>
-  <v-separator />
   <v-navigation-drawer v-model="modelValue" :location="props.location">
     <v-list-item :title="t('app.actions.title')" />
     <v-divider />
