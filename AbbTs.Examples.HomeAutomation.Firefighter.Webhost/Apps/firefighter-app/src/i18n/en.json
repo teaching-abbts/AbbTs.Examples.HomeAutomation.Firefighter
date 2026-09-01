@@ -6,6 +6,63 @@
   "app": {
     "language-selector": {
       "label": "Language"
+    },
+    "main-navigation": {
+      "home": {
+        "title": "Firefighter Dashboard"
+      },
+      "wiki": {
+        "title": "Wiki"
+      }
+    }
+  },
+  "house-state": {
+    "endangerment": {
+      "label": "Endangerment",
+      "Normal": "Normal",
+      "Warning": "Warning",
+      "Critical": "Critical"
+    },
+    "danger-kind": {
+      "label": "Danger Kind",
+      "None": "None",
+      "Gas": "Gas",
+      "Smoke": "Smoke"
+    }
+  },
+  "wiki": {
+    "index": {
+      "title": "Firefighter Wiki"
+    },
+    "smoke": {
+      "title": "Smoke Levels",
+      "description": "Gas and smoke levels are important indicators of air quality and potential fire hazards within a building."
+    },
+    "humidity": {
+      "title": "Humidity Levels",
+      "description": "Humidity is the concentration of water vapor in the air. It is usually expressed as a percentage of the maximum moisture the air can hold at a given temperature."
+    },
+    "temperature": {
+      "title": "Temperature Levels",
+      "description": "Temperature measures the warmth or coldness of an environment or object. It is typically measured in degrees Celsius (C) or Fahrenheit (F)."
+    },
+    "brightness": {
+      "title": "Brightness Levels",
+      "description": "Brightness is the perceived intensity of light in an environment. It affects visibility and is typically measured in lumens or lux."
+    },
+    "endangerment": {
+      "title": "Endangerment",
+      "description": "Endangerment summarizes the current severity of a detected condition in a home.",
+      "normal": "Normal: no immediate danger has been detected.",
+      "warning": "Warning: a condition needs attention and should be checked promptly.",
+      "critical": "Critical: a serious danger has been detected and immediate action is required."
+    },
+    "danger-kind": {
+      "title": "Danger Kind",
+      "description": "Danger kind identifies the type of hazard associated with the current endangerment.",
+      "none": "None: no specific hazard is reported.",
+      "gas": "Gas: a potentially hazardous gas condition is reported.",
+      "smoke": "Smoke: smoke has been detected."
     }
   }
 }

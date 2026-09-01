@@ -6,6 +6,63 @@
   "app": {
     "language-selector": {
       "label": "Sprache"
+    },
+    "main-navigation": {
+      "home": {
+        "title": "Feuerwehr Übersicht"
+      },
+      "wiki": {
+        "title": "Nachschlagewerk"
+      }
+    }
+  },
+  "house-state": {
+    "endangerment": {
+      "label": "Gefährdung",
+      "Normal": "Normal",
+      "Warning": "Warnung",
+      "Critical": "Kritisch"
+    },
+    "danger-kind": {
+      "label": "Gefahrenart",
+      "None": "Keine",
+      "Gas": "Gas",
+      "Smoke": "Rauch"
+    }
+  },
+  "wiki": {
+    "index": {
+      "title": "Feuerwehr-Nachschlagewerk"
+    },
+    "smoke": {
+      "title": "Rauchwerte",
+      "description": "Gas- und Rauchwerte sind wichtige Hinweise auf die Luftqualität und mögliche Brandgefahren in einem Gebäude."
+    },
+    "humidity": {
+      "title": "Luftfeuchtigkeit",
+      "description": "Die Luftfeuchtigkeit bezeichnet die Konzentration von Wasserdampf in der Luft. Sie wird meist als Prozentsatz der maximalen Feuchtigkeitsmenge angegeben, die die Luft bei einer bestimmten Temperatur aufnehmen kann."
+    },
+    "temperature": {
+      "title": "Temperaturwerte",
+      "description": "Die Temperatur misst die Wärme oder Kälte einer Umgebung oder eines Objekts. Sie wird normalerweise in Grad Celsius (C) oder Fahrenheit (F) gemessen."
+    },
+    "brightness": {
+      "title": "Helligkeitswerte",
+      "description": "Die Helligkeit ist die wahrgenommene Lichtintensität in einer Umgebung. Sie beeinflusst die Sichtbarkeit und wird normalerweise in Lumen oder Lux gemessen."
+    },
+    "endangerment": {
+      "title": "Gefährdung",
+      "description": "Die Gefährdung fasst die aktuelle Schwere eines erkannten Zustands in einem Zuhause zusammen.",
+      "normal": "Normal: Es wurde keine unmittelbare Gefahr erkannt.",
+      "warning": "Warnung: Ein Zustand erfordert Aufmerksamkeit und sollte zeitnah geprüft werden.",
+      "critical": "Kritisch: Eine ernsthafte Gefahr wurde erkannt und erfordert sofortiges Handeln."
+    },
+    "danger-kind": {
+      "title": "Gefahrenart",
+      "description": "Die Gefahrenart bezeichnet den Gefahrentyp, der mit der aktuellen Gefährdung verbunden ist.",
+      "none": "Keine: Es wird keine konkrete Gefahrenart gemeldet.",
+      "gas": "Gas: Eine potenziell gefährliche Gassituation wird gemeldet.",
+      "smoke": "Rauch: Rauch wurde erkannt."
     }
   }
 }

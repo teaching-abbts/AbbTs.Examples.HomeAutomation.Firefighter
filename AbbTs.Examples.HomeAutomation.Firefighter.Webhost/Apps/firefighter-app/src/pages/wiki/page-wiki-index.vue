@@ -1,9 +1,13 @@
 <template>
   <v-container fluid>
-    <h1>Firefighter Wiki</h1>
+    <h1>{{ $t("wiki.index.title") }}</h1>
     <ul>
       <li v-for="route in childRoutes" :key="route.name">
-        <router-link :to="`/wiki/${route.path}`">{{ route.path }}</router-link>
+        <router-link :to="`/wiki/${route.path}`">{{
+          route.meta?.titleKey
+            ? $t(String(route.meta.titleKey))
+            : String(route.path)
+        }}</router-link>
       </li>
     </ul>
     <router-view />

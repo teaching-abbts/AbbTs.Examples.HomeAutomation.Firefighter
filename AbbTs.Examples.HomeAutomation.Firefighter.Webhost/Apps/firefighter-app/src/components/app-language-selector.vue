@@ -1,14 +1,14 @@
 <template>
   <v-select
-    v-model="selectedLocale"
     :items="languageOptions"
+    :label="t('app.language-selector.label')"
     class="language-switcher"
     density="compact"
     hide-details
     item-title="title"
     item-value="value"
-    :label="t('app.language-selector.label')"
     prepend-inner-icon="mdi-translate"
+    v-model="selectedLocale"
     variant="outlined"
   />
 </template>

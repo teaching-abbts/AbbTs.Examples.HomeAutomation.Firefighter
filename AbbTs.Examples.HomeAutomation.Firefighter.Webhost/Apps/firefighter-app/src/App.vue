@@ -3,7 +3,12 @@
     <v-app-bar>
       <v-app-bar-nav-icon @click="toggleDrawerLeft()" />
       <v-app-bar-title>
-        <v-btn variant="text" to="/">Firefighter App</v-btn>
+        <v-btn variant="text" to="/">{{
+          $t("app.main-navigation.home.title")
+        }}</v-btn>
+        <v-btn variant="text" to="/wiki">{{
+          $t("app.main-navigation.wiki.title")
+        }}</v-btn>
       </v-app-bar-title>
       <app-theme-switcher />
       <app-language-selector />
