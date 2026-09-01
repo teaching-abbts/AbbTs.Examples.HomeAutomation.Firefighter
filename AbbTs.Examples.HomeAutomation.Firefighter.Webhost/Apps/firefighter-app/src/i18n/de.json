@@ -41,6 +41,12 @@
     },
     "overview": {
       "navigate-to-detail": "Detailansicht"
+    },
+    "detail": {
+      "outline-table": {
+        "key-title": "Sensortyp",
+        "value-title": "Aktueller Wert"
+      }
     }
   },
   "wiki": {

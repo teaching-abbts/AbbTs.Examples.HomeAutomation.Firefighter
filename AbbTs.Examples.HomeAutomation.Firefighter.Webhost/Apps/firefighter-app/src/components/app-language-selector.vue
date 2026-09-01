@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useAppStore } from "@/stores/app";
+import { useAppStore } from "@/stores/appStore";
 import { useI18n } from "vue-i18n";
 
 const appStore = useAppStore();

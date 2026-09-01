@@ -1,12 +1,5 @@
-/**
- * router/index.ts
- *
- * Manual routes for ./src/pages/*.vue
- */
-
-// Composables
-import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "@/pages/page-home.vue";
+import { createRouter, createWebHashHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -18,8 +11,8 @@ const router = createRouter({
     },
     {
       path: "/house/:buildingId",
-      name: "house",
-      component: () => import("@/pages/page-house.vue"),
+      name: "house-detail",
+      component: () => import("@/pages/page-house-detail.vue"),
     },
     {
       path: "/wiki",
