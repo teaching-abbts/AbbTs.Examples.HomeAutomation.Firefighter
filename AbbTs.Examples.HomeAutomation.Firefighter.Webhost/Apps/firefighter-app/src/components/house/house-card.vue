@@ -11,25 +11,25 @@
         :title="props.humidity"
         icon="mdi-water-percent"
         tooltip-to="/wiki/humidity"
-        tooltip-text="Humidity levels"
+        :tooltip-text="$t('house-property.humidity')"
       />
       <house-card-property
         :title="props.gasLevel"
         icon="mdi-smoke-detector"
         tooltip-to="/wiki/smoke"
-        tooltip-text="Gas/Smoke levels"
+        :tooltip-text="$t('house-property.gas-smoke')"
       />
       <house-card-property
         :title="props.temperature"
         icon="mdi-thermometer"
         tooltip-to="/wiki/temperature"
-        tooltip-text="Temperature levels"
+        :tooltip-text="$t('house-property.temperature')"
       />
       <house-card-property
         :title="props.brightness"
         icon="mdi-brightness-5"
         tooltip-to="/wiki/brightness"
-        tooltip-text="Brightness levels"
+        :tooltip-text="$t('house-property.brightness')"
       />
     </div>
   </v-card>

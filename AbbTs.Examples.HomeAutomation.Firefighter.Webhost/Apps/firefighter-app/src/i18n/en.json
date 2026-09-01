@@ -30,6 +30,14 @@
       "Smoke": "Smoke"
     }
   },
+  "house-property": {
+    "learn-more": "Learn more",
+    "about": "about {property}.",
+    "humidity": "humidity levels",
+    "gas-smoke": "gas and smoke levels",
+    "temperature": "temperature levels",
+    "brightness": "brightness levels"
+  },
   "wiki": {
     "index": {
       "title": "Firefighter Wiki"

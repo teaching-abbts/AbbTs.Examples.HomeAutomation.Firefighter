@@ -14,14 +14,16 @@
         class="text-primary font-weight-medium"
         :to="props.tooltipTo"
       >
-        Learn more
+        {{ t("house-property.learn-more") }}
       </router-link>
-      about {{ props.tooltipText }}.
+      {{ t("house-property.about", { property: props.tooltipText }) }}
     </div>
   </v-tooltip>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
 export interface HouseCardPropertyProps {
   title: string;
   icon: string;
@@ -30,4 +32,5 @@ export interface HouseCardPropertyProps {
 }
 
 const props = defineProps<HouseCardPropertyProps>();
+const { t } = useI18n({ useScope: "global" });
 </script>
