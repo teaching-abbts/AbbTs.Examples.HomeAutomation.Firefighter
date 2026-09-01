@@ -47,7 +47,6 @@ import HouseCardProperty from "@/components/house/house-card-property.vue";
 import HouseCardState, {
   type HouseCardStateProps,
 } from "@/components/house/house-card-state.vue";
-import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 export interface HouseCardProps {
@@ -66,8 +65,4 @@ export interface HouseCardProps {
 
 const props = defineProps<HouseCardProps>();
 const { t } = useI18n();
-
-const origin = computed(
-  () => `(${props.coordinates.x}, ${props.coordinates.y})`,
-);
 </script>

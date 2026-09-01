@@ -47,6 +47,15 @@
         "key-title": "Sensor type",
         "value-title": "Current Value"
       }
+    },
+    "setting": {
+      "light": "Is the light on?",
+      "door-lock": "Is the door locked?",
+      "heating": "Is the heating on?",
+      "alarm": "Is the alarm enabled?",
+      "light-intensity": "Light intensity",
+      "heating-intensity": "Heating intensity",
+      "display-value": "Display Text"
     }
   },
   "wiki": {
