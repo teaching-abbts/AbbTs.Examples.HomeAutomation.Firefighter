@@ -4,6 +4,7 @@
     :subtitle="props.subtitle"
     :title="props.title"
     link
+    active
   >
     <template #prepend>
       <v-icon>{{ props.icon }}</v-icon>

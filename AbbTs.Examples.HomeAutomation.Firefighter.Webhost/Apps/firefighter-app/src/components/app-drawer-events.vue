@@ -3,19 +3,19 @@
     <v-list-item :title="t('app.events.title')" />
     <v-divider />
     <event-list-item
-      title="Bewegung"
-      subtitle="house-1"
+      title="Gefährdung"
+      subtitle="house-2"
       base-color="info"
       icon="mdi-information"
     />
     <event-list-item
-      title="Gas!"
+      title="Gasalarm"
       subtitle="house-1"
       base-color="warning"
       icon="mdi-gas-cylinder"
     />
     <event-list-item
-      title="Feuer!"
+      title="Feueralarm"
       subtitle="house-1"
       base-color="error"
       icon="mdi-fire-alert"
