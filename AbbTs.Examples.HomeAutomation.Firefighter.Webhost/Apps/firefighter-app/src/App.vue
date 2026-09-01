@@ -6,6 +6,7 @@
         <v-btn variant="text" to="/">Firefighter App</v-btn>
       </v-app-bar-title>
       <app-theme-switcher />
+      <app-language-selector />
       <v-app-bar-nav-icon @click="toggleDrawerRight()" />
     </v-app-bar>
     <v-navigation-drawer v-model="drawerLeft" :location="'left'">
@@ -23,6 +24,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import AppThemeSwitcher from "@/components/app-theme-switcher.vue";
+import AppLanguageSelector from "@/components/app-language-selector.vue";
 
 const drawerLeft = ref<boolean | null>(null);
 const drawerRight = ref<boolean | null>(null);

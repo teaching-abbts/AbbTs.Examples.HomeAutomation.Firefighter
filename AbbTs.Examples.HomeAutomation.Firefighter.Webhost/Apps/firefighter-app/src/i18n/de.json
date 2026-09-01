@@ -1,0 +1,11 @@
+{
+  "language": {
+    "de": "Deutsch",
+    "en": "Englisch"
+  },
+  "app": {
+    "language-selector": {
+      "label": "Sprache"
+    }
+  }
+}
