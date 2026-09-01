@@ -14,9 +14,9 @@
         class="text-primary font-weight-medium"
         :to="props.tooltipTo"
       >
-        {{ t("house-property.learn-more") }}
+        {{ t("house.property.learn-more") }}
       </router-link>
-      {{ t("house-property.about", { property: props.tooltipText }) }}
+      {{ t("house.property.about", { property: props.tooltipText }) }}
     </div>
   </v-tooltip>
 </template>

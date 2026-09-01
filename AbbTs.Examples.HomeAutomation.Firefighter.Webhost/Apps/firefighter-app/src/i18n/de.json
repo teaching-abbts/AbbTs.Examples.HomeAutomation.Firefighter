@@ -16,27 +16,32 @@
       }
     }
   },
-  "house-state": {
-    "endangerment": {
-      "label": "Gefährdung",
-      "Normal": "Normal",
-      "Warning": "Warnung",
-      "Critical": "Kritisch"
+  "house": {
+    "state": {
+      "endangerment": {
+        "label": "Gefährdung",
+        "Normal": "Normal",
+        "Warning": "Warnung",
+        "Critical": "Kritisch"
+      },
+      "danger-kind": {
+        "label": "Gefahrenart",
+        "None": "Keine",
+        "Gas": "Gas",
+        "Smoke": "Rauch"
+      }
     },
-    "danger-kind": {
-      "label": "Gefahrenart",
-      "None": "Keine",
-      "Gas": "Gas",
-      "Smoke": "Rauch"
+    "property": {
+      "learn-more": "Mehr erfahren",
+      "about": "über {property}.",
+      "humidity": "die Luftfeuchtigkeit",
+      "gas-smoke": "Gas- und Rauchwerte",
+      "temperature": "Temperaturwerte",
+      "brightness": "Helligkeitswerte"
+    },
+    "overview": {
+      "navigate-to-detail": "Detailansicht"
     }
-  },
-  "house-property": {
-    "learn-more": "Mehr erfahren",
-    "about": "über {property}.",
-    "humidity": "die Luftfeuchtigkeit",
-    "gas-smoke": "Gas- und Rauchwerte",
-    "temperature": "Temperaturwerte",
-    "brightness": "Helligkeitswerte"
   },
   "wiki": {
     "index": {

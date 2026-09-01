@@ -7,7 +7,6 @@
 // Composables
 import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "@/pages/page-home.vue";
-import WikiIndex from "@/pages/wiki/page-wiki-index.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -18,9 +17,14 @@ const router = createRouter({
       component: Home,
     },
     {
+      path: "/house/:buildingId",
+      name: "house",
+      component: () => import("@/pages/page-house.vue"),
+    },
+    {
       path: "/wiki",
       name: "wiki",
-      component: WikiIndex,
+      component: () => import("@/pages/wiki/page-wiki-index.vue"),
       children: [
         {
           path: "smoke",

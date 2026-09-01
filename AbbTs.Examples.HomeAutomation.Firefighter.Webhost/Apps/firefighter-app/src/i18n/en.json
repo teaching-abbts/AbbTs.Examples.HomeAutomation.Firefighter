@@ -16,27 +16,32 @@
       }
     }
   },
-  "house-state": {
-    "endangerment": {
-      "label": "Endangerment",
-      "Normal": "Normal",
-      "Warning": "Warning",
-      "Critical": "Critical"
+  "house": {
+    "state": {
+      "endangerment": {
+        "label": "Endangerment",
+        "Normal": "Normal",
+        "Warning": "Warning",
+        "Critical": "Critical"
+      },
+      "danger-kind": {
+        "label": "Danger Kind",
+        "None": "None",
+        "Gas": "Gas",
+        "Smoke": "Smoke"
+      }
     },
-    "danger-kind": {
-      "label": "Danger Kind",
-      "None": "None",
-      "Gas": "Gas",
-      "Smoke": "Smoke"
+    "property": {
+      "learn-more": "Learn more",
+      "about": "about {property}.",
+      "humidity": "humidity levels",
+      "gas-smoke": "gas and smoke levels",
+      "temperature": "temperature levels",
+      "brightness": "brightness levels"
+    },
+    "overview": {
+      "navigate-to-detail": "Go to details"
     }
-  },
-  "house-property": {
-    "learn-more": "Learn more",
-    "about": "about {property}.",
-    "humidity": "humidity levels",
-    "gas-smoke": "gas and smoke levels",
-    "temperature": "temperature levels",
-    "brightness": "brightness levels"
   },
   "wiki": {
     "index": {

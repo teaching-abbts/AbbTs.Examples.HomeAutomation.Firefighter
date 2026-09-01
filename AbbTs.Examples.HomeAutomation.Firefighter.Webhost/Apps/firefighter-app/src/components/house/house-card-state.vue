@@ -9,15 +9,15 @@
       <div>
         <ul>
           <li>
-            {{ t("house-state.endangerment.label") }}:
+            {{ t("house.state.endangerment.label") }}:
             <router-link :to="{ name: 'wiki-endangerment' }">
-              {{ t(`house-state.endangerment.${props.endangerment}`) }}
+              {{ t(`house.state.endangerment.${props.endangerment}`) }}
             </router-link>
           </li>
           <li>
-            {{ t("house-state.danger-kind.label") }}:
+            {{ t("house.state.danger-kind.label") }}:
             <router-link :to="{ name: 'wiki-danger-kind' }">
-              {{ t(`house-state.danger-kind.${props.dangerKind}`) }}
+              {{ t(`house.state.danger-kind.${props.dangerKind}`) }}
             </router-link>
           </li>
         </ul>

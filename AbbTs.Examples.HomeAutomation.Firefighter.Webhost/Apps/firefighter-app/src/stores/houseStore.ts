@@ -5,6 +5,7 @@ import { ref } from "vue";
 export const useHouseStore = defineStore("house", () => {
   const houses = ref<HouseCardProps[]>([
     {
+      buildingId: "house-1",
       title: "Haus 1",
       coordinates: {
         x: 0,
@@ -20,6 +21,7 @@ export const useHouseStore = defineStore("house", () => {
       },
     },
     {
+      buildingId: "house-2",
       title: "Haus 2",
       coordinates: {
         x: 1,
@@ -35,6 +37,7 @@ export const useHouseStore = defineStore("house", () => {
       },
     },
     {
+      buildingId: "house-3",
       title: "Haus 3",
       coordinates: {
         x: 0,
@@ -50,6 +53,7 @@ export const useHouseStore = defineStore("house", () => {
       },
     },
     {
+      buildingId: "house-4",
       title: "Haus 4",
       coordinates: {
         x: 1,
@@ -65,6 +69,7 @@ export const useHouseStore = defineStore("house", () => {
       },
     },
     {
+      buildingId: "house-5",
       title: "Haus 5",
       coordinates: {
         x: 2,
