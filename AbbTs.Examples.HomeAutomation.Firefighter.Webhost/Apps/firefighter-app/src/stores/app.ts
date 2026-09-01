@@ -1,36 +1,24 @@
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import { defineStore } from "pinia";
 import { useI18n } from "vue-i18n";
-import { useStorage } from "@vueuse/core";
+import { useStorageBackedRef } from "@/composables/use-storage-backed-ref";
 import { useTheme } from "vuetify";
 
 export const useAppStore = defineStore("app", () => {
   const theme = useTheme();
   const i18n = useI18n({ useScope: "global" });
 
-  const isDarkTheme = useStorage("isDarkTheme", theme.current.value.dark);
-  const selectedLocale = useStorage("selectedLocale", i18n.locale.value);
+  const isDarkTheme = useStorageBackedRef("isDarkTheme", {
+    get: () => theme.current.value.dark,
+    set: (isDark) => theme.change(isDark ? "dark" : "light"),
+  });
 
-  watch(
-    isDarkTheme,
-    (isDark) => {
-      const nextTheme = isDark ? "dark" : "light";
-      theme.change(nextTheme);
+  const selectedLocale = useStorageBackedRef("selectedLocale", {
+    get: () => i18n.locale.value,
+    set: (locale) => {
+      i18n.locale.value = locale;
     },
-    {
-      immediate: true,
-    },
-  );
-
-  watch(
-    theme.current,
-    (newTheme) => {
-      isDarkTheme.value = newTheme.dark;
-    },
-    {
-      immediate: true,
-    },
-  );
+  });
 
   const languageOptions = computed(() =>
     i18n.availableLocales.map((locale) => ({
