@@ -14,12 +14,8 @@
       <app-language-selector />
       <v-app-bar-nav-icon @click="toggleDrawerRight()" />
     </v-app-bar>
-    <v-navigation-drawer v-model="drawerLeft" :location="'left'">
-      <!--  -->
-    </v-navigation-drawer>
-    <v-navigation-drawer v-model="drawerRight" :location="'right'">
-      <!--  -->
-    </v-navigation-drawer>
+    <app-drawer-events v-model="drawerLeft" location="left" />
+    <app-drawer-actions v-model="drawerRight" location="right" />
     <v-main>
       <router-view />
     </v-main>
@@ -30,6 +26,8 @@
 import { ref } from "vue";
 import AppThemeSwitcher from "@/components/app-theme-switcher.vue";
 import AppLanguageSelector from "@/components/app-language-selector.vue";
+import AppDrawerEvents from "@/components/app-drawer-events.vue";
+import AppDrawerActions from "@/components/app-drawer-actions.vue";
 
 const drawerLeft = ref<boolean | null>(null);
 const drawerRight = ref<boolean | null>(null);

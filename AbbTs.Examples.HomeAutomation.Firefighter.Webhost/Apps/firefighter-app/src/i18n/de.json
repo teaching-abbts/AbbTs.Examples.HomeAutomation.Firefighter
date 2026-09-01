@@ -14,6 +14,12 @@
       "wiki": {
         "title": "Nachschlagewerk"
       }
+    },
+    "actions": {
+      "title": "Aktionen"
+    },
+    "events": {
+      "title": "Ereignisse"
     }
   },
   "house": {
@@ -47,6 +53,15 @@
         "key-title": "Sensortyp",
         "value-title": "Aktueller Wert"
       }
+    },
+    "setting": {
+      "alarm": "Ist der Alarm aktiviert?",
+      "display-value": "Anzeigetext",
+      "door-lock": "Ist die Haustüre geschlossen?",
+      "heating": "Ist die Heizung an?",
+      "heating-intensity": "Heizintensität",
+      "light": "Ist das Licht an?",
+      "light-intensity": "Lichtintensität"
     }
   },
   "wiki": {
