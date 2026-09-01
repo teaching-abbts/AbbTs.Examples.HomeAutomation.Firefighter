@@ -6,7 +6,7 @@ export const useHouseStore = defineStore("house", () => {
   const houses = ref<HouseCardProps[]>([
     {
       buildingId: "house-1",
-      title: "Haus 1",
+      owner: "Max",
       coordinates: {
         x: 0,
         y: 0,
@@ -22,7 +22,7 @@ export const useHouseStore = defineStore("house", () => {
     },
     {
       buildingId: "house-2",
-      title: "Haus 2",
+      owner: "Moritz",
       coordinates: {
         x: 1,
         y: 0,
@@ -38,7 +38,7 @@ export const useHouseStore = defineStore("house", () => {
     },
     {
       buildingId: "house-3",
-      title: "Haus 3",
+      owner: "Lehrer Lämpel",
       coordinates: {
         x: 0,
         y: 1,
@@ -54,7 +54,7 @@ export const useHouseStore = defineStore("house", () => {
     },
     {
       buildingId: "house-4",
-      title: "Haus 4",
+      owner: "Onkel Fritz",
       coordinates: {
         x: 1,
         y: 1,
@@ -70,7 +70,7 @@ export const useHouseStore = defineStore("house", () => {
     },
     {
       buildingId: "house-5",
-      title: "Haus 5",
+      owner: "Meister Bäcker",
       coordinates: {
         x: 2,
         y: 0,

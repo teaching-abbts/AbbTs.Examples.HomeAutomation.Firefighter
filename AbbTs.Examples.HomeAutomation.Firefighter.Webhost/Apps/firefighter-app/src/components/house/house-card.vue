@@ -1,5 +1,5 @@
 <template>
-  <v-card :title="props.title" :subtitle="origin">
+  <v-card :title="props.buildingId" :subtitle="props.owner">
     <v-card-text class="py-0">
       <house-card-state
         :danger-kind="props.state.dangerKind"
@@ -52,7 +52,7 @@ import { useI18n } from "vue-i18n";
 
 export interface HouseCardProps {
   buildingId: string;
-  title: string;
+  owner: string;
   coordinates: {
     x: number;
     y: number;

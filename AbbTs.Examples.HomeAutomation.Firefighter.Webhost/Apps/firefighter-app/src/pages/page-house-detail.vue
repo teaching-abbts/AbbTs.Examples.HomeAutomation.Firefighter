@@ -1,10 +1,11 @@
 <template>
   <v-container fluid>
     <template v-if="currentHouse">
-      <h1>{{ currentHouse.title }}</h1>
-      <h2>
+      <h1>{{ currentHouse.buildingId }}</h1>
+      <h2>{{ currentHouse.owner }}</h2>
+      <h3>
         [{{ currentHouse.coordinates.x }}, {{ currentHouse.coordinates.y }}]
-      </h2>
+      </h3>
       <v-card-text class="py-0">
         <house-card-state
           :danger-kind="currentHouse.state.dangerKind"
