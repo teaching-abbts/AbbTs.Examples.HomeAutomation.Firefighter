@@ -1,7 +1,4 @@
 <template>
-  <!-- <v-list-item :prepend-icon="props.icon" density="compact">
-    <v-list-item-title>{{ props.title }}</v-list-item-title>
-  </v-list-item> -->
   <v-tooltip interactive location="bottom">
     <template #activator="activatorProps">
       <v-list-item
@@ -24,7 +21,7 @@
   </v-tooltip>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 export interface HouseCardPropertyProps {
   title: string;
   icon: string;
