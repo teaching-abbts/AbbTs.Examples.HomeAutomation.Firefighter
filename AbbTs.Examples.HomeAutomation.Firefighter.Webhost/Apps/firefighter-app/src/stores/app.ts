@@ -1,30 +1,40 @@
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { defineStore } from "pinia";
 import { useI18n } from "vue-i18n";
+import { useStorage } from "@vueuse/core";
 import { useTheme } from "vuetify";
 
 export const useAppStore = defineStore("app", () => {
-  const { locale, t, availableLocales } = useI18n({ useScope: "global" });
   const theme = useTheme();
+  const i18n = useI18n({ useScope: "global" });
 
-  const isDarkTheme = computed({
-    get: () => theme.current.value.dark,
-    set: (isDark) => {
+  const isDarkTheme = useStorage("isDarkTheme", theme.current.value.dark);
+  const selectedLocale = useStorage("selectedLocale", i18n.locale.value);
+
+  watch(
+    isDarkTheme,
+    (isDark) => {
       const nextTheme = isDark ? "dark" : "light";
       theme.change(nextTheme);
     },
-  });
-
-  const selectedLocale = computed({
-    get: () => locale.value,
-    set: (value: string) => {
-      locale.value = value;
+    {
+      immediate: true,
     },
-  });
+  );
+
+  watch(
+    theme.current,
+    (newTheme) => {
+      isDarkTheme.value = newTheme.dark;
+    },
+    {
+      immediate: true,
+    },
+  );
 
   const languageOptions = computed(() =>
-    availableLocales.map((locale) => ({
-      title: t(`language.${locale}`),
+    i18n.availableLocales.map((locale) => ({
+      title: i18n.t(`language.${locale}`),
       value: locale,
     })),
   );
