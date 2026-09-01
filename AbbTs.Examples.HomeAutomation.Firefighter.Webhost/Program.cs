@@ -45,85 +45,21 @@ public static class Program
     if (builder.Environment.EnvironmentName != "NSWAG")
     {
       builder.SetupSpaMiddleware(appSettings);
-      builder.Services.AddFirefighterAuthentication(builder.Configuration);
+      // builder.Services.AddFirefighterAuthentication(builder.Configuration);
     }
-
-    builder.Services.AddSmartQuartier(builder.Configuration);
-    builder.Services.AddSignalR();
-
-    builder.Services.AddAkka(
-      "firefighter-system",
-      configurationBuilder =>
-      {
-        configurationBuilder.WithActors(
-          (actorSystem, actorRegistry) =>
-          {
-            actorSystem.ActorOf(
-              Props.Create(() => new SmartHomeManagerActor()),
-              SmartHomeManagerActor.ActorName
-            );
-          }
-        );
-      }
-    );
 
     var app = builder.Build();
 
-    var actorSystem = app.Services.GetRequiredService<ActorSystem>();
-    var smartQuartierClient = app.Services.GetRequiredService<ISmartQuartierClient>();
-    var hubContext = app.Services.GetRequiredService<IHubContext<SmartHomeHub>>();
-    var dashboardHistoryBroadcasterLogger = app.Services.GetRequiredService<
-      ILogger<SmartQuartierDashboardHistoryBroadcasterActor>
-    >();
-    var smartQuartierStatisticsLogger = app.Services.GetRequiredService<
-      ILogger<SmartQuartierStatisticsActor>
-    >();
-    var smartQuartierOptions = app
-      .Services.GetRequiredService<IOptions<SmartQuartierOptions>>()
-      .Value;
-
-    actorSystem.ActorOf(
-      Props.Create(() =>
-        new SmartQuartierAnalyticsActor(smartQuartierClient, smartQuartierOptions)
-      ),
-      SmartQuartierAnalyticsActor.ActorName
-    );
-
-    actorSystem.ActorOf(
-      Props.Create(() =>
-        new SmartQuartierStatisticsActor(smartQuartierClient, smartQuartierStatisticsLogger)
-      ),
-      SmartQuartierStatisticsActor.ActorName
-    );
-
-    actorSystem.ActorOf(
-      Props.Create(() =>
-        new SmartQuartierDashboardHistoryBroadcasterActor(
-          actorSystem,
-          hubContext,
-          dashboardHistoryBroadcasterLogger
-        )
-      ),
-      SmartQuartierDashboardHistoryBroadcasterActor.ActorName
-    );
-
-    app.UseWebSockets();
-
-    if (app.Environment.EnvironmentName != "NSWAG")
-    {
-      app.UseAuthentication();
-      app.UseAuthorization();
-    }
+    // if (app.Environment.EnvironmentName != "NSWAG")
+    // {
+    //   app.UseAuthentication();
+    //   app.UseAuthorization();
+    // }
 
     // Mapped unconditionally so NSwag can discover it and generate a typed client.
     app.MapAccountEndpoints();
 
     app.UseNSwag();
-    app.MapSmartQuartierHistoryEndpoint();
-    app.MapSmartQuartierStatisticEndpoint();
-    app.MapSmartHomesEndpoints();
-    app.MapSmartHomeGatewayEndpoints();
-    app.MapHub<SmartHomeHub>("/hubs/smart-homes");
 
     app.MapAboutEndpoint();
 
