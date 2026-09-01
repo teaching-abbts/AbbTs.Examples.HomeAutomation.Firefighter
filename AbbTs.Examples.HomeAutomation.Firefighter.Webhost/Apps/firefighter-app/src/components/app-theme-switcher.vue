@@ -1,7 +1,7 @@
 <template>
   <div class="mr-2">
     <v-switch
-      v-model="isDarkTheme"
+      v-model="appStore.isDarkTheme"
       true-icon="mdi-moon-waning-crescent"
       false-icon="mdi-white-balance-sunny"
       density="comfortable"
@@ -11,16 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
-import { useTheme } from "vuetify";
+import { useAppStore } from "@/stores/app";
 
-const theme = useTheme();
-
-const isDarkTheme = computed({
-  get: () => theme.current.value.dark,
-  set: (v) => {
-    const nextTheme = v ? "dark" : "light";
-    theme.global.name.value = nextTheme;
-  },
-});
+const appStore = useAppStore();
 </script>

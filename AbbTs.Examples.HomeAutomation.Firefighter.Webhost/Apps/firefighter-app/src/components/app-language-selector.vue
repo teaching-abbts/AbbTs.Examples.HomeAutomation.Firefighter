@@ -1,6 +1,6 @@
 <template>
   <v-select
-    :items="languageOptions"
+    :items="appStore.languageOptions"
     :label="t('app.language-selector.label')"
     class="language-switcher"
     density="compact"
@@ -8,30 +8,17 @@
     item-title="title"
     item-value="value"
     prepend-inner-icon="mdi-translate"
-    v-model="selectedLocale"
+    v-model="appStore.selectedLocale"
     variant="outlined"
   />
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { useAppStore } from "@/stores/app";
 import { useI18n } from "vue-i18n";
 
-const { locale, t, availableLocales } = useI18n({ useScope: "global" });
-
-const selectedLocale = computed({
-  get: () => locale.value,
-  set: (value: string) => {
-    locale.value = value;
-  },
-});
-
-const languageOptions = computed(() =>
-  availableLocales.map((locale) => ({
-    title: t(`language.${locale}`),
-    value: locale,
-  })),
-);
+const appStore = useAppStore();
+const { t } = useI18n({ useScope: "global" });
 </script>
 
 <style scoped>
