@@ -30,7 +30,7 @@
       "withCredentials": false,
       "useSingletonProvider": false,
       "injectionTokenType": "OpaqueToken",
-      "rxJsVersion": 6.0,
+      "rxJsVersion": 6,
       "dateTimeType": "Date",
       "nullValue": "Undefined",
       "generateClientClasses": true,
@@ -78,7 +78,7 @@
       "templateDirectory": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "Apps/firefighter-dashboard/src/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost.ts",
+      "output": "Apps/firefighter-app/src/api/AbbTs.Examples.HomeAutomation.Firefighter.Webhost.ts",
       "newLineBehavior": "Auto"
     }
   }

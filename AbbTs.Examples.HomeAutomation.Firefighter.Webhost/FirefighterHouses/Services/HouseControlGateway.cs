@@ -13,18 +13,26 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Services;
 
-public sealed class HouseControlGateway(ActorSystem actorSystem, IHubContext<HouseControlHub> hubContext)
-  : IHouseControlGateway
+public sealed class HouseControlGateway(
+  ActorSystem actorSystem,
+  IHubContext<HouseControlHub> hubContext
+) : IHouseControlGateway
 {
   private static readonly TimeSpan AskTimeout = TimeSpan.FromSeconds(5);
 
-  public async Task<IReadOnlyList<HouseSnapshot>> GetHousesAsync(CancellationToken cancellationToken)
+  public async Task<IReadOnlyList<HouseSnapshot>> GetHousesAsync(
+    CancellationToken cancellationToken
+  )
   {
     cancellationToken.ThrowIfCancellationRequested();
 
     var manager = await ResolveManagerAsync();
     return await manager
-      .Ask<IReadOnlyList<HouseSnapshot>>(new GetAllHouseSnapshots(), AskTimeout)
+      .Ask<IReadOnlyList<HouseSnapshot>>(
+        new GetAllHouseSnapshots(),
+        AskTimeout,
+        cancellationToken: cancellationToken
+      )
       .WaitAsync(cancellationToken);
   }
 
@@ -37,7 +45,11 @@ public sealed class HouseControlGateway(ActorSystem actorSystem, IHubContext<Hou
 
     var manager = await ResolveManagerAsync();
     var response = await manager
-      .Ask<HouseSnapshotResponse>(new GetHouseSnapshot(buildingId), AskTimeout)
+      .Ask<HouseSnapshotResponse>(
+        new GetHouseSnapshot(buildingId),
+        AskTimeout,
+        cancellationToken: cancellationToken
+      )
       .WaitAsync(cancellationToken);
 
     return response.Snapshot;
@@ -53,7 +65,8 @@ public sealed class HouseControlGateway(ActorSystem actorSystem, IHubContext<Hou
     string buildingId,
     bool isDoorLocked,
     CancellationToken cancellationToken
-  ) => SendCommandAsync(buildingId, new ToggleDoorLock(buildingId, isDoorLocked), cancellationToken);
+  ) =>
+    SendCommandAsync(buildingId, new ToggleDoorLock(buildingId, isDoorLocked), cancellationToken);
 
   public Task<HouseSnapshot> ToggleHeatingAsync(
     string buildingId,
@@ -105,7 +118,9 @@ public sealed class HouseControlGateway(ActorSystem actorSystem, IHubContext<Hou
     cancellationToken.ThrowIfCancellationRequested();
 
     var manager = await ResolveManagerAsync();
-    var result = await manager.Ask<object>(command, AskTimeout).WaitAsync(cancellationToken);
+    var result = await manager
+      .Ask<object>(command, AskTimeout, cancellationToken: cancellationToken)
+      .WaitAsync(cancellationToken);
 
     if (result is not HouseSnapshot snapshot)
     {
@@ -117,7 +132,10 @@ public sealed class HouseControlGateway(ActorSystem actorSystem, IHubContext<Hou
     return snapshot;
   }
 
-  private async Task NotifyHouseChangedAsync(HouseSnapshot snapshot, CancellationToken cancellationToken)
+  private async Task NotifyHouseChangedAsync(
+    HouseSnapshot snapshot,
+    CancellationToken cancellationToken
+  )
   {
     var allHouses = await GetHousesAsync(cancellationToken);
 
