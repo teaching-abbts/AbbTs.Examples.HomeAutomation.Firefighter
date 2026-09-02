@@ -1,6 +1,11 @@
 import type { HouseCardProps } from "@/components/house/house-card.vue";
+import {
+  HubConnectionBuilder,
+  LogLevel,
+  type HubConnection,
+} from "@microsoft/signalr";
 import { defineStore } from "pinia";
-import { computed, readonly, ref } from "vue";
+import { readonly, ref } from "vue";
 
 interface HouseSensors {
   isLightOn: boolean;
@@ -17,187 +22,100 @@ interface House extends HouseCardProps {
 }
 
 export const useHouseStore = defineStore("house", () => {
-  const houses = ref<House[]>([
-    {
-      buildingId: "house-1",
-      owner: "Max",
-      coordinates: {
-        x: 0,
-        y: 0,
-      },
-      temperature: "22°C",
-      brightness: "80%",
-      humidity: "48%",
-      gasLevel: "5%",
-      state: {
-        dangerKind: "None",
-        endangerment: "Normal",
-      },
-      sensors: {
-        isLightOn: true,
-        isDoorLocked: true,
-        isHeatingOn: false,
-        isAlarmOn: false,
-        lightIntensity: 80,
-        heatingIntensity: 22,
-        displayValue: "Normal",
-      },
-    },
-    {
-      buildingId: "house-2",
-      owner: "Moritz",
-      coordinates: {
-        x: 1,
-        y: 0,
-      },
-      temperature: "21°C",
-      brightness: "75%",
-      humidity: "50%",
-      gasLevel: "4%",
-      state: {
-        dangerKind: "None",
-        endangerment: "Normal",
-      },
-      sensors: {
-        isLightOn: false,
-        isDoorLocked: true,
-        isHeatingOn: true,
-        isAlarmOn: false,
-        lightIntensity: 75,
-        heatingIntensity: 21,
-        displayValue: "Normal",
-      },
-    },
-    {
-      buildingId: "house-3",
-      owner: "Lehrer Lämpel",
-      coordinates: {
-        x: 0,
-        y: 1,
-      },
-      temperature: "23°C",
-      brightness: "90%",
-      humidity: "45%",
-      gasLevel: "6%",
-      state: {
-        dangerKind: "None",
-        endangerment: "Normal",
-      },
-      sensors: {
-        isLightOn: true,
-        isDoorLocked: false,
-        isHeatingOn: true,
-        isAlarmOn: false,
-        lightIntensity: 90,
-        heatingIntensity: 23,
-        displayValue: "Normal",
-      },
-    },
-    {
-      buildingId: "house-4",
-      owner: "Onkel Fritz",
-      coordinates: {
-        x: 1,
-        y: 1,
-      },
-      temperature: "22°C",
-      brightness: "85%",
-      humidity: "47%",
-      gasLevel: "5%",
-      state: {
-        dangerKind: "None",
-        endangerment: "Normal",
-      },
-      sensors: {
-        isLightOn: false,
-        isDoorLocked: false,
-        isHeatingOn: false,
-        isAlarmOn: true,
-        lightIntensity: 85,
-        heatingIntensity: 22,
-        displayValue: "Normal",
-      },
-    },
-    {
-      buildingId: "house-5",
-      owner: "Meister Bäcker",
-      coordinates: {
-        x: 2,
-        y: 0,
-      },
-      temperature: "20°C",
-      brightness: "70%",
-      humidity: "52%",
-      gasLevel: "3%",
-      state: {
-        dangerKind: "None",
-        endangerment: "Normal",
-      },
-      sensors: {
-        isLightOn: true,
-        isDoorLocked: true,
-        isHeatingOn: false,
-        isAlarmOn: false,
-        lightIntensity: 70,
-        heatingIntensity: 20,
-        displayValue: "Normal",
-      },
-    },
-  ]);
+  const houses = ref<House[]>([]);
+  const readonlyHouses = readonly(houses);
+  const hubConnection = ref<HubConnection | null>(null);
 
-  const readonlyHouses = computed(() => readonly(houses.value));
+  const applyHousesChanged = (payload: House[]) => {
+    houses.value = payload;
+  };
 
-  function setSetting<T extends keyof HouseSensors>(
-    buildingId: string,
-    key: T,
-    value: HouseSensors[T],
-  ) {
-    const house = houses.value.find((h) => h.buildingId === buildingId);
-    if (house) {
-      house.sensors[key] = value;
+  const applyHouseUpdated = (payload: House) => {
+    const index = houses.value.findIndex(
+      (house) => house.buildingId === payload.buildingId,
+    );
+
+    if (index === -1) {
+      houses.value.push(payload);
+      return;
     }
+
+    houses.value.splice(index, 1, payload);
+  };
+
+  function connect() {
+    const connection = new HubConnectionBuilder()
+      .withUrl("/hubs/houses")
+      .withAutomaticReconnect()
+      .configureLogging(LogLevel.Warning)
+      .build();
+
+    connection.on("housesChanged", applyHousesChanged);
+    connection.on("houseUpdated", applyHouseUpdated);
+    connection.onreconnected(() => connection.invoke("SubscribeAll"));
+
+    hubConnection.value = connection;
+
+    connection
+      .start()
+      .then(() => connection.invoke("SubscribeAll"))
+      .catch((error: unknown) =>
+        console.error("Failed to connect to house hub", error),
+      );
   }
 
-  function toggleBooleanSetting(
-    buildingId: string,
-    key: Exclude<
-      keyof HouseSensors,
-      "lightIntensity" | "heatingIntensity" | "displayValue"
-    >,
-    value: boolean,
-  ) {
-    setSetting(buildingId, key, value);
-  }
+  // The store is a singleton whose setup body runs once, so connecting here
+  // (rather than via a method every page must remember to call) is enough.
+  connect();
 
-  function setLightIntensity(buildingId: string, lightIntensity: number) {
-    const cleanedLightIntensity = Math.max(0, Math.min(1023, lightIntensity));
-    setSetting(buildingId, "lightIntensity", cleanedLightIntensity);
-  }
-
-  function setHeatingIntensity(buildingId: string, heatingIntensity: number) {
-    const cleanedHeatingIntensity = Math.max(0, Math.min(30, heatingIntensity));
-    setSetting(buildingId, "heatingIntensity", cleanedHeatingIntensity);
-  }
-
-  function setDisplayValue(buildingId: string, displayValue: string) {
-    const cleanedDisplayValue = displayValue.trim().slice(0, 33);
-    setSetting(buildingId, "displayValue", cleanedDisplayValue);
-  }
-
+  // Every setting change is a command sent to the server; the UI only updates once the
+  // authoritative state comes back via the "houseUpdated"/"housesChanged" hub events.
   function toggleLight(buildingId: string, isLightOn: boolean) {
-    toggleBooleanSetting(buildingId, "isLightOn", isLightOn);
+    return hubConnection.value?.invoke("ToggleLight", buildingId, isLightOn);
   }
 
   function toggleDoorLock(buildingId: string, isDoorLocked: boolean) {
-    toggleBooleanSetting(buildingId, "isDoorLocked", isDoorLocked);
+    return hubConnection.value?.invoke(
+      "ToggleDoorLock",
+      buildingId,
+      isDoorLocked,
+    );
   }
 
   function toggleHeating(buildingId: string, isHeatingOn: boolean) {
-    toggleBooleanSetting(buildingId, "isHeatingOn", isHeatingOn);
+    return hubConnection.value?.invoke(
+      "ToggleHeating",
+      buildingId,
+      isHeatingOn,
+    );
   }
 
   function toggleAlarm(buildingId: string, isAlarmOn: boolean) {
-    toggleBooleanSetting(buildingId, "isAlarmOn", isAlarmOn);
+    return hubConnection.value?.invoke("ToggleAlarm", buildingId, isAlarmOn);
+  }
+
+  function setLightIntensity(buildingId: string, lightIntensity: number) {
+    return hubConnection.value?.invoke(
+      "SetLightIntensity",
+      buildingId,
+      lightIntensity,
+    );
+  }
+
+  function setHeatingIntensity(buildingId: string, heatingIntensity: number) {
+    return hubConnection.value?.invoke(
+      "SetHeatingIntensity",
+      buildingId,
+      heatingIntensity,
+    );
+  }
+
+  function setDisplayValue(buildingId: string, displayValue: string) {
+    return hubConnection.value?.invoke(
+      "SetDisplayValue",
+      buildingId,
+      displayValue,
+    );
   }
 
   return {
