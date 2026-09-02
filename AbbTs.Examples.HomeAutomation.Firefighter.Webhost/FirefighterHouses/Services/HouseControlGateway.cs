@@ -15,6 +15,7 @@ namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Se
 
 public sealed class HouseControlGateway(
   ActorSystem actorSystem,
+  IHouseReadModel readModel,
   IHubContext<HouseControlHub> hubContext
 ) : IHouseControlGateway
 {
@@ -26,14 +27,7 @@ public sealed class HouseControlGateway(
   {
     cancellationToken.ThrowIfCancellationRequested();
 
-    var manager = await ResolveManagerAsync();
-    return await manager
-      .Ask<IReadOnlyList<HouseSnapshot>>(
-        new GetAllHouseSnapshots(),
-        AskTimeout,
-        cancellationToken: cancellationToken
-      )
-      .WaitAsync(cancellationToken);
+    return await readModel.GetHousesAsync(cancellationToken);
   }
 
   public async Task<HouseSnapshot?> GetHouseAsync(
@@ -43,16 +37,7 @@ public sealed class HouseControlGateway(
   {
     cancellationToken.ThrowIfCancellationRequested();
 
-    var manager = await ResolveManagerAsync();
-    var response = await manager
-      .Ask<HouseSnapshotResponse>(
-        new GetHouseSnapshot(buildingId),
-        AskTimeout,
-        cancellationToken: cancellationToken
-      )
-      .WaitAsync(cancellationToken);
-
-    return response.Snapshot;
+    return await readModel.GetHouseAsync(buildingId, cancellationToken);
   }
 
   public Task<HouseSnapshot> ToggleLightAsync(

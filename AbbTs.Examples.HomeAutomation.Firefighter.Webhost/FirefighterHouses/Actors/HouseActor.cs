@@ -12,7 +12,9 @@ public sealed class HouseActor : ReceivePersistentActor
   private readonly HouseSnapshot _seed;
   private HouseSensors _sensors;
 
-  public override string PersistenceId => $"house-{_seed.BuildingId}";
+  public static string BuildPersistenceId(string buildingId) => $"house-{buildingId}";
+
+  public override string PersistenceId => BuildPersistenceId(_seed.BuildingId);
 
   public HouseActor(HouseSnapshot seed)
   {
@@ -52,8 +54,6 @@ public sealed class HouseActor : ReceivePersistentActor
     Command<SetDisplayValue>(message =>
       PersistSensorChange(_sensors with { DisplayValue = message.DisplayValue.Trim().Slice(33) })
     );
-
-    Command<GetHouseSnapshot>(_ => Sender.Tell(CreateSnapshot(), Self));
   }
 
   private void PersistSensorChange(HouseSensors updatedSensors)

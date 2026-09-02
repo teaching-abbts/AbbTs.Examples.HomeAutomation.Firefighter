@@ -1,10 +1,17 @@
+using System;
+using System.IO;
+
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Actors;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Services;
 
 using Akka.Actor;
 using Akka.Hosting;
+using Akka.Persistence.Sql.Hosting;
+
+using LinqToDB;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Extensions;
 
@@ -16,14 +23,15 @@ public static class ServiceCollectionExtensions
   {
     services.AddAkka(
       ActorSystemName,
-      (builder, _) => builder
-          .AddHocon(
-            """
-            akka.persistence.journal.plugin = "akka.persistence.journal.inmem"
-            akka.persistence.snapshot-store.plugin = "akka.persistence.no-snapshot-store"
-            """,
-            HoconAddMode.Prepend
-          )
+      (builder, serviceProvider) =>
+      {
+        var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
+        var dataDirectory = Path.Combine(environment.ContentRootPath, "App_Data");
+        Directory.CreateDirectory(dataDirectory);
+        var dbPath = Path.Combine(dataDirectory, "firefighter-houses.db");
+
+        builder
+          .WithSqlPersistence(connectionString: $"Data Source={dbPath}", providerName: ProviderName.SQLite)
           .WithActors(
             (system, registry) =>
             {
@@ -33,8 +41,11 @@ public static class ServiceCollectionExtensions
               );
               registry.Register<HouseManagerActor>(manager);
             }
-          ));
+          );
+      }
+    );
 
+    services.AddSingleton<IHouseReadModel, HouseReadModel>();
     services.AddSingleton<IHouseControlGateway, HouseControlGateway>();
 
     return services;

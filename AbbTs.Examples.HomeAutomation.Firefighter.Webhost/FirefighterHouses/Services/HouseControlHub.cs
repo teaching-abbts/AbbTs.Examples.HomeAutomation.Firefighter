@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 
-using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Models;
-
 using Microsoft.AspNetCore.SignalR;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Services;

@@ -22,12 +22,5 @@ public sealed record SetHeatingIntensity(string BuildingId, int HeatingIntensity
 
 public sealed record SetDisplayValue(string BuildingId, string DisplayValue) : IHouseCommand;
 
-public sealed record GetHouseSnapshot(string BuildingId);
-
-public sealed record GetAllHouseSnapshots;
-
-// Wraps the (possibly missing) lookup result since Akka messages cannot be null.
-public sealed record HouseSnapshotResponse(HouseSnapshot? Snapshot);
-
 // Persisted event: carries the full sensors record rather than one event type per field.
 public sealed record HouseSettingChanged(HouseSensors Sensors);

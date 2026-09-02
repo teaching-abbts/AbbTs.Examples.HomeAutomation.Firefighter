@@ -8,10 +8,10 @@
   <ItemGroup>
     <PackageReference Include="Akka.Cluster.Hosting" Version="1.5.71" />
     <PackageReference Include="Akka.Persistence" Version="1.5.71" />
-    <PackageReference
-      Include="Microsoft.AspNetCore.Authentication.OpenIdConnect"
-      Version="10.0.11"
-    />
+    <PackageReference Include="Akka.Persistence.Sql" Version="1.5.70" />
+    <PackageReference Include="Akka.Persistence.Sql.Hosting" Version="1.5.70" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.11" />
     <PackageReference Include="Mumrich.SpaDevMiddleware" Version="1.7.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
     <PackageReference Include="OpenTelemetry" Version="1.18.0" />
@@ -31,10 +31,6 @@
     </SpaRoot>
   </ItemGroup>
   <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
-    <Exec
-      WorkingDirectory="$(ProjectDir)"
-      EnvironmentVariables="ASPNETCORE_ENVIRONMENT=NSWAG"
-      Command="$(NSwagExe_Net100) run .nswag /variables:Configuration=$(Configuration)"
-    />
+    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=NSWAG" Command="$(NSwagExe_Net100) run .nswag /variables:Configuration=$(Configuration)" />
   </Target>
 </Project>
