@@ -1,5 +1,8 @@
 using System;
 using System.Threading.Tasks;
+
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.Configuration;
+using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.Authentication.Endpoints;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Endpoints;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Extensions;
 using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.FirefighterHouses.Services;
@@ -12,7 +15,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Mumrich.SpaDevMiddleware.Extensions;
-using AbbTs.Examples.HomeAutomation.Firefighter.Webhost.Configuration;
 
 namespace AbbTs.Examples.HomeAutomation.Firefighter.Webhost;
 
@@ -39,6 +41,7 @@ public static class Program
 
     app.UseNSwag();
 
+    app.MapAccountEndpoints();
     app.MapAboutEndpoint();
     app.MapHousesEndpoints();
     app.MapHub<HouseControlHub>("/hubs/houses");

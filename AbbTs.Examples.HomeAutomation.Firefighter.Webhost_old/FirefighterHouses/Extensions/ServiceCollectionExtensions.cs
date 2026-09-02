@@ -16,7 +16,9 @@ public static class ServiceCollectionExtensions
   {
     services.AddAkka(
       ActorSystemName,
-      (builder, _) => builder
+      (builder, _) =>
+      {
+        builder
           .AddHocon(
             """
             akka.persistence.journal.plugin = "akka.persistence.journal.inmem"
@@ -33,7 +35,9 @@ public static class ServiceCollectionExtensions
               );
               registry.Register<HouseManagerActor>(manager);
             }
-          ));
+          );
+      }
+    );
 
     services.AddSingleton<IHouseControlGateway, HouseControlGateway>();
 
